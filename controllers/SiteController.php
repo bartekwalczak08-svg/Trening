@@ -20,12 +20,17 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout'],
+                'only' => ['logout', 'profile', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'profile'],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['signup'],
+                        'allow' => true,
+                        'roles' => ['?'],
                     ],
                 ],
             ],
@@ -33,6 +38,7 @@ class SiteController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
+                    'profile' => ['get','post'],
                 ],
             ],
         ];
@@ -69,6 +75,24 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
+    public function actionSignup()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new \app\models\SignupForm();
+        if ($model->load(Yii::$app->request->post()) && ($user = $model->signup())) {
+            // automatically log in newly created user
+            Yii::$app->user->login($user);
+            return $this->goHome();
+        }
+
+        return $this->render('signup', [
+            'model' => $model,
+        ]);
+    }
+
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
@@ -121,6 +145,24 @@ class SiteController extends Controller
      *
      * @return string
      */
+    public function actionProfile()
+    {
+        $model = new \app\models\ChangeCredentialsForm();
+
+        // prefill current username and email
+        $model->username = Yii::$app->user->identity->username;
+        $model->email = Yii::$app->user->identity->email;
+
+        if ($model->load(Yii::$app->request->post()) && $model->update()) {
+            Yii::$app->session->setFlash('success', 'Your account details have been updated.');
+            return $this->refresh();
+        }
+
+        return $this->render('profile', [
+            'model' => $model,
+        ]);
+    }
+
     public function actionAbout()
     {
         return $this->render('about');

@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="site-login">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out the following fields to login:</p>
+    <p>Please fill out the following fields to login (you may enter either username or email):</p>
 
     <div class="row">
         <div class="col-lg-5">
@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ]); ?>
 
-            <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
+            <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'username or email']) ?>
 
             <?= $form->field($model, 'password')->passwordInput() ?>
 
@@ -45,9 +45,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <?php ActiveForm::end(); ?>
 
-            <div style="color:#999;">
-                You may login with <strong>admin/admin</strong> or <strong>demo/demo</strong>.<br>
-                To modify the username/password, please check out the code <code>app\models\User::$users</code>.
+            <div class="text-muted">
+                You may login with the credentials you created in the database. For convenience an "admin" user
+                with password "admin123" is inserted by the migration.
             </div>
 
         </div>

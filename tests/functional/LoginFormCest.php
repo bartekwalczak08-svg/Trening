@@ -46,11 +46,31 @@ class LoginFormCest
         $I->see('Incorrect username or password.');
     }
 
+    public function loginWithEmail(\FunctionalTester $I)
+    {
+        // ensure admin has an email in DB
+        $I->haveInDatabase('user', [
+            'id' => 100,
+            'username' => 'admin',
+            'email' => 'admin@example.com',
+            'password_hash' => Yii::$app->security->generatePasswordHash('admin123'),
+            'auth_key' => Yii::$app->security->generateRandomString(),
+            'created_at' => time(),
+            'updated_at' => time(),
+        ]);
+
+        $I->submitForm('#login-form', [
+            'LoginForm[username]' => 'admin@example.com',
+            'LoginForm[password]' => 'admin123',
+        ]);
+        $I->see('Logout (admin)');
+    }
+
     public function loginSuccessfully(\FunctionalTester $I)
     {
         $I->submitForm('#login-form', [
             'LoginForm[username]' => 'admin',
-            'LoginForm[password]' => 'admin',
+            'LoginForm[password]' => 'admin123',
         ]);
         $I->see('Logout (admin)');
         $I->dontSeeElement('form#login-form');
