@@ -106,6 +106,30 @@ body {
 .text-success { color: var(--success) !important; }
 .text-info    { color: var(--info)    !important; }
 
+.breadcrumb {
+  margin-top: 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+}
+
+.breadcrumb-item a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+  color: #5be5ff;
+  text-decoration: underline;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: #8a8ab5;
+}
+
+.breadcrumb-item.active {
+  color: #d6d6f5;
+}
+
 .day {
   background-color: #111119;
   border: 1px solid var(--border);

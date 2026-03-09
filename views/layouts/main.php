@@ -65,9 +65,9 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                         ['label' => '<i class="bi bi-person me-1"></i>Profile', 'url' => ['/site/profile'], 'encode' => false],
                         '<li><hr class="text-secondary"></li>',
                         '<li><span class="text-secondary small">Planowanie</span></li>',
-                        ['label' => '&nbsp;<i class="bi bi-speedometer2"></i> Panel', 'url' => ['dashboard/index'], 'encode' => false],
+                        ['label' => '&nbsp;<i class="bi bi-speedometer2"></i> Panel', 'url' => ['/dashboard/index'], 'encode' => false],
                         ['label' => '&nbsp;<i class="bi bi-calendar-event"></i> Kalendarz', 'url' => ['#'], 'encode' => false],
-                        ['label' => '&nbsp;<i class="bi bi-activity"></i> Plany treningowe', 'url' => ['#'], 'encode' => false],
+                        ['label' => '&nbsp;<i class="bi bi-activity"></i> Plany treningowe', 'url' => ['/workout/index'], 'encode' => false],
                         ['label' => '&nbsp;<i class="bi bi-graph-up"></i> Progres', 'url' => ['#'], 'encode' => false],
                         '<li><hr class="text-secondary"></li>',
                         '<li class="nav-item">'
@@ -100,8 +100,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <footer id="footer" class="mt-auto py-3 bg-light">
     <div class="container">
         <div class="row text-muted">
-            <div class="col-md-6 text-center text-md-start">&copy; KOKSOWNIA SP.Z O.O.  <?= date('Y') ?></div>
-        </div>
+            <div class="col-md-6 text-center text-md-start">&copy; KOKSY SP.Z O.O.  <?= date('Y') ?></div>
     </div>
 </footer>
 

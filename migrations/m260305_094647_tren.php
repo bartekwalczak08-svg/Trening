@@ -2,21 +2,23 @@
 
 use yii\db\Migration;
 
-class m260305_094647_init extends Migration
+class m260305_094647_tren extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-$this->createTable('user', [
-            'id' => $this->primaryKey(),
-            'username' => $this->string()->notNull(),
-            'email' => $this->string()->notNull(),
-            'password_hash' => $this->string()->notNull(),
-            'created_at' => $this->integer()->notNull(),
-            'updated_at' => $this->integer()->notNull(),
-        ]);
+        if ($this->db->schema->getTableSchema('{{%user}}', true) === null) {
+            $this->createTable('{{%user}}', [
+                'id' => $this->primaryKey(),
+                'username' => $this->string()->notNull(),
+                'email' => $this->string()->notNull(),
+                'password_hash' => $this->string()->notNull(),
+                'created_at' => $this->integer()->notNull(),
+                'updated_at' => $this->integer()->notNull(),
+            ]);
+        }
     }
 
     /**
@@ -24,9 +26,11 @@ $this->createTable('user', [
      */
     public function safeDown()
     {
-        $this->dropTable('user');
+        if ($this->db->schema->getTableSchema('{{%user}}', true) !== null) {
+            $this->dropTable('{{%user}}');
+        }
 
-        return false;
+   
     }
 
     /*

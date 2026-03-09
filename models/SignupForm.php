@@ -19,14 +19,19 @@ class SignupForm extends Model
     {
         return [
             [['username', 'email', 'password', 'passwordRepeat'], 'required'],
+            [['username', 'email'], 'trim'],
             ['username', 'string', 'min' => 3, 'max' => 255],
-            ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_-]+$/',
-                'message' => 'Only letters, numbers, dashes and underscores are allowed.'],
+            ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_\-ąćęłńóśżźĄĆĘŁŃÓŚŻŹ]+$/u',
+                'message' => 'Only letters , numbers, dashes and underscores are allowed.'],
             ['username', 'validateUsernameUnique'],
 
             ['password', 'string', 'min' => 6],
+            ['password', 'match', 'pattern' => '/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/',
+                'message' => 'Password must contain at least one uppercase letter, one digit and one special character.'],
+            ['password', 'validatePasswordDoesNotContainUsername'],
             ['passwordRepeat', 'compare', 'compareAttribute' => 'password',
                 'message' => 'Passwords do not match.'],
+
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
             ['email', 'unique', 'targetClass' => '\\app\\models\\User', 'message' => 'This email address has already been taken.'],
@@ -36,6 +41,8 @@ class SignupForm extends Model
     public function attributeLabels()
     {
         return [
+            'username' => 'Username',
+            'password' => 'Password',
             'passwordRepeat' => 'Repeat Password',
             'email' => 'Email',
         ];
@@ -43,8 +50,15 @@ class SignupForm extends Model
 
     public function validateUsernameUnique($attribute, $params)
     {
-        if (User::find()->where(['username' => $this->username])->exists()) {
+        if (User::find()->where(['username' => $this->$attribute])->exists()) {
             $this->addError($attribute, 'This username has already been taken.');
+        }
+    }
+
+    public function validatePasswordDoesNotContainUsername($attribute, $params)
+    {
+        if (strpos($this->$attribute, $this->username) !== false) {
+            $this->addError($attribute, 'Password cannot contain your username.');
         }
     }
 

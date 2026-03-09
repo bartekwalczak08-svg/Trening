@@ -23,6 +23,7 @@ class ChangeCredentialsForm extends Model
     {
         return [
             [['username', 'email', 'currentPassword'], 'required'],
+            [['username', 'email'], 'trim'],
             ['username', 'string', 'min' => 3, 'max' => 255],
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
@@ -34,6 +35,10 @@ class ChangeCredentialsForm extends Model
             ['currentPassword', 'validateCurrentPassword'],
 
             ['newPassword', 'string', 'min' => 6, 'skipOnEmpty' => true],
+            ['newPassword', 'match', 'pattern' => '/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/',
+                'message' => 'Password must contain at least one uppercase letter, one digit and one special character.',
+                'skipOnEmpty' => true],
+            ['newPassword', 'validateNewPasswordDoesNotContainUsername'],
             ['newPasswordRepeat', 'compare', 'compareAttribute' => 'newPassword',
                 'message' => 'Passwords do not match.',
                 'skipOnEmpty' => true],
@@ -87,6 +92,13 @@ class ChangeCredentialsForm extends Model
         $existing = User::find()->where(['email' => $this->email])->andWhere(['<>', 'id', $this->_user->id])->one();
         if ($existing) {
             $this->addError($attribute, 'This email has already been taken.');
+        }
+    }
+
+    public function validateNewPasswordDoesNotContainUsername($attribute, $params)
+    {
+        if ($this->$attribute && strpos($this->$attribute, $this->username) !== false) {
+            $this->addError($attribute, 'Password cannot contain your username.');
         }
     }
 
