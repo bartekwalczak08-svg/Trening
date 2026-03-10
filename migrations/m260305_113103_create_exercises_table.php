@@ -1,15 +1,24 @@
 <?php
 
+/**
+ * Opis: Migracja bazy danych odpowiedzialna za zmiany schematu.
+ */
+
+
+namespace app\migrations;
+
 use yii\db\Migration;
 
 /**
  * Handles the creation of table `{{%exercises}}`.
  */
+// Klasa m260305_113103_create_exercises_table.
 class m260305_113103_create_exercises_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
+    // Metoda safeUp.
     public function safeUp()
     {
         if ($this->db->schema->getTableSchema('{{%exercises}}', true) === null) {
@@ -30,6 +39,7 @@ class m260305_113103_create_exercises_table extends Migration
     /**
      * {@inheritdoc}
      */
+    // Metoda safeDown.
     public function safeDown()
     {
         if ($this->db->schema->getTableSchema('{{%exercises}}', true) !== null) {
@@ -37,3 +47,6 @@ class m260305_113103_create_exercises_table extends Migration
         }
     }
 }
+
+
+

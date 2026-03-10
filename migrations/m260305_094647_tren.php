@@ -1,12 +1,21 @@
 <?php
 
+/**
+ * Opis: Migracja bazy danych odpowiedzialna za zmiany schematu.
+ */
+
+
+namespace app\migrations;
+
 use yii\db\Migration;
 
+// Klasa m260305_094647_tren.
 class m260305_094647_tren extends Migration
 {
     /**
      * {@inheritdoc}
      */
+    // Metoda safeUp.
     public function safeUp()
     {
         if ($this->db->schema->getTableSchema('{{%user}}', true) === null) {
@@ -24,6 +33,7 @@ class m260305_094647_tren extends Migration
     /**
      * {@inheritdoc}
      */
+    // Metoda safeDown.
     public function safeDown()
     {
         if ($this->db->schema->getTableSchema('{{%user}}', true) !== null) {
@@ -48,3 +58,6 @@ class m260305_094647_tren extends Migration
     }
     */
 }
+
+
+

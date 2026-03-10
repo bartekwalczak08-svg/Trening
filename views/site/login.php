@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Widok odpowiedzialny za renderowanie interfejsu uytkownika.
+ */
+
+
 /** @var yii\web\View $this */
 /** @var yii\bootstrap5\ActiveForm $form */
 
@@ -8,13 +13,13 @@
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
-$this->title = 'Login';
+$this->title = 'Logowanie';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-login">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out the following fields to login (you may enter either username or email):</p>
+    <p>Wypełnij pola, aby się zalogować (możesz podać nazwę użytkownika lub e-mail):</p>
 
     <div class="row">
         <div class="col-lg-5">
@@ -29,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ]); ?>
 
-            <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'username or email']) ?>
+            <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'nazwa użytkownika lub e-mail']) ?>
 
             <?= $form->field($model, 'password', [
                 'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"login-password\" aria-label=\"Toggle password visibility\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
@@ -42,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <div class="form-group">
                 <div>
-                    <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+                    <?= Html::submitButton('Zaloguj', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
                 </div>
             </div>
 
@@ -76,8 +81,8 @@ JS
 ); ?>
 
             <div class="text-muted">
-                You may login with the credentials you created in the database. For convenience an "admin" user
-                with password "admin123" is inserted by the migration.
+                Możesz zalogować się danymi utworzonymi przy rejestracji. Dla wygody migracja dodaje użytkownika
+                "admin" z hasłem "admin123".
             </div>
 
         </div>

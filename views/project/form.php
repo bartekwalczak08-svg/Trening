@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Widok odpowiedzialny za renderowanie interfejsu uytkownika.
+ */
+
+
 use app\models\Project;
 use Yii;
 use yii\bootstrap5\ActiveForm;

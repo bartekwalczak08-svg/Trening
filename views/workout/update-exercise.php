@@ -1,15 +1,20 @@
 <?php
 
+/**
+ * Opis: Widok odpowiedzialny za renderowanie interfejsu uytkownika.
+ */
+
+
 use yii\helpers\Html;
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\ArrayHelper;
 
 /** @var yii\web\View $this */
-/** @var app\models\generated\WorkoutExercises $model */
-/** @var app\models\generated\Workouts $workout */
-/** @var app\models\generated\Exercises[] $exercises */
+/** @var app\models\WorkoutExercises $model */
+/** @var app\models\Workouts $workout */
+/** @var app\models\Exercises[] $exercises */
 
-$this->title = 'Edytuj cwiczenie';
+$this->title = 'Edytuj ćwiczenie';
 $this->params['breadcrumbs'][] = ['label' => 'Plany treningowe', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $workout->name, 'url' => ['view', 'id' => $workout->id]];
 $this->params['breadcrumbs'][] = 'Edytuj';
@@ -46,7 +51,7 @@ if ($durationValue !== null && $durationUnit === 'min') {
             <div class="row g-3">
                 <div class="col-12">
                     <label class="form-label fw-bold">
-                        <i class="bi bi-list-ul me-1"></i>Wybierz cwiczenie z listy
+                        <i class="bi bi-list-ul me-1"></i>Wybierz ćwiczenie z listy
                     </label>
                     <?= Html::dropDownList(
                         'WorkoutExercises[exercise_id]',
@@ -59,14 +64,14 @@ if ($durationValue !== null && $durationUnit === 'min') {
 
                 <div class="col-12">
                     <label class="form-label fw-bold">
-                        <i class="bi bi-plus me-1"></i>Lub wpisz nazwe nowego cwiczenia
+                        <i class="bi bi-plus me-1"></i>Lub wpisz nazwę nowego ćwiczenia
                     </label>
                     <div class="input-group input-group-lg">
                         <span class="input-group-text bg-light"><i class="bi bi-pencil"></i></span>
-                        <input type="text" name="custom_exercise_name" class="form-control" placeholder="Wpisz nazwe cwiczenia">
+                        <input type="text" name="custom_exercise_name" class="form-control" placeholder="Wpisz nazwę ćwiczenia">
                     </div>
                     <div class="form-text workout-form-muted">
-                        <i class="bi bi-info-circle me-1"></i>Jesli wpiszesz nowe cwiczenie, zostanie ono dodane do listy.
+                        <i class="bi bi-info-circle me-1"></i>Jeśli wpiszesz nowe ćwiczenie, zostanie ono dodane do listy.
                     </div>
                 </div>
 
@@ -79,7 +84,7 @@ if ($durationValue !== null && $durationUnit === 'min') {
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold"><i class="bi bi-arrow-repeat me-1"></i>Powtorzenia</label>
+                    <label class="form-label fw-bold"><i class="bi bi-arrow-repeat me-1"></i>Powtórzenia</label>
                     <div class="input-group">
                         <input type="text" name="WorkoutExercises[reps]" class="form-control form-control-lg" placeholder="np. 8-12" value="<?= Html::encode($model->reps) ?>">
                         <span class="input-group-text bg-light">powt.</span>
@@ -143,3 +148,4 @@ if ($durationValue !== null && $durationUnit === 'min') {
     color: var(--text-muted, #a0a0cc);
 }
 </style>
+

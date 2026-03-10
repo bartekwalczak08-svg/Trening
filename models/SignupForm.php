@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Model domenowy uywany w aplikacji.
+ */
+
+
 namespace app\models;
 
 use Yii;
@@ -8,6 +13,7 @@ use yii\base\Model;
 /**
  * Signup form collects user information for registration.
  */
+// Klasa SignupForm.
 class SignupForm extends Model
 {
     public $username;
@@ -15,13 +21,15 @@ class SignupForm extends Model
     public $password;
     public $passwordRepeat;
 
+    // Metoda rules.
     public function rules()
     {
         return [
             [['username', 'email', 'password', 'passwordRepeat'], 'required'],
             [['username', 'email'], 'trim'],
             ['username', 'string', 'min' => 3, 'max' => 255],
-            ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_\-ąćęłńóśżźĄĆĘŁŃÓŚŻŹ]+$/u',
+            ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_\-�
+ćęłńóśżźĄĆĘŁŃÓŚŻŹ]+$/u',
                 'message' => 'Only letters , numbers, dashes and underscores are allowed.'],
             ['username', 'validateUsernameUnique'],
 
@@ -38,6 +46,7 @@ class SignupForm extends Model
         ];
     }
 
+    // Metoda attributeLabels.
     public function attributeLabels()
     {
         return [
@@ -48,6 +57,7 @@ class SignupForm extends Model
         ];
     }
 
+    // Metoda validateUsernameUnique.
     public function validateUsernameUnique($attribute, $params)
     {
         if (User::find()->where(['username' => $this->$attribute])->exists()) {
@@ -55,6 +65,7 @@ class SignupForm extends Model
         }
     }
 
+    // Metoda validatePasswordDoesNotContainUsername.
     public function validatePasswordDoesNotContainUsername($attribute, $params)
     {
         if (strpos($this->$attribute, $this->username) !== false) {
@@ -66,6 +77,7 @@ class SignupForm extends Model
      * Creates new user if validation passes
      * @return User|null
      */
+    // Metoda signup.
     public function signup()
     {
         if (!$this->validate()) {

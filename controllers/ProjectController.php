@@ -1,13 +1,20 @@
 <?php
 
+/**
+ * Opis: Kontroler obsugujcy dania HTTP i logik akcji.
+ */
+
+
 namespace app\controllers;
 
 use app\models\Project;
 use Yii;
 use yii\web\Controller;
 
+// Klasa ProjectController.
 class ProjectController extends Controller
 {
+    // Metoda actionForm.
     public function actionForm()
     {
         $project = new Project();

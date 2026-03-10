@@ -1,10 +1,15 @@
 <?php
 
+/**
+ * Opis: Widok odpowiedzialny za renderowanie interfejsu uytkownika.
+ */
+
+
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
-/** @var app\models\generated\Workouts|null $todayWorkout */
-/** @var app\models\generated\Workouts[] $recentWorkouts */
+/** @var app\models\Workouts|null $todayWorkout */
+/** @var app\models\Workouts[] $recentWorkouts */
 /** @var array $kpi */
 
 $this->title = 'Panel';
@@ -21,14 +26,14 @@ $todayExerciseCount = $todayWorkout ? $todayWorkout->getWorkoutExercises()->coun
                 <?php if ($todayWorkout): ?>
                     <h1 class="hero-title mb-1"><?= Html::encode($todayWorkout->name) ?></h1>
                     <p class="hero-subtitle mb-0">
-                        <?= $todayExerciseCount ?> cwiczen w planie
+                        <?= $todayExerciseCount ?> ćwiczeń w planie
                         <?php if ($todayWorkout->description): ?>
                             | <?= Html::encode($todayWorkout->description) ?>
                         <?php endif; ?>
                     </p>
                 <?php else: ?>
-                    <h1 class="hero-title mb-1">Brak planu na dzis</h1>
-                    <p class="hero-subtitle mb-0">Dodaj pierwszy trening i zacznij budowac progres.</p>
+                    <h1 class="hero-title mb-1">Brak planu na dziś</h1>
+                    <p class="hero-subtitle mb-0">Dodaj pierwszy trening i zacznij budować progres.</p>
                 <?php endif; ?>
             </div>
             <div class="hero-actions">
@@ -44,25 +49,27 @@ $todayExerciseCount = $todayWorkout ? $todayWorkout->getWorkoutExercises()->coun
     <section class="row g-3 mb-4">
         <div class="col-sm-6 col-xl-3">
             <div class="kpi-card">
-                <div class="kpi-label">Treningi tydzien</div>
+                <div class="kpi-label">Treningi tydzień</div>
                 <div class="kpi-value"><?= $kpi['weekWorkouts'] ?></div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="kpi-card">
-                <div class="kpi-label">Treningi miesiac</div>
+                <div class="kpi-label">Treningi miesi�
+c</div>
                 <div class="kpi-value"><?= $kpi['monthWorkouts'] ?></div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="kpi-card">
-                <div class="kpi-label">Laczny czas planow</div>
+                <div class="kpi-label">Ł�
+czny czas planów</div>
                 <div class="kpi-value"><?= Html::encode($kpi['plannedDuration']) ?></div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="kpi-card">
-                <div class="kpi-label">Sredni odpoczynek</div>
+                <div class="kpi-label">Średni odpoczynek</div>
                 <div class="kpi-value"><?= $kpi['avgRestSec'] ?> sek</div>
             </div>
         </div>
@@ -72,12 +79,12 @@ $todayExerciseCount = $todayWorkout ? $todayWorkout->getWorkoutExercises()->coun
         <div class="col-lg-8">
             <div class="card panel-card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="h5 mb-0">Ostatnie aktywnosci</h3>
+                    <h3 class="h5 mb-0">Ostatnie aktywności</h3>
                     <?= Html::a('Zobacz wszystkie', ['/workout/index'], ['class' => 'btn btn-sm btn-outline-info']) ?>
                 </div>
                 <div class="card-body p-0">
                     <?php if (empty($recentWorkouts)): ?>
-                        <div class="p-4 panel-muted">Brak aktywnosci. Dodaj pierwszy trening.</div>
+                        <div class="p-4 panel-muted">Brak aktywności. Dodaj pierwszy trening.</div>
                     <?php else: ?>
                         <ul class="list-group list-group-flush">
                             <?php foreach ($recentWorkouts as $workout): ?>
@@ -86,11 +93,12 @@ $todayExerciseCount = $todayWorkout ? $todayWorkout->getWorkoutExercises()->coun
                                         <div class="activity-title"><?= Html::encode($workout->name) ?></div>
                                         <div class="panel-muted small">
                                             <?= date('d.m.Y H:i', $workout->created_at) ?>
-                                            | <?= $workout->getWorkoutExercises()->count() ?> cwiczen
+                                            | <?= $workout->getWorkoutExercises()->count() ?> ćwiczeń
                                         </div>
                                     </div>
                                     <div class="d-flex gap-2">
-                                        <?= Html::a('Podglad', ['/workout/view', 'id' => $workout->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
+                                        <?= Html::a('Podgl�
+d', ['/workout/view', 'id' => $workout->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
                                         <?= Html::a('Edytuj', ['/workout/update', 'id' => $workout->id], ['class' => 'btn btn-sm btn-outline-secondary']) ?>
                                     </div>
                                 </li>
@@ -154,8 +162,8 @@ $todayExerciseCount = $todayWorkout ? $todayWorkout->getWorkoutExercises()->coun
 }
 
 .dashboard-panel .kpi-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--surface-soft, #f8fafc);
+    border: 1px solid var(--border, #dbe4ef);
     border-radius: 14px;
     padding: 1rem;
 }
@@ -173,15 +181,31 @@ $todayExerciseCount = $todayWorkout ? $todayWorkout->getWorkoutExercises()->coun
 
 .dashboard-panel .panel-card {
     border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(18, 18, 26, 0.9);
+    border: 1px solid var(--border, #dbe4ef);
+    background: var(--card-bg, #ffffff);
 }
 
 .dashboard-panel .panel-card .card-header,
 .dashboard-panel .panel-card .card-footer,
 .dashboard-panel .activity-item {
     background: transparent;
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--border, #dbe4ef);
+}
+
+html[data-theme='dark'] .dashboard-panel .kpi-card {
+    background: rgba(15, 23, 42, 0.75);
+    border-color: #334155;
+}
+
+html[data-theme='dark'] .dashboard-panel .panel-card {
+    background: rgba(17, 24, 39, 0.92);
+    border-color: #334155;
+}
+
+html[data-theme='dark'] .dashboard-panel .panel-card .card-header,
+html[data-theme='dark'] .dashboard-panel .panel-card .card-footer,
+html[data-theme='dark'] .dashboard-panel .activity-item {
+    border-color: #334155;
 }
 
 .dashboard-panel .activity-title {
@@ -199,3 +223,4 @@ $todayExerciseCount = $todayWorkout ? $todayWorkout->getWorkoutExercises()->coun
     }
 }
 </style>
+

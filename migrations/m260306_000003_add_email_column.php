@@ -1,9 +1,18 @@
 <?php
 
+/**
+ * Opis: Migracja bazy danych odpowiedzialna za zmiany schematu.
+ */
+
+
+namespace app\migrations;
+
 use yii\db\Migration;
 
+// Klasa m260306_000003_add_email_column.
 class m260306_000003_add_email_column extends Migration
 {
+    // Metoda safeUp.
     public function safeUp()
     {
         // add email column to user table
@@ -19,6 +28,7 @@ class m260306_000003_add_email_column extends Migration
         }
     }
 
+    // Metoda safeDown.
     public function safeDown()
     {
         if ($this->db->schema->getTableSchema('{{%user}}', true) !== null) {
@@ -27,3 +37,6 @@ class m260306_000003_add_email_column extends Migration
         }
     }
 }
+
+
+

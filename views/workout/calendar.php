@@ -1,0 +1,102 @@
+<?php
+
+/**
+ * Opis: Widok odpowiedzialny za renderowanie interfejsu uytkownika.
+ */
+
+
+use yii\helpers\Html;
+
+/** @var yii\web\View $this */
+/** @var array<string, app\models\Workouts[]> $groupedWorkouts */
+
+$this->title = 'Kalendarz treningów';
+$this->params['breadcrumbs'][] = ['label' => 'Plany treningowe', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
+?>
+
+<div class="workout-calendar">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1"><?= Html::encode($this->title) ?></h1>
+            <p class="calendar-subtitle mb-0">Tygodniowy rozkład treningów</p>
+        </div>
+        <?= Html::a('<i class="bi bi-plus-circle"></i> Dodaj trening', ['create'], ['class' => 'btn btn-success']) ?>
+    </div>
+
+    <div class="calendar-grid">
+        <?php foreach (\app\models\Workouts::weekdayOrder() as $weekday): ?>
+            <?php $dayWorkouts = $groupedWorkouts[$weekday] ?? []; ?>
+            <section class="calendar-day card shadow-sm">
+                <div class="card-header bg-transparent border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="h6 mb-0"><?= Html::encode(\app\models\Workouts::weekdayOptions()[$weekday]) ?></h2>
+                        <span class="badge calendar-count"><?= count($dayWorkouts) ?></span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <?php if (empty($dayWorkouts)): ?>
+                        <p class="calendar-empty mb-0">Brak treningów.</p>
+                    <?php else: ?>
+                        <div class="d-grid gap-2">
+                            <?php foreach ($dayWorkouts as $workout): ?>
+                                <article class="calendar-item p-2 rounded">
+                                    <div class="d-flex justify-content-between align-items-start gap-2">
+                                        <strong class="calendar-item-title"><?= Html::encode($workout->name) ?></strong>
+                                        <small class="calendar-date"><?= date('d.m', $workout->created_at) ?></small>
+                                    </div>
+                                    <div class="calendar-meta small mt-1">
+                                        <?= (int) $workout->getWorkoutExercises()->count() ?> ćwiczeń
+                                    </div>
+                                    <div class="mt-2">
+                                        <?= Html::a('Otwórz', ['view', 'id' => $workout->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
+                                    </div>
+                                </article>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </section>
+        <?php endforeach; ?>
+    </div>
+</div>
+
+<style>
+.calendar-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+@media (min-width: 768px) {
+    .calendar-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (min-width: 1200px) {
+    .calendar-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+.calendar-day {
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
+}
+.calendar-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.calendar-item-title {
+    color: var(--text, #e8e8ff);
+}
+.calendar-subtitle,
+.calendar-empty,
+.calendar-meta,
+.calendar-date {
+    color: var(--text-muted, #a0a0cc);
+}
+.calendar-count {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text, #e8e8ff);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+</style>

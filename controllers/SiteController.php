@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Kontroler obsugujcy dania HTTP i logik akcji.
+ */
+
+
 namespace app\controllers;
 
 use Yii;
@@ -9,12 +14,16 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\Workouts;
+use app\models\WorkoutExercises;
 
+// Klasa SiteController.
 class SiteController extends Controller
 {
     /**
      * {@inheritdoc}
      */
+    // Metoda behaviors.
     public function behaviors()
     {
         return [
@@ -47,6 +56,7 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
+    // Metoda actions.
     public function actions()
     {
         return [
@@ -65,9 +75,144 @@ class SiteController extends Controller
      *
      * @return string
      */
+    // Metoda actionIndex.
     public function actionIndex()
     {
-        return $this->render('index');
+        $groupedWorkouts = [];
+        $monthlyWorkouts = 0;
+        $todayWorkouts = [];
+        $nextWorkoutDayLabel = null;
+        $activeDaysCount = 0;
+        $totalExercisesPlanned = 0;
+        $recentlyUpdatedWorkouts = [];
+        $weeklyCompletedWorkouts = 0;
+        $weeklySkippedWorkouts = 0;
+        $weeklyCompletionPercent = 0;
+        $calendarFilter = Yii::$app->request->get('calendarFilter', 'all');
+        $allowedFilters = ['all', 'today', 'weekend'];
+        if (!in_array($calendarFilter, $allowedFilters, true)) {
+            $calendarFilter = 'all';
+        }
+        $visibleWeekdays = Workouts::weekdayOrder();
+
+        if (!Yii::$app->user->isGuest) {
+            $workouts = Workouts::find()
+                ->where(['user_id' => Yii::$app->user->id])
+                ->orderBy(['created_at' => SORT_DESC])
+                ->all();
+
+            $recentlyUpdatedWorkouts = Workouts::find()
+                ->where(['user_id' => Yii::$app->user->id])
+                ->orderBy(['updated_at' => SORT_DESC])
+                ->limit(5)
+                ->all();
+
+            foreach (Workouts::weekdayOrder() as $weekday) {
+                $groupedWorkouts[$weekday] = [];
+            }
+
+            foreach ($workouts as $workout) {
+                $weekday = $workout->weekday ?: Workouts::WEEKDAY_MONDAY;
+                if (!isset($groupedWorkouts[$weekday])) {
+                    $groupedWorkouts[$weekday] = [];
+                }
+                $groupedWorkouts[$weekday][] = $workout;
+            }
+
+            $monthStart = strtotime(date('Y-m-01 00:00:00'));
+            $monthlyWorkouts = (int) Workouts::find()
+                ->where(['user_id' => Yii::$app->user->id])
+                ->andWhere(['>=', 'created_at', $monthStart])
+                ->count();
+
+            $todayWeekday = $this->mapWeekdayFromNumber((int) date('N'));
+            $todayWorkouts = $groupedWorkouts[$todayWeekday] ?? [];
+
+            $weekdayOrder = Workouts::weekdayOrder();
+            $todayPosition = array_search($todayWeekday, $weekdayOrder, true);
+            $daysUpToToday = $todayPosition === false ? $weekdayOrder : array_slice($weekdayOrder, 0, $todayPosition + 1);
+            $plannedToDate = 0;
+            $completedToDate = 0;
+
+            foreach ($daysUpToToday as $weekday) {
+                foreach ($groupedWorkouts[$weekday] ?? [] as $item) {
+                    $plannedToDate++;
+                    if ($item->hasAttribute('is_completed') && (int) $item->getAttribute('is_completed') === 1) {
+                        $completedToDate++;
+                    }
+                }
+            }
+
+            $weeklyCompletedWorkouts = $completedToDate;
+            $weeklySkippedWorkouts = max(0, $plannedToDate - $completedToDate);
+            $weeklyCompletionPercent = $plannedToDate > 0
+                ? (int) round(($completedToDate / $plannedToDate) * 100)
+                : 0;
+
+            foreach (Workouts::weekdayOrder() as $weekday) {
+                if (!empty($groupedWorkouts[$weekday])) {
+                    $activeDaysCount++;
+                }
+            }
+
+            $totalExercisesPlanned = (int) WorkoutExercises::find()
+                ->joinWith('workout')
+                ->where(['workouts.user_id' => Yii::$app->user->id])
+                ->count();
+
+            foreach (Workouts::weekdayOrder() as $weekday) {
+                if ($weekday === $todayWeekday) {
+                    continue;
+                }
+                if (!empty($groupedWorkouts[$weekday])) {
+                    $nextWorkoutDayLabel = Workouts::weekdayOptions()[$weekday] ?? null;
+                    break;
+                }
+            }
+
+            if ($calendarFilter === 'today') {
+                $visibleWeekdays = [$todayWeekday];
+            } elseif ($calendarFilter === 'weekend') {
+                $visibleWeekdays = [Workouts::WEEKDAY_SATURDAY, Workouts::WEEKDAY_SUNDAY];
+            }
+        }
+
+        return $this->render('index', [
+            'groupedWorkouts' => $groupedWorkouts,
+            'monthlyWorkouts' => $monthlyWorkouts,
+            'todayWorkouts' => $todayWorkouts,
+            'nextWorkoutDayLabel' => $nextWorkoutDayLabel,
+            'activeDaysCount' => $activeDaysCount,
+            'totalExercisesPlanned' => $totalExercisesPlanned,
+            'recentlyUpdatedWorkouts' => $recentlyUpdatedWorkouts,
+            'calendarFilter' => $calendarFilter,
+            'visibleWeekdays' => $visibleWeekdays,
+            'weeklyCompletedWorkouts' => $weeklyCompletedWorkouts,
+            'weeklySkippedWorkouts' => $weeklySkippedWorkouts,
+            'weeklyCompletionPercent' => $weeklyCompletionPercent,
+        ]);
+    }
+
+    /**
+     * Maps numeric weekday (1-7) to workout weekday key.
+     *
+     * @param int $dayNumber
+     * @return string
+     */
+    // Metoda mapWeekdayFromNumber.
+    private function mapWeekdayFromNumber($dayNumber)
+    {
+        $map = [
+            1 => Workouts::WEEKDAY_MONDAY,
+            2 => Workouts::WEEKDAY_TUESDAY,
+            3 => Workouts::WEEKDAY_WEDNESDAY,
+            4 => Workouts::WEEKDAY_THURSDAY,
+            5 => Workouts::WEEKDAY_FRIDAY,
+            6 => Workouts::WEEKDAY_SATURDAY,
+            7 => Workouts::WEEKDAY_SUNDAY,
+        ];
+
+        return $map[$dayNumber] ?? Workouts::WEEKDAY_MONDAY;
     }
 
     /**
@@ -75,6 +220,7 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
+    // Metoda actionSignup.
     public function actionSignup()
     {
         if (!Yii::$app->user->isGuest) {
@@ -93,6 +239,7 @@ class SiteController extends Controller
         ]);
     }
 
+    // Metoda actionLogin.
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
@@ -115,6 +262,7 @@ class SiteController extends Controller
      *
      * @return Response
      */
+    // Metoda actionLogout.
     public function actionLogout()
     {
         Yii::$app->user->logout();
@@ -127,6 +275,7 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
+    // Metoda actionContact.
     public function actionContact()
     {
         $model = new ContactForm();
@@ -145,6 +294,7 @@ class SiteController extends Controller
      *
      * @return string
      */
+    // Metoda actionProfile.
     public function actionProfile()
     {
         $model = new \app\models\ChangeCredentialsForm();
@@ -163,6 +313,7 @@ class SiteController extends Controller
         ]);
     }
 
+    // Metoda actionAbout.
     public function actionAbout()
     {
         return $this->render('about');

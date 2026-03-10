@@ -1,10 +1,19 @@
 <?php
 
+/**
+ * Opis: Migracja bazy danych odpowiedzialna za zmiany schematu.
+ */
+
+
+namespace app\migrations;
+
 use yii\db\Migration;
 use yii\db\Query;
 
+// Klasa m260309_130000_add_user_id_to_workouts.
 class m260309_130000_add_user_id_to_workouts extends Migration
 {
+    // Metoda safeUp.
     public function safeUp()
     {
         $workoutsTable = $this->db->schema->getTableSchema('{{%workouts}}', true);
@@ -39,6 +48,7 @@ class m260309_130000_add_user_id_to_workouts extends Migration
         }
     }
 
+    // Metoda safeDown.
     public function safeDown()
     {
         $workoutsTable = $this->db->schema->getTableSchema('{{%workouts}}', true);
@@ -51,3 +61,6 @@ class m260309_130000_add_user_id_to_workouts extends Migration
         $this->dropColumn('{{%workouts}}', 'user_id');
     }
 }
+
+
+

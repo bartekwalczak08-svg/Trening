@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Konfiguracja komponentów i parametrów aplikacji.
+ */
+
+
 return [
     'class' => 'yii\db\Connection',
     'dsn' => 'mysql:host=localhost;dbname=yii2basic',

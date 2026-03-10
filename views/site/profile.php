@@ -1,12 +1,17 @@
 <?php
 
+/**
+ * Opis: Widok odpowiedzialny za renderowanie interfejsu uytkownika.
+ */
+
+
 /** @var yii\web\View $this */
 /** @var app\models\ChangeCredentialsForm $model */
 
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
-$this->title = 'Profile';
+$this->title = 'Profil';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-profile">
@@ -34,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ])->passwordInput(['id' => 'profile-new-password-repeat', 'autocomplete' => 'new-password', 'value' => '']) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Save changes', ['class' => 'btn btn-primary']) ?>
+        <?= Html::submitButton('Zapisz zmiany', ['class' => 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

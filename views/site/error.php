@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Widok odpowiedzialny za renderowanie interfejsu uytkownika.
+ */
+
+
 /** @var yii\web\View $this */
 /** @var string $name */
 /** @var string $message */

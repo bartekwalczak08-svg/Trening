@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Model domenowy uywany w aplikacji.
+ */
+
+
 namespace app\models;
 
 use Yii;
@@ -8,6 +13,7 @@ use yii\base\Model;
 /**
  * Form used by users to update their username/password.
  */
+// Klasa ChangeCredentialsForm.
 class ChangeCredentialsForm extends Model
 {
     public $username;
@@ -19,6 +25,7 @@ class ChangeCredentialsForm extends Model
     /** @var User */
     private $_user;
 
+    // Metoda rules.
     public function rules()
     {
         return [
@@ -45,6 +52,7 @@ class ChangeCredentialsForm extends Model
         ];
     }
 
+    // Metoda attributeLabels.
     public function attributeLabels()
     {
         return [
@@ -58,6 +66,7 @@ class ChangeCredentialsForm extends Model
     /**
      * @inheritdoc
      */
+    // Metoda __construct.
     public function __construct($config = [])
     {
         parent::__construct($config);
@@ -67,6 +76,7 @@ class ChangeCredentialsForm extends Model
     /**
      * Checks that the provided currentPassword matches the user's password.
      */
+    // Metoda validateCurrentPassword.
     public function validateCurrentPassword($attribute, $params)
     {
         if (!$this->hasErrors()) {
@@ -79,6 +89,7 @@ class ChangeCredentialsForm extends Model
     /**
      * Validates that username is not already taken by another user.
      */
+    // Metoda validateUsernameUnique.
     public function validateUsernameUnique($attribute, $params)
     {
         $existing = User::find()->where(['username' => $this->username])->andWhere(['<>', 'id', $this->_user->id])->one();
@@ -87,6 +98,7 @@ class ChangeCredentialsForm extends Model
         }
     }
 
+    // Metoda validateEmailUnique.
     public function validateEmailUnique($attribute, $params)
     {
         $existing = User::find()->where(['email' => $this->email])->andWhere(['<>', 'id', $this->_user->id])->one();
@@ -95,6 +107,7 @@ class ChangeCredentialsForm extends Model
         }
     }
 
+    // Metoda validateNewPasswordDoesNotContainUsername.
     public function validateNewPasswordDoesNotContainUsername($attribute, $params)
     {
         if ($this->$attribute && strpos($this->$attribute, $this->username) !== false) {
@@ -106,6 +119,7 @@ class ChangeCredentialsForm extends Model
      * Applies changes to the current user and saves.
      * @return bool whether save was successful
      */
+    // Metoda update.
     public function update()
     {
         if (!$this->validate()) {

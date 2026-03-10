@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Model domenowy uywany w aplikacji.
+ */
+
+
 namespace app\models;
 
 use Yii;
@@ -8,6 +13,7 @@ use yii\base\Model;
 /**
  * ContactForm is the model behind the contact form.
  */
+// Klasa ContactForm.
 class ContactForm extends Model
 {
     public $name;
@@ -20,6 +26,7 @@ class ContactForm extends Model
     /**
      * @return array the validation rules.
      */
+    // Metoda rules.
     public function rules()
     {
         return [
@@ -35,6 +42,7 @@ class ContactForm extends Model
     /**
      * @return array customized attribute labels
      */
+    // Metoda attributeLabels.
     public function attributeLabels()
     {
         return [
@@ -47,6 +55,7 @@ class ContactForm extends Model
      * @param string $email the target email address
      * @return bool whether the model passes validation
      */
+    // Metoda contact.
     public function contact($email)
     {
         if ($this->validate()) {

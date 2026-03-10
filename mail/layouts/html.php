@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Opis: Szablon wiadomoci e-mail uywany przez aplikacj.
+ */
+
 use yii\helpers\Html;
 
 /** @var \yii\web\View $this view component instance */

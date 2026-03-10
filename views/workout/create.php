@@ -1,10 +1,15 @@
 <?php
 
+/**
+ * Opis: Widok odpowiedzialny za renderowanie interfejsu uytkownika.
+ */
+
+
 use yii\helpers\Html;
 use yii\bootstrap5\ActiveForm;
 
 /** @var yii\web\View $this */
-/** @var app\models\generated\Workouts $model */
+/** @var app\models\Workouts $model */
 
 $this->title = 'Dodaj trening';
 $this->params['breadcrumbs'][] = ['label' => 'Plany treningowe', 'url' => ['index']];
@@ -19,6 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
+        <?= $form->field($model, 'weekday')->dropDownList(\app\models\Workouts::weekdayOptions()) ?>
+
         <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
         <div class="form-group">
@@ -28,3 +35,4 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?php ActiveForm::end(); ?>
     </div>
+

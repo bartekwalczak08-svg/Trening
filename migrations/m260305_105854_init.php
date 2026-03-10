@@ -1,9 +1,18 @@
 <?php
 
+/**
+ * Opis: Migracja bazy danych odpowiedzialna za zmiany schematu.
+ */
+
+
+namespace app\migrations;
+
 use yii\db\Migration;
 
+// Klasa m260305_105854_init.
 class m260305_105854_init extends Migration
 {
+    // Metoda safeUp.
     public function safeUp()
     {
         // Tabela treningów
@@ -54,6 +63,7 @@ class m260305_105854_init extends Migration
         }
     }
 
+    // Metoda safeDown.
     public function safeDown()
     {
         if ($this->db->schema->getTableSchema('{{%workout_exercises}}', true) !== null) {
@@ -69,3 +79,5 @@ class m260305_105854_init extends Migration
         }
     }
 }
+
+

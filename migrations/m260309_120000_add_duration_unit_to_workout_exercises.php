@@ -1,9 +1,18 @@
 <?php
 
+/**
+ * Opis: Migracja bazy danych odpowiedzialna za zmiany schematu.
+ */
+
+
+namespace app\migrations;
+
 use yii\db\Migration;
 
+// Klasa m260309_120000_add_duration_unit_to_workout_exercises.
 class m260309_120000_add_duration_unit_to_workout_exercises extends Migration
 {
+    // Metoda safeUp.
     public function safeUp()
     {
         $table = $this->db->schema->getTableSchema('{{%workout_exercises}}', true);
@@ -23,6 +32,7 @@ class m260309_120000_add_duration_unit_to_workout_exercises extends Migration
         }
     }
 
+    // Metoda safeDown.
     public function safeDown()
     {
         $table = $this->db->schema->getTableSchema('{{%workout_exercises}}', true);
@@ -31,3 +41,6 @@ class m260309_120000_add_duration_unit_to_workout_exercises extends Migration
         }
     }
 }
+
+
+

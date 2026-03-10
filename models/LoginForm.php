@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Model domenowy uywany w aplikacji.
+ */
+
+
 namespace app\models;
 
 use Yii;
@@ -11,6 +16,7 @@ use yii\base\Model;
  * @property-read User|null $user
  *
  */
+// Klasa LoginForm.
 class LoginForm extends Model
 {
     public $username; // username or email
@@ -23,6 +29,7 @@ class LoginForm extends Model
     /**
      * @return array the validation rules.
      */
+    // Metoda rules.
     public function rules()
     {
         return [
@@ -48,6 +55,7 @@ class LoginForm extends Model
      * @param string $attribute the attribute currently being validated
      * @param array $params the additional name-value pairs given in the rule
      */
+    // Metoda validatePassword.
     public function validatePassword($attribute, $params)
     {
         if (!$this->hasErrors()) {
@@ -63,6 +71,7 @@ class LoginForm extends Model
      * Custom validator for the login field. It accepts either a valid
      * username (alphanumeric, underscores, dashes) or a properly formatted email.
      */
+    // Metoda validateLogin.
     public function validateLogin($attribute, $params)
     {
         if (strpos($this->$attribute, '@') !== false) {
@@ -80,6 +89,7 @@ class LoginForm extends Model
      * Logs in a user using the provided username and password.
      * @return bool whether the user is logged in successfully
      */
+    // Metoda login.
     public function login()
     {
         if ($this->validate()) {
@@ -91,6 +101,7 @@ class LoginForm extends Model
     /**
      * {@inheritdoc}
      */
+    // Metoda attributeLabels.
     public function attributeLabels()
     {
         return [
@@ -103,6 +114,7 @@ class LoginForm extends Model
      *
      * @return User|null
      */
+    // Metoda getUser.
     public function getUser()
     {
         if ($this->_user === false) {

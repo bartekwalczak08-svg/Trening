@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * Opis: Komenda konsolowa aplikacji.
+ */
+
+
+/**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
@@ -19,6 +24,7 @@ use yii\console\ExitCode;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
+//odpowiada za logik tego moduu.
 class HelloController extends Controller
 {
     /**
@@ -26,6 +32,7 @@ class HelloController extends Controller
      * @param string $message the message to be echoed.
      * @return int Exit code
      */
+    // a actionIndex realizuje fragment logiki aplikacji.
     public function actionIndex($message = 'hello world')
     {
         echo $message . "\n";

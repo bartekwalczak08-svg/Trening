@@ -7,8 +7,7 @@
 
 namespace app\models;
 
-// Klasa Project.
-class Project extends extended\Project
+// Klasa Exercises.
+class Exercises extends extended\Exercises
 {
-
 }

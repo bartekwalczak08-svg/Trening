@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * Opis: Rejestracja zasobów frontendowych (CSS/JS).
+ */
+
+
+/**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
@@ -16,6 +21,7 @@ use yii\web\AssetBundle;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
+// : Klasa AppAsset odpowiada za logik tego moduu.
 class AppAsset extends AssetBundle
 {
     public $basePath = '@webroot';

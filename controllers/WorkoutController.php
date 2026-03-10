@@ -1,10 +1,15 @@
 <?php
 
+/**
+ * Opis: Kontroler obsugujcy dania HTTP i logik akcji.
+ */
+
+
 namespace app\controllers;
 
-use app\models\generated\Workouts;
-use app\models\generated\WorkoutExercises;
-use app\models\generated\Exercises;
+use app\models\Workouts;
+use app\models\WorkoutExercises;
+use app\models\Exercises;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -14,17 +19,19 @@ use yii\filters\VerbFilter;
 /**
  * WorkoutController implements CRUD actions for Workouts model.
  */
+// Klasa WorkoutController.
 class WorkoutController extends Controller
 {
     /**
      * {@inheritdoc}
      */
+    // Metoda behaviors.
     public function behaviors()
     {
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['index', 'view', 'create', 'update', 'delete', 'add-exercise', 'update-exercise', 'delete-exercise'],
+                'only' => ['index', 'calendar', 'view', 'create', 'update', 'delete', 'add-exercise', 'update-exercise', 'delete-exercise', 'toggle-exercise-completion'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -37,6 +44,7 @@ class WorkoutController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                     'delete-exercise' => ['POST'],
+                    'toggle-exercise-completion' => ['POST'],
                 ],
             ],
         ];
@@ -46,15 +54,61 @@ class WorkoutController extends Controller
      * Lists all Workouts models.
      * @return string
      */
+    // Metoda actionIndex.
     public function actionIndex()
+    {
+        $workouts = Workouts::find()
+            ->with('workoutExercises')
+            ->where(['user_id' => Yii::$app->user->id])
+            ->orderBy(['created_at' => SORT_DESC])
+            ->all();
+
+        $groupedWorkouts = [];
+        foreach (Workouts::weekdayOrder() as $weekday) {
+            $groupedWorkouts[$weekday] = [];
+        }
+
+        foreach ($workouts as $workout) {
+            $weekday = $workout->weekday ?: Workouts::WEEKDAY_MONDAY;
+            if (!isset($groupedWorkouts[$weekday])) {
+                $groupedWorkouts[$weekday] = [];
+            }
+            $groupedWorkouts[$weekday][] = $workout;
+        }
+        
+        return $this->render('index', [
+            'workouts' => $workouts,
+            'groupedWorkouts' => $groupedWorkouts,
+        ]);
+    }
+
+    /**
+     * Shows workouts in weekly calendar layout.
+     * @return string
+     */
+    // Metoda actionCalendar.
+    public function actionCalendar()
     {
         $workouts = Workouts::find()
             ->where(['user_id' => Yii::$app->user->id])
             ->orderBy(['created_at' => SORT_DESC])
             ->all();
-        
-        return $this->render('index', [
-            'workouts' => $workouts,
+
+        $groupedWorkouts = [];
+        foreach (Workouts::weekdayOrder() as $weekday) {
+            $groupedWorkouts[$weekday] = [];
+        }
+
+        foreach ($workouts as $workout) {
+            $weekday = $workout->weekday ?: Workouts::WEEKDAY_MONDAY;
+            if (!isset($groupedWorkouts[$weekday])) {
+                $groupedWorkouts[$weekday] = [];
+            }
+            $groupedWorkouts[$weekday][] = $workout;
+        }
+
+        return $this->render('calendar', [
+            'groupedWorkouts' => $groupedWorkouts,
         ]);
     }
 
@@ -64,6 +118,7 @@ class WorkoutController extends Controller
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
+    // Metoda actionView.
     public function actionView($id)
     {
         $workout = $this->findModel($id);
@@ -87,9 +142,13 @@ class WorkoutController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
+    // Metoda actionCreate.
     public function actionCreate()
     {
         $model = new Workouts();
+        if (empty($model->weekday)) {
+            $model->weekday = Workouts::WEEKDAY_MONDAY;
+        }
         
         if ($model->load(Yii::$app->request->post())) {
             $model->user_id = Yii::$app->user->id;
@@ -97,7 +156,7 @@ class WorkoutController extends Controller
             $model->updated_at = time();
             
             if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Trening zostal utworzony.');
+                Yii::$app->session->setFlash('success', 'Trening został utworzony.');
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
@@ -114,6 +173,7 @@ class WorkoutController extends Controller
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
+    // Metoda actionUpdate.
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
@@ -122,7 +182,7 @@ class WorkoutController extends Controller
             $model->updated_at = time();
             
             if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Trening zostal zaktualizowany.');
+                Yii::$app->session->setFlash('success', 'Trening został zaktualizowany.');
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
@@ -139,6 +199,7 @@ class WorkoutController extends Controller
      * @return \yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
+    // Metoda actionDelete.
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
@@ -148,13 +209,14 @@ class WorkoutController extends Controller
         
         $model->delete();
         
-        Yii::$app->session->setFlash('success', 'Trening zostal usunietu.');
+        Yii::$app->session->setFlash('success', 'Trening został usunięty.');
         return $this->redirect(['index']);
     }
 
 /**
      * Add exercise to workout
      */
+    // Metoda actionAddExercise.
     public function actionAddExercise($workout_id)
     {
         $workout = $this->findModel($workout_id);
@@ -217,13 +279,17 @@ class WorkoutController extends Controller
                     ->where(['workout_id' => $workout_id])
                     ->max('position');
                 $model->position = ($maxPosition !== null ? $maxPosition : 0) + 1;
+                if ($model->hasAttribute('is_completed')) {
+                    $model->setAttribute('is_completed', 0);
+                }
                 
                 if ($model->save()) {
-                    Yii::$app->session->setFlash('success', 'Cwiczenie zostalo dodane.');
+                    $this->syncWorkoutCompletionStatus($workout_id);
+                    Yii::$app->session->setFlash('success', 'Ćwiczenie zostało dodane.');
                     return $this->redirect(['view', 'id' => $workout_id]);
                 }
             } else {
-                $model->addError('exercise_id', 'Wybierz cwiczenie z listy lub wpisz nazwe.');
+                $model->addError('exercise_id', 'Wybierz ćwiczenie z listy lub wpisz nazwę.');
             }
         }
         
@@ -237,12 +303,13 @@ class WorkoutController extends Controller
 /**
      * Update exercise in workout
      */
+    // Metoda actionUpdateExercise.
     public function actionUpdateExercise($id)
     {
         $model = $this->findWorkoutExerciseModel($id);
         
         if (!$model) {
-            throw new NotFoundHttpException('Cwiczenie nie zostalo znalezione.');
+            throw new NotFoundHttpException('Ćwiczenie nie zostało znalezione.');
         }
         
         $workout = $this->findModel($model->workout_id);
@@ -295,11 +362,12 @@ class WorkoutController extends Controller
                 $model->rest_sec = ($model->rest_sec === '' || $model->rest_sec === null) ? 60 : $model->rest_sec;
                 
                 if ($model->save()) {
-                    Yii::$app->session->setFlash('success', 'Cwiczenie zostalo zaktualizowane.');
+                    $this->syncWorkoutCompletionStatus((int) $model->workout_id);
+                    Yii::$app->session->setFlash('success', 'Ćwiczenie zostało zaktualizowane.');
                     return $this->redirect(['view', 'id' => $model->workout_id]);
                 }
             } else {
-                $model->addError('exercise_id', 'Wybierz cwiczenie z listy lub wpisz nazwe.');
+                $model->addError('exercise_id', 'Wybierz ćwiczenie z listy lub wpisz nazwę.');
             }
         }
         
@@ -313,19 +381,49 @@ class WorkoutController extends Controller
     /**
      * Delete exercise from workout
      */
+    // Metoda actionDeleteExercise.
     public function actionDeleteExercise($id)
     {
         $model = $this->findWorkoutExerciseModel($id);
         
         if (!$model) {
-            throw new NotFoundHttpException('Cwiczenie nie zostalo znalezione.');
+            throw new NotFoundHttpException('Ćwiczenie nie zostało znalezione.');
         }
         
         $workout_id = $model->workout_id;
         $model->delete();
+        $this->syncWorkoutCompletionStatus((int) $workout_id);
         
-        Yii::$app->session->setFlash('success', 'Cwiczenie zostalo usunietu.');
+        Yii::$app->session->setFlash('success', 'Ćwiczenie zostało usunięte.');
         return $this->redirect(['view', 'id' => $workout_id]);
+    }
+
+    /**
+     * Toggle completion state for exercise in workout.
+     *
+     * @param int $id
+     * @return \yii\web\Response
+     * @throws NotFoundHttpException
+     */
+    // Metoda actionToggleExerciseCompletion.
+    public function actionToggleExerciseCompletion($id)
+    {
+        $model = $this->findWorkoutExerciseModel($id);
+        $completed = (int) Yii::$app->request->post('completed', 0) === 1;
+
+        if ($model->hasAttribute('is_completed')) {
+            $model->setAttribute('is_completed', $completed ? 1 : 0);
+            $model->save(false, ['is_completed']);
+        }
+
+        $this->syncWorkoutCompletionStatus((int) $model->workout_id);
+
+        $returnUrl = Yii::$app->request->post('returnUrl');
+        if (is_string($returnUrl) && $returnUrl !== '') {
+            return $this->redirect($returnUrl);
+        }
+
+        return $this->redirect(['view', 'id' => $model->workout_id]);
     }
 
     /**
@@ -335,13 +433,14 @@ class WorkoutController extends Controller
      * @return Workouts the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
+    // Metoda findModel.
     protected function findModel($id)
     {
         if (($model = Workouts::find()->where(['id' => $id, 'user_id' => Yii::$app->user->id])->one()) !== null) {
             return $model;
         }
         
-        throw new NotFoundHttpException('Strona nie zostala znaleziona.');
+        throw new NotFoundHttpException('Strona nie została znaleziona.');
     }
 
     /**
@@ -351,6 +450,7 @@ class WorkoutController extends Controller
      * @return WorkoutExercises
      * @throws NotFoundHttpException
      */
+    // Metoda findWorkoutExerciseModel.
     protected function findWorkoutExerciseModel($id)
     {
         $model = WorkoutExercises::find()
@@ -365,6 +465,41 @@ class WorkoutController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException('Cwiczenie nie zostalo znalezione.');
+        throw new NotFoundHttpException('Ćwiczenie nie zostało znalezione.');
+    }
+
+    /**
+     * Marks workout as completed when all its exercises are completed.
+     *
+     * @param int $workoutId
+     * @return void
+     */
+    // Metoda syncWorkoutCompletionStatus.
+    protected function syncWorkoutCompletionStatus($workoutId)
+    {
+        $workout = Workouts::find()
+            ->where(['id' => $workoutId, 'user_id' => Yii::$app->user->id])
+            ->one();
+
+        if ($workout === null || !$workout->hasAttribute('is_completed')) {
+            return;
+        }
+
+        $total = (int) WorkoutExercises::find()
+            ->where(['workout_id' => $workoutId])
+            ->count();
+
+        if ($total === 0) {
+            $workout->setAttribute('is_completed', 0);
+            $workout->save(false, ['is_completed']);
+            return;
+        }
+
+        $completed = (int) WorkoutExercises::find()
+            ->where(['workout_id' => $workoutId, 'is_completed' => 1])
+            ->count();
+
+        $workout->setAttribute('is_completed', $completed === $total ? 1 : 0);
+        $workout->save(false, ['is_completed']);
     }
 }

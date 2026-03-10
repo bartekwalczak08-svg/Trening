@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Model domenowy uywany w aplikacji.
+ */
+
+
 namespace app\models;
 
 use Yii;
@@ -19,6 +24,7 @@ use Yii;
  * @property Exercises $exercise
  * @property Workouts $workout
  */
+// Klasa WorkoutExercise.
 class WorkoutExercise extends \yii\db\ActiveRecord
 {
 
@@ -26,6 +32,7 @@ class WorkoutExercise extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    // Metoda tableName.
     public static function tableName()
     {
         return 'workout_exercises';
@@ -34,6 +41,7 @@ class WorkoutExercise extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    // Metoda rules.
     public function rules()
     {
         return [
@@ -50,6 +58,7 @@ class WorkoutExercise extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    // Metoda attributeLabels.
     public function attributeLabels()
     {
         return [
@@ -69,6 +78,7 @@ class WorkoutExercise extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
+    // Metoda getExercise.
     public function getExercise()
     {
         return $this->hasOne(Exercises::class, ['id' => 'exercise_id']);
@@ -79,6 +89,7 @@ class WorkoutExercise extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
+    // Metoda getWorkout.
     public function getWorkout()
     {
         return $this->hasOne(Workouts::class, ['id' => 'workout_id']);

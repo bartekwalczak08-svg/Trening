@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * Opis: Konfiguracja komponentów i parametrów aplikacji.
+ */
+
+
+/**
  * This class only exists here for IDE (PHPStorm/Netbeans/...) autocompletion.
  * This file is never included anywhere.
  * Adjust this file to match classes configured in your application config, to enable IDE autocompletion for custom components.
@@ -11,6 +16,7 @@
  * }
  * ```
  */
+// Klasa Yii.
 class Yii
 {
     /**
@@ -23,6 +29,7 @@ class Yii
  * @property yii\rbac\DbManager $authManager
  * @property \yii\web\User|__WebUser $user
  */
+// Klasa __Application.
 class __Application
 {
 }
@@ -30,6 +37,7 @@ class __Application
 /**
  * @property app\models\User $identity
  */
+// Klasa __WebUser.
 class __WebUser
 {
 }

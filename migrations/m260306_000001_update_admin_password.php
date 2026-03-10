@@ -1,9 +1,20 @@
 <?php
 
+/**
+ * Opis: Migracja bazy danych odpowiedzialna za zmiany schematu.
+ */
+
+
+namespace app\migrations;
+
+use Yii;
+
 use yii\db\Migration;
 
+// Klasa m260306_000001_update_admin_password.
 class m260306_000001_update_admin_password extends Migration
 {
+    // Metoda safeUp.
     public function safeUp()
     {
         // if the admin user exists and password is 'admin' (hashed), reset to 'admin123'
@@ -19,6 +30,7 @@ class m260306_000001_update_admin_password extends Migration
         }
     }
 
+    // Metoda safeDown.
     public function safeDown()
     {
         // revert back to 'admin' if necessary (not recommended)
@@ -33,3 +45,6 @@ class m260306_000001_update_admin_password extends Migration
         }
     }
 }
+
+
+

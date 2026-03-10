@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Komenda konsolowa aplikacji.
+ */
+
+
 namespace app\commands;
 
 use Yii;
@@ -9,6 +14,7 @@ use yii\gii\generators\model\Generator;
 /**
  * Command to generate ActiveRecord models from existing database tables.
  */
+//  Klasa GenerateController odpowiada za logik tego moduu.
 class GenerateController extends Controller
 {
     public $ignoredTables = ['migration'];
@@ -16,6 +22,7 @@ class GenerateController extends Controller
     /**
      * Generate active record models from existing database tables.
      */
+    //   realizuje fragment logiki aplikacji.
     public function actionIndex()
     {
         echo PHP_EOL . 'Generating active-models for following tables:' . PHP_EOL;

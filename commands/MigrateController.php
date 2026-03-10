@@ -1,10 +1,16 @@
 <?php
 
+/**
+ * Opis: Komenda konsolowa aplikacji.
+ */
+
+
 namespace app\commands;
 
 use yii\console\Controller;
 use yii\gii\generators\model\Generator;
 
+//  Klasa MigrateController odpowiada za logik tego moduu.
 class MigrateController extends \yii\console\controllers\MigrateController
 {
     public $migrationTable = 'migration';
@@ -14,6 +20,7 @@ class MigrateController extends \yii\console\controllers\MigrateController
     /**
      * Generate active record models from existing database tables.
      */
+    //   actionGenerate realizuje fragment logiki aplikacji.
     public function actionGenerate()
     {
         echo PHP_EOL . 'Generating active-models for following tables:' . PHP_EOL;
@@ -49,6 +56,7 @@ class MigrateController extends \yii\console\controllers\MigrateController
         return Controller::EXIT_CODE_NORMAL;
     }
 
+    // afterAction realizuje fragment logiki aplikacji.
     public function afterAction($action, $result): void
     {
         if (in_array($action->id, ['down', 'fresh', 'redo', 'to', 'up'])) {

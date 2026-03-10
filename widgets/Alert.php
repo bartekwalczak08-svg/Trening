@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Opis: Widget wielokrotnego uytku dla warstwy widoku.
+ */
+
+
 namespace app\widgets;
 
 use Yii;
@@ -23,6 +28,7 @@ use Yii;
  * @author Kartik Visweswaran <kartikv2@gmail.com>
  * @author Alexander Makarov <sam@rmcreative.ru>
  */
+// Klasa Alert.
 class Alert extends \yii\bootstrap5\Widget
 {
     /**
@@ -48,6 +54,7 @@ class Alert extends \yii\bootstrap5\Widget
     /**
      * {@inheritdoc}
      */
+    // Metoda run.
     public function run()
     {
         $session = Yii::$app->session;
