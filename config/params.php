@@ -31,7 +31,7 @@ return [
 'jebac','jebać','jebany','jebana','jebane','jebie','jebanie','jebanko','jebiesz','jebnąć','zajebać','wyjebać',
 'gówno','gowno','gówniany','gowniany','gówniarz',
 'skurwysyn','skurwysyny','skurwysyński',
-'skurwiel','skurwiele',
+'skurwiel','skurwiele','Suka','suki','sukinsyn','sukinsyny',
 'dupa','dupą','dupy','dupie','dupek','dupka','dupek',
 'odpierdol','spierdalaj','wypierdalaj','rozpierdol','rozpierdolić',
 'zjebać','zjebany','zjeb','zjeby',
@@ -45,6 +45,6 @@ return [
 'szmata','szmaty',
 'gnój','gnida',
 'świnia','świnie',
-'ciota','cioty','nigga','nigger','pedał','pedale','pecie','kutas','kutasie','pedalisko'
+'ciota','cioty','nigga','nigger','pedał','pedale','pecie','kutas','kutasie','pedalisko','jeahbac','yeahbac'
     ],
 ];

@@ -107,12 +107,14 @@ class ContactForm extends Model
         $blockedWords = Yii::$app->params['contactBlacklistWords'] ?? [];
         $normalizedValue = $this->normalizeForBlacklist($value);
         $pattern = $this->buildBlacklistRegex($blockedWords);
-        // Three layers: obfuscated regex, collapsed letters, and digit-noise detection.
+        // Four layers: obfuscated regex, collapsed letters, digit-noise detection,
+        // and bounded-gap subsequence matching for split/inserted-letter obfuscation.
         $matchedByRegex = $pattern !== null && preg_match($pattern, $normalizedValue) === 1;
         $matchedByCollapsedText = $this->containsBlockedWordInCollapsedText($normalizedValue, $blockedWords);
         $matchedByDigitNoise = $this->containsBlockedWordIgnoringDigits($value, $blockedWords);
+        $matchedByFuzzySubsequence = $this->containsBlockedWordAsFuzzySubsequence($value, $normalizedValue, $blockedWords);
 
-        if ($matchedByRegex || $matchedByCollapsedText || $matchedByDigitNoise) {
+        if ($matchedByRegex || $matchedByCollapsedText || $matchedByDigitNoise || $matchedByFuzzySubsequence) {
             $this->addError($attribute, 'Wiadomość nie może zawierać wulgaryzmów.');
         }
     }
@@ -169,6 +171,8 @@ class ContactForm extends Model
             return '';
         }
 
+        $text = $this->normalizeUnicodeForBlacklist($text);
+
         if (function_exists('mb_strtolower')) {
             $text = mb_strtolower($text, 'UTF-8');
         } else {
@@ -199,6 +203,13 @@ class ContactForm extends Model
             '8' => 'b',
             '9' => 'g',
         ]);
+
+        // Handle common obfuscation variant: yeb* -> jeb* (e.g. "yeb@c").
+        $text = preg_replace('/\by(?=eb)/u', 'j', $text) ?? $text;
+        // Handle common obfuscation variant: qurwa -> kurwa.
+        $text = preg_replace('/\bq(?=urwa)/u', 'k', $text) ?? $text;
+        // Handle common obfuscation variant: curwa -> kurwa.
+        $text = preg_replace('/\bc(?=urwa)/u', 'k', $text) ?? $text;
 
         return $text;
     }
@@ -258,6 +269,106 @@ class ContactForm extends Model
         return false;
     }
 
+    // Metoda containsBlockedWordAsFuzzySubsequence.
+    private function containsBlockedWordAsFuzzySubsequence($originalValue, $normalizedValue, array $blockedWords)
+    {
+        // Keep fuzzy mode for suspicious obfuscation only (digits/special chars),
+        // otherwise regular text can produce false positives such as innocent words.
+        if (!$this->hasObfuscationNoise((string) $originalValue)) {
+            return false;
+        }
+
+        $valueForCompare = $this->collapseRepeatedLetters($this->lettersOnly((string) $normalizedValue));
+        if ($valueForCompare === '') {
+            return false;
+        }
+
+        foreach ($blockedWords as $word) {
+            $normalizedWord = $this->normalizeForBlacklist((string) $word);
+            $wordForCompare = $this->collapseRepeatedLetters($this->lettersOnly($normalizedWord));
+
+            // Skip very short words to reduce accidental matches in normal text.
+            if ($wordForCompare === '' || strlen($wordForCompare) < 5) {
+                continue;
+            }
+
+            if ($this->matchesWithMaxGap($valueForCompare, $wordForCompare, 5)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Metoda hasObfuscationNoise.
+    private function hasObfuscationNoise($value)
+    {
+        $text = trim((string) $value);
+        if ($text === '') {
+            return false;
+        }
+
+        // Digits or punctuation/symbols are treated as likely obfuscation signals.
+        if (preg_match('/\d/u', $text) === 1) {
+            return true;
+        }
+
+        return preg_match('/[^\p{L}\s]/u', $text) === 1;
+    }
+
+    // Metoda matchesWithMaxGap.
+    private function matchesWithMaxGap($haystack, $needle, $maxGap)
+    {
+        $haystack = (string) $haystack;
+        $needle = (string) $needle;
+        $maxGap = (int) $maxGap;
+
+        if ($haystack === '' || $needle === '') {
+            return false;
+        }
+
+        $haystackLength = strlen($haystack);
+        $needleLength = strlen($needle);
+        if ($needleLength > $haystackLength) {
+            return false;
+        }
+
+        for ($start = 0; $start < $haystackLength; $start++) {
+            if ($haystack[$start] !== $needle[0]) {
+                continue;
+            }
+
+            $currentPos = $start;
+            $matched = true;
+
+            for ($i = 1; $i < $needleLength; $i++) {
+                $foundAt = -1;
+                $searchFrom = $currentPos + 1;
+                $searchTo = min($haystackLength - 1, $currentPos + $maxGap + 1);
+
+                for ($j = $searchFrom; $j <= $searchTo; $j++) {
+                    if ($haystack[$j] === $needle[$i]) {
+                        $foundAt = $j;
+                        break;
+                    }
+                }
+
+                if ($foundAt === -1) {
+                    $matched = false;
+                    break;
+                }
+
+                $currentPos = $foundAt;
+            }
+
+            if ($matched) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // Metoda normalizeWithoutLeet.
     private function normalizeWithoutLeet($value)
     {
@@ -265,6 +376,8 @@ class ContactForm extends Model
         if ($text === '') {
             return '';
         }
+
+        $text = $this->normalizeUnicodeForBlacklist($text);
 
         if (function_exists('mb_strtolower')) {
             $text = mb_strtolower($text, 'UTF-8');
@@ -283,5 +396,52 @@ class ContactForm extends Model
             'ż' => 'z',
             'ź' => 'z',
         ]);
+    }
+
+    // Metoda normalizeUnicodeForBlacklist.
+    private function normalizeUnicodeForBlacklist($text)
+    {
+        $value = (string) $text;
+
+        // Remove hidden Unicode format characters often used for evasion.
+        $withoutHidden = preg_replace('/[\x{00AD}\x{034F}\x{061C}\x{180E}\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{206F}\x{FE00}-\x{FE0F}\x{FEFF}]/u', '', $value);
+        if ($withoutHidden !== null) {
+            $value = $withoutHidden;
+        }
+
+        // Normalize compatibility characters (e.g. full-width variants).
+        if (class_exists('\\Normalizer')) {
+            $normalized = \Normalizer::normalize($value, \Normalizer::FORM_KD);
+            if ($normalized !== false) {
+                $value = $normalized;
+            }
+        }
+
+        // Drop combining marks after normalization.
+        $withoutMarks = preg_replace('/\p{Mn}+/u', '', $value);
+        if ($withoutMarks !== null) {
+            $value = $withoutMarks;
+        }
+
+        if (function_exists('mb_convert_kana')) {
+            $value = mb_convert_kana($value, 'asKV', 'UTF-8');
+        }
+
+        // Map common Cyrillic/Greek homoglyphs to Latin lookalikes.
+        $value = strtr($value, [
+            'а' => 'a', 'А' => 'a', 'е' => 'e', 'Е' => 'e', 'о' => 'o', 'О' => 'o',
+            'р' => 'p', 'Р' => 'p', 'с' => 'c', 'С' => 'c', 'х' => 'x', 'Х' => 'x',
+            'у' => 'y', 'У' => 'y', 'к' => 'k', 'К' => 'k', 'м' => 'm', 'М' => 'm',
+            'т' => 't', 'Т' => 't', 'в' => 'b', 'В' => 'b', 'н' => 'h', 'Н' => 'h',
+            'і' => 'i', 'І' => 'i', 'ї' => 'i', 'Ї' => 'i', 'ј' => 'j', 'Ј' => 'j',
+            'ӏ' => 'l',
+            'α' => 'a', 'Α' => 'a', 'β' => 'b', 'Β' => 'b', 'δ' => 'd', 'Δ' => 'd',
+            'ε' => 'e', 'Ε' => 'e', 'ι' => 'i', 'Ι' => 'i', 'κ' => 'k', 'Κ' => 'k',
+            'ν' => 'v', 'Ν' => 'v', 'ο' => 'o', 'Ο' => 'o', 'ρ' => 'p', 'Ρ' => 'p',
+            'τ' => 't', 'Τ' => 't', 'υ' => 'u', 'Υ' => 'u', 'χ' => 'x', 'Χ' => 'x',
+        ]);
+
+        $normalizedSpaces = preg_replace('/\p{Z}+/u', ' ', $value);
+        return $normalizedSpaces === null ? $value : $normalizedSpaces;
     }
 }
