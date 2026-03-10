@@ -19,8 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="mb-1"><?= Html::encode($this->title) ?></h1>
-            <p class="workout-subtitle mb-0">Zarz�
-dzaj swoimi treningami</p>
+            <p class="workout-subtitle mb-0">Zarządzaj swoimi treningami</p>
         </div>
         <?= Html::a('<i class="bi bi-plus-circle"></i> Dodaj trening', ['create'], ['class' => 'btn btn-success btn-lg workout-btn-main']) ?>
     </div>
@@ -102,14 +101,12 @@ dzaj swoimi treningami</p>
                                     </div>
                                     <div class="card-footer bg-transparent border-0 pb-3">
                                         <div class="btn-group btn-group-sm w-100">
-                                            <?= Html::a('<i class="bi bi-eye"></i> Podgl�
-d', ['view', 'id' => $workout->id], ['class' => 'btn btn-outline-primary']) ?>
+                                            <?= Html::a('<i class="bi bi-eye"></i> Podgląd', ['view', 'id' => $workout->id], ['class' => 'btn btn-outline-primary']) ?>
                                             <?= Html::a('<i class="bi bi-pencil"></i> Edytuj', ['update', 'id' => $workout->id], ['class' => 'btn btn-outline-secondary']) ?>
                                             <?= Html::a('<i class="bi bi-trash"></i>', ['delete', 'id' => $workout->id], [
                                                 'class' => 'btn btn-outline-danger',
                                                 'data' => [
-                                                    'confirm' => 'Czy na pewno chcesz usun�
-ć ten trening?',
+                                                    'confirm' => 'Czy na pewno chcesz usunąć ten trening?',
                                                     'method' => 'post',
                                                 ],
                                             ]) ?>

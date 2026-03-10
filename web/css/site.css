@@ -80,6 +80,7 @@ html[data-theme='dark'] body {
 .sidebar {
   background: linear-gradient(180deg, var(--sidebar) 0%, var(--sidebar-2) 100%) !important;
   border-right: 1px solid var(--sidebar-border);
+  min-height: calc(100vh - var(--bs-navbar-height, 56px));
 }
 
 .theme-toggle-btn {
@@ -401,7 +402,7 @@ footer {
 
   .sidebar {
     width: 100% !important;
-    height: auto !important;
+    height: 100% !important;
     position: relative;
     border-right: none;
     border-bottom: 1px solid rgba(148, 163, 184, 0.3);

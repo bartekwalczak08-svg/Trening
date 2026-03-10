@@ -26,8 +26,7 @@ class Workouts extends \app\models\generated\Workouts
 			self::WEEKDAY_TUESDAY => 'Wtorek',
 			self::WEEKDAY_WEDNESDAY => 'Środa',
 			self::WEEKDAY_THURSDAY => 'Czwartek',
-			self::WEEKDAY_FRIDAY => 'Pi�
-tek',
+			self::WEEKDAY_FRIDAY => 'Piątek',
 			self::WEEKDAY_SATURDAY => 'Sobota',
 			self::WEEKDAY_SUNDAY => 'Niedziela',
 		];

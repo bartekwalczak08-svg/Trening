@@ -59,8 +59,7 @@ if ($exerciseTotal > 0 && $exerciseCompleted === $exerciseTotal) {
                     <?= Html::a('<i class="bi bi-trash"></i> Usuń', ['delete', 'id' => $workout->id], [
                         'class' => 'btn btn-outline-danger',
                         'data' => [
-                            'confirm' => 'Czy na pewno chcesz usun�
-ć ten trening?',
+                            'confirm' => 'Czy na pewno chcesz usunąć ten trening?',
                             'method' => 'post',
                         ],
                     ]) ?>
@@ -175,8 +174,7 @@ if ($exerciseTotal > 0 && $exerciseCompleted === $exerciseTotal) {
                                                 'class' => 'btn btn-outline-danger',
                                                 'title' => 'Usuń',
                                                 'data' => [
-                                                    'confirm' => 'Czy na pewno chcesz usun�
-ć to ćwiczenie z treningu?',
+                                                    'confirm' => 'Czy na pewno chcesz usunąć to ćwiczenie z treningu?',
                                                     'method' => 'post',
                                                 ],
                                             ]) ?>

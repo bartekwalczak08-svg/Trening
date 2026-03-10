@@ -8,12 +8,14 @@
 namespace app\controllers;
 
 use Yii;
+use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\ContactMessage;
 use app\models\Workouts;
 use app\models\WorkoutExercises;
 
@@ -29,12 +31,33 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'profile', 'signup'],
+                'only' => [
+                    'logout',
+                    'profile',
+                    'signup',
+                    'contact-messages',
+                    'contact-messages-trash',
+                    'delete-contact-message',
+                    'restore-contact-message',
+                    'purge-contact-message',
+                ],
                 'rules' => [
                     [
-                        'actions' => ['logout', 'profile'],
+                        'actions' => [
+                            'logout',
+                            'profile',
+                            'delete-contact-message',
+                            'restore-contact-message',
+                            'purge-contact-message',
+                            'contact-messages-trash',
+                        ],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['contact-messages'],
+                        'allow' => true,
+                        'roles' => ['?', '@'],
                     ],
                     [
                         'actions' => ['signup'],
@@ -48,6 +71,9 @@ class SiteController extends Controller
                 'actions' => [
                     'logout' => ['post'],
                     'profile' => ['get','post'],
+                    'delete-contact-message' => ['post'],
+                    'restore-contact-message' => ['post'],
+                    'purge-contact-message' => ['post'],
                 ],
             ],
         ];
@@ -317,5 +343,152 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    // Metoda actionContactMessages.
+    public function actionContactMessages()
+    {
+        // Paginate active messages (not in trash).
+        $query = ContactMessage::find()
+            ->where(['deleted_at' => null])
+            ->orderBy(['created_at' => SORT_DESC]);
+
+        $pagination = new Pagination([
+            'totalCount' => (int) $query->count(),
+            'pageSize' => 20,
+            'pageSizeParam' => false,
+        ]);
+
+        $messages = $query
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        $session = Yii::$app->session;
+        $seenIds = array_map('intval', (array) $session->get('seenContactMessageIds', []));
+        $currentlySeenNewIds = [];
+
+        foreach ($messages as $message) {
+            if ($message->status === ContactMessage::STATUS_NEW) {
+                $currentlySeenNewIds[] = (int) $message->id;
+            }
+        }
+
+        // Move status from "new" to "in progress" after reopening the page.
+        $idsToMove = array_values(array_intersect($currentlySeenNewIds, $seenIds));
+        if (!empty($idsToMove)) {
+            ContactMessage::updateAll(
+                [
+                    'status' => ContactMessage::STATUS_IN_PROGRESS,
+                    'updated_at' => time(),
+                ],
+                ['id' => $idsToMove, 'status' => ContactMessage::STATUS_NEW, 'deleted_at' => null]
+            );
+
+            $messages = $query
+                ->offset($pagination->offset)
+                ->limit($pagination->limit)
+                ->all();
+        }
+
+        $session->set('seenContactMessageIds', array_values(array_unique(array_merge($seenIds, $currentlySeenNewIds))));
+
+        $trashCount = (int) ContactMessage::find()
+            ->where(['not', ['deleted_at' => null]])
+            ->count();
+
+        return $this->render('contact-messages', [
+            'messages' => $messages,
+            'pagination' => $pagination,
+            'trashCount' => $trashCount,
+        ]);
+    }
+
+    // Metoda actionDeleteContactMessage.
+    public function actionDeleteContactMessage($id)
+    {
+        $model = ContactMessage::findOne((int) $id);
+        if ($model === null || $model->deleted_at !== null) {
+            Yii::$app->session->setFlash('error', 'Nie znaleziono zgłoszenia.');
+            return $this->redirect(['contact-messages']);
+        }
+
+        $model->deleted_at = time();
+        $model->updated_at = time();
+        if ($model->save(false, ['deleted_at', 'updated_at']) !== false) {
+            $seenIds = array_map('intval', (array) Yii::$app->session->get('seenContactMessageIds', []));
+            $seenIds = array_values(array_filter($seenIds, static function ($seenId) use ($id) {
+                return (int) $seenId !== (int) $id;
+            }));
+            Yii::$app->session->set('seenContactMessageIds', $seenIds);
+
+            Yii::$app->session->setFlash('success', 'Zgłoszenie zostało przeniesione do kosza.');
+        } else {
+            Yii::$app->session->setFlash('error', 'Nie udało się przenieść zgłoszenia do kosza.');
+        }
+
+        return $this->redirect(['contact-messages']);
+    }
+
+    // Metoda actionContactMessagesTrash.
+    public function actionContactMessagesTrash()
+    {
+        $query = ContactMessage::find()
+            ->where(['not', ['deleted_at' => null]])
+            ->orderBy(['deleted_at' => SORT_DESC, 'id' => SORT_DESC]);
+
+        $pagination = new Pagination([
+            'totalCount' => (int) $query->count(),
+            'pageSize' => 20,
+            'pageSizeParam' => false,
+        ]);
+
+        $messages = $query
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        return $this->render('contact-messages-trash', [
+            'messages' => $messages,
+            'pagination' => $pagination,
+        ]);
+    }
+
+    // Metoda actionRestoreContactMessage.
+    public function actionRestoreContactMessage($id)
+    {
+        $model = ContactMessage::findOne((int) $id);
+        if ($model === null || $model->deleted_at === null) {
+            Yii::$app->session->setFlash('error', 'Nie znaleziono zgłoszenia w koszu.');
+            return $this->redirect(['contact-messages-trash']);
+        }
+
+        $model->deleted_at = null;
+        $model->updated_at = time();
+        if ($model->save(false, ['deleted_at', 'updated_at']) !== false) {
+            Yii::$app->session->setFlash('success', 'Zgłoszenie zostało przywrócone.');
+        } else {
+            Yii::$app->session->setFlash('error', 'Nie udało się przywrócić zgłoszenia.');
+        }
+
+        return $this->redirect(['contact-messages-trash']);
+    }
+
+    // Metoda actionPurgeContactMessage.
+    public function actionPurgeContactMessage($id)
+    {
+        $model = ContactMessage::findOne((int) $id);
+        if ($model === null || $model->deleted_at === null) {
+            Yii::$app->session->setFlash('error', 'Nie znaleziono zgłoszenia w koszu.');
+            return $this->redirect(['contact-messages-trash']);
+        }
+
+        if ($model->delete() !== false) {
+            Yii::$app->session->setFlash('success', 'Zgłoszenie zostało trwale usunięte.');
+        } else {
+            Yii::$app->session->setFlash('error', 'Nie udało się trwale usunąć zgłoszenia.');
+        }
+
+        return $this->redirect(['contact-messages-trash']);
     }
 }

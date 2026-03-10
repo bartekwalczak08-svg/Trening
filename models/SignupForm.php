@@ -28,8 +28,7 @@ class SignupForm extends Model
             [['username', 'email', 'password', 'passwordRepeat'], 'required'],
             [['username', 'email'], 'trim'],
             ['username', 'string', 'min' => 3, 'max' => 255],
-            ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_\-�
-ćęłńóśżźĄĆĘŁŃÓŚŻŹ]+$/u',
+            ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_\-ąćęłńóśżźĄĆĘŁŃÓŚŻŹ]+$/u',
                 'message' => 'Only letters , numbers, dashes and underscores are allowed.'],
             ['username', 'validateUsernameUnique'],
 

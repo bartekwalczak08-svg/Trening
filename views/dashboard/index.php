@@ -55,15 +55,13 @@ $todayExerciseCount = $todayWorkout ? $todayWorkout->getWorkoutExercises()->coun
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="kpi-card">
-                <div class="kpi-label">Treningi miesi�
-c</div>
+                <div class="kpi-label">Treningi miesiąc</div>
                 <div class="kpi-value"><?= $kpi['monthWorkouts'] ?></div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="kpi-card">
-                <div class="kpi-label">Ł�
-czny czas planów</div>
+                <div class="kpi-label">Łączny czas planów</div>
                 <div class="kpi-value"><?= Html::encode($kpi['plannedDuration']) ?></div>
             </div>
         </div>
@@ -97,8 +95,7 @@ czny czas planów</div>
                                         </div>
                                     </div>
                                     <div class="d-flex gap-2">
-                                        <?= Html::a('Podgl�
-d', ['/workout/view', 'id' => $workout->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
+                                        <?= Html::a('Podgląd', ['/workout/view', 'id' => $workout->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
                                         <?= Html::a('Edytuj', ['/workout/update', 'id' => $workout->id], ['class' => 'btn btn-sm btn-outline-secondary']) ?>
                                     </div>
                                 </li>

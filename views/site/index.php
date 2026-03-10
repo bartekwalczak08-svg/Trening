@@ -50,15 +50,13 @@ foreach ($groupedWorkouts as $items) {
         <div class="row g-4 mb-4">
             <div class="col-md-4">
                 <div class="card p-4 text-center h-100">
-                    <div class="text-muted small">Treningi ł�
-cznie</div>
+                    <div class="text-muted small">Treningi łącznie</div>
                     <div class="card-value"><?= $totalWorkouts ?></div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card p-4 text-center h-100">
-                    <div class="text-muted small">Treningi w tym miesi�
-cu</div>
+                    <div class="text-muted small">Treningi w tym miesiącu</div>
                     <div class="card-value"><?= $monthlyWorkouts ?></div>
                 </div>
             </div>
@@ -134,8 +132,7 @@ cu</div>
         <div class="card p-4 mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h3 class="h5 mb-0">Ostatnio edytowane treningi</h3>
-                <?= Html::a('Zarz�
-dzaj wszystkimi', ['/workout/index'], ['class' => 'btn btn-sm btn-outline-secondary']) ?>
+                <?= Html::a('Zarządzaj wszystkimi', ['/workout/index'], ['class' => 'btn btn-sm btn-outline-secondary']) ?>
             </div>
             <?php if (empty($recentlyUpdatedWorkouts)): ?>
                 <p class="text-muted mb-0">Nie masz jeszcze edytowanych treningów.</p>

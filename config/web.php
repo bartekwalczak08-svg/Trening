@@ -16,7 +16,14 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
-    'components' => [
+    'components' => [ 
+        "formatter" => [
+            "class" => "yii\\i18n\\Formatter",
+            "dateFormat" => "php:Y-m-d",
+            "datetimeFormat" => "php:Y-m-d H:i:s",
+            "timeFormat" => "php:H:i:s",
+            "locale" => "pl-PL",
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'PejbiTujrxNzQ7UpunPU9kFtcAq0_z_x',

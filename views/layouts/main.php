@@ -80,6 +80,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                     ['label' => '<i class="bi bi-house me-1"></i>Strona główna', 'url' => ['/site/index'], 'encode' => false],
                     ['label' => '<i class="bi bi-info-circle me-1"></i>O aplikacji', 'url' => ['/site/about'], 'encode' => false],
                     ['label' => '<i class="bi bi-envelope me-1"></i>Kontakt', 'url' => ['/site/contact'], 'encode' => false],
+                    ['label' => '<i class="bi bi-inbox me-1"></i>Zgłoszenia', 'url' => ['/site/contact-messages'], 'encode' => false],
                 ],
                 Yii::$app->user->isGuest ?
                     [['label' => '<i class="bi bi-box-arrow-in-right me-1"></i>Logowanie', 'url' => ['/site/login'], 'encode' => false], ['label' => '<i class="bi bi-person-plus me-1"></i>Rejestracja', 'url' => ['/site/signup'], 'encode' => false]] :

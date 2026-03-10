@@ -156,8 +156,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card p-3 mt-4">
         <h3 class="h5 mb-3">Do domknięcia</h3>
         <?php if (empty($incompleteWorkouts)): ?>
-            <p class="text-muted mb-0">Świetna robota. Wszystkie treningi s�
- ukończone.</p>
+            <p class="text-muted mb-0">Świetna robota. Wszystkie treningi są ukończone.</p>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0">
