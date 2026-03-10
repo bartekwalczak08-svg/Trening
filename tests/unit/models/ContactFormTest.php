@@ -134,4 +134,214 @@ class ContactFormTest extends \Codeception\Test\Unit
             \Yii::$app->params['contactBlacklistWords'] = $original;
         }
     }
+
+    public function testBlacklistBlocksStylizedCwelVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['cwel'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = '🅒wᴇ𝘓';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksMixedScriptCwelVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['cwel'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = "\u{0441}w\u{0435}\u{04CF}";
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksEnclosedKurwaVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['kurwa'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = '🅚🅤🅡🅦🅐';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksZeroWidthSplitCwelVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['cwel'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = "c\u{200B}w\u{200D}e\u{FEFF}l";
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksComplementSymbolCweluVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['cwelu'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = '∁welu';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksGreekGammaInKurwoVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['kurwo'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'kuΓwo';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksMixedScriptUnknownLetterSubstitution()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['kurwa'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = "ku\u{0531}wa";
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistAllowsPureNonLatinPhrase()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['kurwa'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'שלום עולם';
+
+            verify($model->validate(['body']))->true();
+            verify($model->getErrors('body'))->empty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksTrailingGreekYpogegrammeniVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['cwelu'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = "cwel\u{037A}";
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksTrailingGreekYpogegrammeniInKurwaVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['kurwa'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = "kurw\u{037A}";
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksRegionalIndicatorEmojiLettersVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['cwel'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = '🇨🇼🇪🇱';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksCircledEmojiLettersVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['cwel'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'ⓒⓦⓔⓛ';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistAllowsPositivePhraseWithEmoji()
+    {
+        $model = new ContactForm();
+        $model->body = 'Super jestem giga chad ❤😍😍😍😍';
+
+        verify($model->validate(['body']))->true();
+        verify($model->getErrors('body'))->empty();
+    }
+
+    public function testBlacklistAllowsSymbolAlphabetSequenceWithoutProfanity()
+    {
+        $model = new ContactForm();
+        $model->body = '🆎 🆑 🆒 🆓 🆔 🆕 🆖 🆗 🆙 🆚🅰 🅱 🅾 🅿🄰 🄱 🄲 🄳 🄴 🄵 🄶 🄷 🄸 🄹 🄺 🄻 🄼 🄽 🄾 🄿 🅀 🅁 🅂 🅃 🅄 🅅 🅆 🅇 🅈 🅉🅐 🅑 🅒 🅓 🅔 🅕 🅖 🅗 🅘 🅙 🅚 🅛 🅜 🅝 🅞 🅟 🅠 🅡 🅢 🅣 🅤 🅥 🅦 🅧 🅨 🅩🅰 🅱 🅲 🅳 🅴 🅵 🅶 🅷 🅸 🅹 🅺 🅻 🅼 🅽 🅾 🅿 🆀 🆁 🆂 🆃 🆄 🆅 🆆 🆇 🆈 🆉';
+
+        verify($model->validate(['body']))->true();
+        verify($model->getErrors('body'))->empty();
+    }
 }

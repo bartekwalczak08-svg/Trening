@@ -113,8 +113,9 @@ class ContactForm extends Model
         $matchedByCollapsedText = $this->containsBlockedWordInCollapsedText($normalizedValue, $blockedWords);
         $matchedByDigitNoise = $this->containsBlockedWordIgnoringDigits($value, $blockedWords);
         $matchedByFuzzySubsequence = $this->containsBlockedWordAsFuzzySubsequence($value, $normalizedValue, $blockedWords);
+        $matchedByMixedScriptSubstitution = $this->containsBlockedWordWithNonLatinSubstitutions($value, $blockedWords);
 
-        if ($matchedByRegex || $matchedByCollapsedText || $matchedByDigitNoise || $matchedByFuzzySubsequence) {
+        if ($matchedByRegex || $matchedByCollapsedText || $matchedByDigitNoise || $matchedByFuzzySubsequence || $matchedByMixedScriptSubstitution) {
             $this->addError($attribute, 'Wiadomość nie może zawierać wulgaryzmów.');
         }
     }
@@ -272,9 +273,9 @@ class ContactForm extends Model
     // Metoda containsBlockedWordAsFuzzySubsequence.
     private function containsBlockedWordAsFuzzySubsequence($originalValue, $normalizedValue, array $blockedWords)
     {
-        // Keep fuzzy mode for suspicious obfuscation only (digits/special chars),
-        // otherwise regular text can produce false positives such as innocent words.
-        if (!$this->hasObfuscationNoise((string) $originalValue)) {
+        // Keep fuzzy mode only when noise appears inside letter sequences
+        // (e.g. k-u-r-w-a), not just anywhere in the message.
+        if (!$this->hasInterLetterObfuscationNoise((string) $originalValue)) {
             return false;
         }
 
@@ -294,6 +295,105 @@ class ContactForm extends Model
 
             if ($this->matchesWithMaxGap($valueForCompare, $wordForCompare, 5)) {
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Metoda hasInterLetterObfuscationNoise.
+    private function hasInterLetterObfuscationNoise($value)
+    {
+        $text = trim((string) $value);
+        if ($text === '') {
+            return false;
+        }
+
+        // Require separators/digits between letters to classify as obfuscation.
+        return preg_match('/\p{L}[\p{Mn}\p{Mc}\p{Me}\p{Sk}\p{So}\p{Pd}\p{Pc}\d]+\p{L}/u', $text) === 1;
+    }
+
+    // Metoda containsBlockedWordWithNonLatinSubstitutions.
+    private function containsBlockedWordWithNonLatinSubstitutions($rawValue, array $blockedWords)
+    {
+        $text = trim((string) $rawValue);
+        if ($text === '') {
+            return false;
+        }
+
+        $withoutHidden = preg_replace('/[\x{00AD}\x{034F}\x{061C}\x{180E}\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{206F}\x{FE00}-\x{FE0F}\x{FEFF}]/u', '', $text);
+        if ($withoutHidden !== null) {
+            $text = $withoutHidden;
+        }
+
+        // Keep these confusables attached to token flow for mixed-script matching.
+        $text = strtr($text, [
+            'ͺ' => '¤',
+            'ͅ' => '¤',
+        ]);
+
+        if (class_exists('\\Normalizer')) {
+            $normalized = \Normalizer::normalize($text, \Normalizer::FORM_KD);
+            if ($normalized !== false) {
+                $text = $normalized;
+            }
+        }
+
+        if (function_exists('mb_strtolower')) {
+            $text = mb_strtolower($text, 'UTF-8');
+        } else {
+            $text = strtolower($text);
+        }
+
+        // Guard to avoid false positives on pure non-Latin messages.
+        if (preg_match('/[a-z]/', $text) !== 1 || preg_match('/[^\x00-\x7F]/u', $text) !== 1) {
+            return false;
+        }
+
+        // Replace every non-ASCII character with a wildcard marker.
+        $masked = preg_replace('/[^\x00-\x7F]/u', '?', $text);
+        if ($masked === null || $masked === '') {
+            return false;
+        }
+
+        $tokens = preg_split('/[^a-z0-9?]+/i', $masked, -1, PREG_SPLIT_NO_EMPTY);
+        if (!is_array($tokens) || empty($tokens)) {
+            return false;
+        }
+
+        foreach ($tokens as $token) {
+            // Mixed-script bypass token must contain both ASCII letters/digits and wildcard marks.
+            if (strpos($token, '?') === false || preg_match('/[a-z0-9]/i', $token) !== 1) {
+                continue;
+            }
+
+            foreach ($blockedWords as $word) {
+                $normalizedWord = $this->normalizeForBlacklist((string) $word);
+                $lettersOnly = preg_replace('/[^a-z0-9]+/', '', $normalizedWord);
+                if ($lettersOnly === null || $lettersOnly === '') {
+                    continue;
+                }
+
+                $chars = str_split($lettersOnly);
+                $parts = [];
+                foreach ($chars as $char) {
+                    $parts[] = '(?:' . preg_quote($char, '/') . '|\?)+';
+                }
+
+                $separator = '[^a-z0-9?]*';
+                $pattern = '/^' . implode($separator, $parts) . '$/i';
+                if (preg_match($pattern, $token) === 1) {
+                    return true;
+                }
+
+                // Fallback for mixed-script replacements that collapse to missing tail letters.
+                $withoutWildcards = str_replace('?', '', $token);
+                if ($withoutWildcards !== '') {
+                    $distance = levenshtein($withoutWildcards, $lettersOnly);
+                    if ($distance >= 0 && $distance <= 1) {
+                        return true;
+                    }
+                }
             }
         }
 
@@ -403,6 +503,12 @@ class ContactForm extends Model
     {
         $value = (string) $text;
 
+        // Handle Greek iota-subscript style confusables before mark stripping.
+        $value = strtr($value, [
+            'ͺ' => 'u',
+            'ͅ' => 'u',
+        ]);
+
         // Remove hidden Unicode format characters often used for evasion.
         $withoutHidden = preg_replace('/[\x{00AD}\x{034F}\x{061C}\x{180E}\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{206F}\x{FE00}-\x{FE0F}\x{FEFF}]/u', '', $value);
         if ($withoutHidden !== null) {
@@ -427,21 +533,98 @@ class ContactForm extends Model
             $value = mb_convert_kana($value, 'asKV', 'UTF-8');
         }
 
+        $value = $this->mapEmojiLetterSymbolsToAscii($value);
+
+        // Map stylized/enclosed Latin letters commonly used to bypass blacklists.
+        $value = strtr($value, [
+            '∁' => 'c',
+            '🅐' => 'A', '🅑' => 'B', '🅒' => 'C', '🅓' => 'D', '🅔' => 'E', '🅕' => 'F',
+            '🅖' => 'G', '🅗' => 'H', '🅘' => 'I', '🅙' => 'J', '🅚' => 'K', '🅛' => 'L',
+            '🅜' => 'M', '🅝' => 'N', '🅞' => 'O', '🅟' => 'P', '🅠' => 'Q', '🅡' => 'R',
+            '🅢' => 'S', '🅣' => 'T', '🅤' => 'U', '🅥' => 'V', '🅦' => 'W', '🅧' => 'X',
+            '🅨' => 'Y', '🅩' => 'Z',
+            '🅰' => 'A', '🅱' => 'B', '🅲' => 'C', '🅳' => 'D', '🅴' => 'E', '🅵' => 'F',
+            '🅶' => 'G', '🅷' => 'H', '🅸' => 'I', '🅹' => 'J', '🅺' => 'K', '🅻' => 'L',
+            '🅼' => 'M', '🅽' => 'N', '🅾' => 'O', '🅿' => 'P', '🆀' => 'Q', '🆁' => 'R',
+            '🆂' => 'S', '🆃' => 'T', '🆄' => 'U', '🆅' => 'V', '🆆' => 'W', '🆇' => 'X',
+            '🆈' => 'Y', '🆉' => 'Z',
+            'ᴬ' => 'A', 'ᴮ' => 'B', 'ᶜ' => 'C', 'ᴰ' => 'D', 'ᴱ' => 'E', 'ᶠ' => 'F',
+            'ᴳ' => 'G', 'ᴴ' => 'H', 'ᴵ' => 'I', 'ᴶ' => 'J', 'ᴷ' => 'K', 'ᴸ' => 'L',
+            'ᴹ' => 'M', 'ᴺ' => 'N', 'ᴼ' => 'O', 'ᴾ' => 'P', 'Q' => 'Q', 'ᴿ' => 'R',
+            'ˢ' => 'S', 'ᵀ' => 'T', 'ᵁ' => 'U', 'ⱽ' => 'V', 'ᵂ' => 'W', 'ˣ' => 'X',
+            'ʸ' => 'Y', 'ᶻ' => 'Z',
+            'ᴀ' => 'a', 'ʙ' => 'b', 'ᴄ' => 'c', 'ᴅ' => 'd', 'ᴇ' => 'e', 'ꜰ' => 'f',
+            'ɢ' => 'g', 'ʜ' => 'h', 'ɪ' => 'i', 'ᴊ' => 'j', 'ᴋ' => 'k', 'ʟ' => 'l',
+            'ᴍ' => 'm', 'ɴ' => 'n', 'ᴏ' => 'o', 'ᴘ' => 'p', 'ǫ' => 'q', 'ʀ' => 'r',
+            'ꜱ' => 's', 'ᴛ' => 't', 'ᴜ' => 'u', 'ᴠ' => 'v', 'ᴡ' => 'w', 'x' => 'x',
+            'ʏ' => 'y', 'ᴢ' => 'z',
+        ]);
+
         // Map common Cyrillic/Greek homoglyphs to Latin lookalikes.
         $value = strtr($value, [
             'а' => 'a', 'А' => 'a', 'е' => 'e', 'Е' => 'e', 'о' => 'o', 'О' => 'o',
             'р' => 'p', 'Р' => 'p', 'с' => 'c', 'С' => 'c', 'х' => 'x', 'Х' => 'x',
             'у' => 'y', 'У' => 'y', 'к' => 'k', 'К' => 'k', 'м' => 'm', 'М' => 'm',
             'т' => 't', 'Т' => 't', 'в' => 'b', 'В' => 'b', 'н' => 'h', 'Н' => 'h',
+            'г' => 'r', 'Г' => 'r',
             'і' => 'i', 'І' => 'i', 'ї' => 'i', 'Ї' => 'i', 'ј' => 'j', 'Ј' => 'j',
             'ӏ' => 'l',
             'α' => 'a', 'Α' => 'a', 'β' => 'b', 'Β' => 'b', 'δ' => 'd', 'Δ' => 'd',
             'ε' => 'e', 'Ε' => 'e', 'ι' => 'i', 'Ι' => 'i', 'κ' => 'k', 'Κ' => 'k',
+            'γ' => 'r', 'Γ' => 'r',
             'ν' => 'v', 'Ν' => 'v', 'ο' => 'o', 'Ο' => 'o', 'ρ' => 'p', 'Ρ' => 'p',
             'τ' => 't', 'Τ' => 't', 'υ' => 'u', 'Υ' => 'u', 'χ' => 'x', 'Χ' => 'x',
         ]);
 
         $normalizedSpaces = preg_replace('/\p{Z}+/u', ' ', $value);
         return $normalizedSpaces === null ? $value : $normalizedSpaces;
+    }
+
+    // Metoda mapEmojiLetterSymbolsToAscii.
+    private function mapEmojiLetterSymbolsToAscii($value)
+    {
+        $text = (string) $value;
+        if ($text === '' || !function_exists('mb_ord')) {
+            return $text;
+        }
+
+        $mapped = preg_replace_callback('/[\x{24B6}-\x{24CF}\x{24D0}-\x{24E9}\x{1F130}-\x{1F169}\x{1F1E6}-\x{1F1FF}]/u', static function ($matches) {
+            $char = $matches[0] ?? '';
+            if ($char === '') {
+                return $char;
+            }
+
+            $cp = mb_ord($char, 'UTF-8');
+            if ($cp === false) {
+                return $char;
+            }
+
+            // Circled Latin capitals A-Z.
+            if ($cp >= 0x24B6 && $cp <= 0x24CF) {
+                return chr(ord('A') + ($cp - 0x24B6));
+            }
+
+            // Circled Latin lowercase a-z.
+            if ($cp >= 0x24D0 && $cp <= 0x24E9) {
+                return chr(ord('a') + ($cp - 0x24D0));
+            }
+
+            // Squared/negative-squared Latin capitals A-Z.
+            if ($cp >= 0x1F130 && $cp <= 0x1F149) {
+                return chr(ord('A') + ($cp - 0x1F130));
+            }
+            if ($cp >= 0x1F150 && $cp <= 0x1F169) {
+                return chr(ord('A') + ($cp - 0x1F150));
+            }
+
+            // Regional indicator symbols (used in flag emoji sequences).
+            if ($cp >= 0x1F1E6 && $cp <= 0x1F1FF) {
+                return chr(ord('A') + ($cp - 0x1F1E6));
+            }
+
+            return $char;
+        }, $text);
+
+        return $mapped === null ? $text : $mapped;
     }
 }
