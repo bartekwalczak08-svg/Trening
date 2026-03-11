@@ -107,6 +107,11 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                 ['label' => '<i class="bi bi-person-plus me-1"></i>Rejestracja', 'url' => ['/site/signup'], 'encode' => false],
             ];
 
+            $identity = Yii::$app->user->identity;
+            $logoutUsername = $identity && isset($identity->username) && $identity->username !== ''
+                ? (string) $identity->username
+                : 'użytkownik';
+
             $authItems = [
                 ['label' => '<i class="bi bi-person me-1"></i>Profil', 'url' => ['/site/profile'], 'encode' => false],
                 '<li><hr class="text-secondary"></li>',
@@ -119,7 +124,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                 '<li class="nav-item">'
                     . Html::beginForm(['/site/logout'])
                     . Html::submitButton(
-                        '<i class="bi bi-box-arrow-right me-1"></i>Wyloguj (' . Yii::$app->user->identity->username . ')',
+                        '<i class="bi bi-box-arrow-right me-1"></i>Wyloguj (' . Html::encode($logoutUsername) . ')',
                         ['class' => 'nav-link btn btn-link logout']
                     )
                     . Html::endForm()
