@@ -333,7 +333,7 @@ class SiteController extends Controller
         $model->email = Yii::$app->user->identity->email;
 
         if ($model->load(Yii::$app->request->post()) && $model->update()) {
-            Yii::$app->session->setFlash('success', 'Your account details have been updated.');
+            Yii::$app->session->setFlash('success', 'Dane konta zostały zaktualizowane.');
             return $this->refresh();
         }
 

@@ -50,13 +50,13 @@ class Project extends \app\models\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'title' => 'Title',
-            'description' => 'Description',
-            'technologies' => 'Technologies',
-            'image_url' => 'Image Url',
+            'title' => 'Tytuł',
+            'description' => 'Opis',
+            'technologies' => 'Technologie',
+            'image_url' => 'URL obrazu',
             'link' => 'Link',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'created_at' => 'Data utworzenia',
+            'updated_at' => 'Data aktualizacji',
         ];
     }
 }

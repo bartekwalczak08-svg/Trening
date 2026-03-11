@@ -71,7 +71,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         'aria-expanded' => 'false',
         'aria-label' => 'Pokaż lub ukryj menu',
     ]);
-    echo Html::button('<i class="bi bi-moon-stars"></i> <span id="theme-toggle-label">Dark</span>', [
+    echo Html::button('<i class="bi bi-moon-stars"></i> <span id="theme-toggle-label">Ciemny</span>', [
         'id' => 'theme-toggle',
         'class' => 'btn btn-sm btn-outline-light theme-toggle-btn',
         'type' => 'button',
@@ -171,7 +171,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                 <h6 class="app-footer-heading">Status</h6>
                 <div class="app-footer-pill">
                     <i class="bi bi-shield-check me-1"></i>
-                    <?= Html::encode(Yii::$app->name) ?> online
+                    <?= Html::encode(Yii::$app->name) ?> aktywny
                 </div>
             </div>
         </div>
@@ -197,7 +197,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         function syncLabel() {
             var current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
             if (toggleLabel) {
-                toggleLabel.textContent = current === 'dark' ? 'Light' : 'Dark';
+                toggleLabel.textContent = current === 'dark' ? 'Jasny' : 'Ciemny';
             }
         }
 

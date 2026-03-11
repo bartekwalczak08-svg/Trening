@@ -54,14 +54,14 @@ class Exercises extends \app\models\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'type' => 'Type',
-            'sets' => 'Sets',
-            'reps' => 'Reps',
-            'duration_sec' => 'Duration Sec',
-            'rest_sec' => 'Rest Sec',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'name' => 'Nazwa',
+            'type' => 'Typ',
+            'sets' => 'Serie',
+            'reps' => 'Powtórzenia',
+            'duration_sec' => 'Czas trwania (s)',
+            'rest_sec' => 'Przerwa (s)',
+            'created_at' => 'Data utworzenia',
+            'updated_at' => 'Data aktualizacji',
         ];
     }
 

@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'nazwa użytkownika lub e-mail']) ?>
 
             <?= $form->field($model, 'password', [
-                'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"login-password\" aria-label=\"Toggle password visibility\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+                'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"login-password\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
                 'errorOptions' => ['class' => 'invalid-feedback d-block'],
             ])->passwordInput(['id' => 'login-password']) ?>
 

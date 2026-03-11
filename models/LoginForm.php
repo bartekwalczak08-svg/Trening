@@ -56,7 +56,7 @@ class LoginForm extends Model
             $user = $this->getUser();
 
             if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+                $this->addError($attribute, 'Nieprawidłowa nazwa użytkownika, e-mail lub hasło.');
             }
         }
     }
@@ -68,11 +68,11 @@ class LoginForm extends Model
     {
         if (strpos($this->$attribute, '@') !== false) {
             if (!filter_var($this->$attribute, FILTER_VALIDATE_EMAIL)) {
-                $this->addError($attribute, 'Invalid email address.');
+                $this->addError($attribute, 'Nieprawidłowy adres e-mail.');
             }
         } else {
             if (!preg_match('/^[a-zA-Z0-9_-]+$/', $this->$attribute)) {
-                $this->addError($attribute, 'Only letters, numbers, dashes and underscores are allowed.');
+                $this->addError($attribute, 'Dozwolone są tylko litery, cyfry, myślniki i podkreślenia.');
             }
         }
     }
@@ -99,7 +99,7 @@ class LoginForm extends Model
     public function attributeLabels()
     {
         return [
-            'username' => 'Username or Email',
+            'username' => 'Nazwa użytkownika lub e-mail',
         ];
     }
 

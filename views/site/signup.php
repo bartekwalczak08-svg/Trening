@@ -30,12 +30,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($model, 'email')->input('email') ?>
 
     <?= $form->field($model, 'password', [
-        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"signup-password\" aria-label=\"Toggle password visibility\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"signup-password\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
         'errorOptions' => ['class' => 'invalid-feedback d-block'],
     ])->passwordInput(['id' => 'signup-password']) ?>
 
     <?= $form->field($model, 'passwordRepeat', [
-        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"signup-password-repeat\" aria-label=\"Toggle password visibility\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"signup-password-repeat\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
         'errorOptions' => ['class' => 'invalid-feedback d-block'],
     ])->passwordInput(['id' => 'signup-password-repeat']) ?>
 

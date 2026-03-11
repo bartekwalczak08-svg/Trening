@@ -24,17 +24,17 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($model, 'email')->input('email') ?>
 
     <?= $form->field($model, 'currentPassword', [
-        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-current-password\" aria-label=\"Toggle password visibility\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-current-password\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
         'errorOptions' => ['class' => 'invalid-feedback d-block'],
     ])->passwordInput(['id' => 'profile-current-password', 'autocomplete' => 'off', 'value' => '']) ?>
 
     <?= $form->field($model, 'newPassword', [
-        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-new-password\" aria-label=\"Toggle password visibility\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-new-password\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
         'errorOptions' => ['class' => 'invalid-feedback d-block'],
     ])->passwordInput(['id' => 'profile-new-password', 'autocomplete' => 'new-password', 'value' => '']) ?>
 
     <?= $form->field($model, 'newPasswordRepeat', [
-        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-new-password-repeat\" aria-label=\"Toggle password visibility\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-new-password-repeat\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
         'errorOptions' => ['class' => 'invalid-feedback d-block'],
     ])->passwordInput(['id' => 'profile-new-password-repeat', 'autocomplete' => 'new-password', 'value' => '']) ?>
 

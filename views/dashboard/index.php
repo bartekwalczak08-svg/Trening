@@ -118,7 +118,7 @@ $todayExerciseCount = $todayWorkout ? $todayWorkout->getWorkoutExercises()->coun
                     <?php endif; ?>
                 </div>
                 <div class="card-footer">
-                    <span class="badge text-bg-dark">Streak: <?= $kpi['streakDays'] ?> dni</span>
+                    <span class="badge text-bg-dark">Seria: <?= $kpi['streakDays'] ?> dni</span>
                 </div>
             </div>
         </div>

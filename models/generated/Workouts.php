@@ -57,13 +57,13 @@ class Workouts extends \app\models\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'user_id' => 'User ID',
-            'name' => 'Name',
-            'description' => 'Description',
-            'weekday' => 'Weekday',
-            'is_completed' => 'Is Completed',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'user_id' => 'ID użytkownika',
+            'name' => 'Nazwa',
+            'description' => 'Opis',
+            'weekday' => 'Dzień tygodnia',
+            'is_completed' => 'Ukończono',
+            'created_at' => 'Data utworzenia',
+            'updated_at' => 'Data aktualizacji',
         ];
     }
 

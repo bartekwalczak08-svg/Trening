@@ -58,14 +58,14 @@ class WorkoutExercises extends \app\models\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'workout_id' => 'Workout ID',
-            'exercise_id' => 'Exercise ID',
-            'sets' => 'Sets',
+            'workout_id' => 'ID treningu',
+            'exercise_id' => 'ID ćwiczenia',
+            'sets' => 'Serie',
             'reps' => 'Powtórzenia',
-            'duration_sec' => 'Duration Sec',
-            'rest_sec' => 'Rest Sec',
-            'position' => 'Position',
-            'is_completed' => 'Is Completed',
+            'duration_sec' => 'Czas trwania (s)',
+            'rest_sec' => 'Przerwa (s)',
+            'position' => 'Pozycja',
+            'is_completed' => 'Ukończono',
         ];
     }
 

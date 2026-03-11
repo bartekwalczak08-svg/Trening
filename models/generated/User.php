@@ -52,13 +52,13 @@ class User extends \app\models\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'username' => 'Username',
-            'password_hash' => 'Password Hash',
-            'auth_key' => 'Auth Key',
-            'access_token' => 'Access Token',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
-            'email' => 'Email',
+            'username' => 'Nazwa użytkownika',
+            'password_hash' => 'Hash hasła',
+            'auth_key' => 'Klucz autoryzacji',
+            'access_token' => 'Token dostępu',
+            'created_at' => 'Data utworzenia',
+            'updated_at' => 'Data aktualizacji',
+            'email' => 'E-mail',
         ];
     }
 }

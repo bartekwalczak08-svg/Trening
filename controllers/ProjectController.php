@@ -27,12 +27,12 @@ class ProjectController extends Controller
             if ($project->validate() && $project->save()) {
                 Yii::$app->session->setFlash(
                     'success',
-                    Yii::t('app', 'Project created.')
+                    'Projekt został utworzony.'
                 );
             } else {
                 Yii::$app->session->setFlash(
                     'danger',
-                    Yii::t('app', 'An error occurred during saving.')
+                    'Wystąpił błąd podczas zapisywania.'
                 );
             }
             return $this->refresh();

@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <article class="border rounded p-3 h-100">
                         <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                             <strong class="small"><?= Html::encode($item['title']) ?></strong>
-                            <span class="badge <?= $badgeClass ?>">Insight</span>
+                            <span class="badge <?= $badgeClass ?>">Wskazówka</span>
                         </div>
                         <p class="small mb-0 text-muted"><?= Html::encode($item['text']) ?></p>
                     </article>

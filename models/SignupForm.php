@@ -30,19 +30,19 @@ class SignupForm extends Model
             [['username', 'email'], 'trim'],
             ['username', 'string', 'min' => 3, 'max' => 255],
             ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_\-ąćęłńóśżźĄĆĘŁŃÓŚŻŹ]+$/u',
-                'message' => 'Only letters , numbers, dashes and underscores are allowed.'],
+                'message' => 'Dozwolone są tylko litery, cyfry, myślniki i podkreślenia.'],
             ['username', 'validateUsernameUnique'],
 
             ['password', 'string', 'min' => 6],
             ['password', 'match', 'pattern' => '/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/',
-                'message' => 'Password must contain at least one uppercase letter, one digit and one special character.'],
+                'message' => 'Hasło musi zawierać co najmniej jedną wielką literę, jedną cyfrę i jeden znak specjalny.'],
             ['password', 'validatePasswordDoesNotContainUsername'],
             ['passwordRepeat', 'compare', 'compareAttribute' => 'password',
-                'message' => 'Passwords do not match.'],
+                'message' => 'Hasła nie są takie same.'],
 
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
-            ['email', 'unique', 'targetClass' => '\\app\\models\\User', 'message' => 'This email address has already been taken.'],
+            ['email', 'unique', 'targetClass' => '\\app\\models\\User', 'message' => 'Ten adres e-mail jest już zajęty.'],
         ];
     }
 
@@ -52,10 +52,10 @@ class SignupForm extends Model
     public function attributeLabels()
     {
         return [
-            'username' => 'Username',
-            'password' => 'Password',
-            'passwordRepeat' => 'Repeat Password',
-            'email' => 'Email',
+            'username' => 'Nazwa użytkownika',
+            'password' => 'Hasło',
+            'passwordRepeat' => 'Powtórz hasło',
+            'email' => 'E-mail',
         ];
     }
 
@@ -65,7 +65,7 @@ class SignupForm extends Model
     public function validateUsernameUnique($attribute, $params)
     {
         if (User::find()->where(['username' => $this->$attribute])->exists()) {
-            $this->addError($attribute, 'This username has already been taken.');
+            $this->addError($attribute, 'Ta nazwa użytkownika jest już zajęta.');
         }
     }
 
@@ -75,7 +75,7 @@ class SignupForm extends Model
     public function validatePasswordDoesNotContainUsername($attribute, $params)
     {
         if (strpos($this->$attribute, $this->username) !== false) {
-            $this->addError($attribute, 'Password cannot contain your username.');
+            $this->addError($attribute, 'Hasło nie może zawierać nazwy użytkownika.');
         }
     }
 

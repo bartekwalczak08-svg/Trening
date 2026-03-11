@@ -384,6 +384,63 @@ class ContactFormTest extends \Codeception\Test\Unit
         verify($model->getErrors('body'))->empty();
     }
 
+    public function testBlacklistDoesNotBlockNeutralWordContainingShortRoot()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['zyd'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'Paweł pochodzi z rodziny żydowskiej.';
+
+            verify($model->validate(['body']))->true();
+            verify($model->getErrors('body'))->empty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistDoesNotBlockNeutralWordWithShortRootAndDiacritics()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['lodz'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'To dobra łódzka inicjatywa społeczna.';
+
+            verify($model->validate(['body']))->true();
+            verify($model->getErrors('body'))->empty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistDoesNotBlockNeutralLongerWordContainingShortToken()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['deb'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'Bierzemy udział w debacie publicznej.';
+
+            verify($model->validate(['body']))->true();
+            verify($model->getErrors('body'))->empty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistAllowsReportedSentenceAboutFamilyBackground()
+    {
+        $model = new ContactForm();
+        $model->body = 'Paweł O. (O-block) pochodzi z rodziny żydowskich bankierów.';
+
+        verify($model->validate(['body']))->true();
+        verify($model->getErrors('body'))->empty();
+    }
+
     public function testBlacklistAllowsSymbolAlphabetSequenceWithoutProfanity()
     {
         $model = new ContactForm();

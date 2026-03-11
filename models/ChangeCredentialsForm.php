@@ -40,18 +40,18 @@ class ChangeCredentialsForm extends Model
             ['email', 'string', 'max' => 255],
             ['email', 'validateEmailUnique'],
             ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_-]+$/',
-                'message' => 'Only letters, numbers, dashes and underscores are allowed.'],
+                'message' => 'Dozwolone są tylko litery, cyfry, myślniki i podkreślenia.'],
             ['username', 'validateUsernameUnique'],
 
             ['currentPassword', 'validateCurrentPassword'],
 
             ['newPassword', 'string', 'min' => 6, 'skipOnEmpty' => true],
             ['newPassword', 'match', 'pattern' => '/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/',
-                'message' => 'Password must contain at least one uppercase letter, one digit and one special character.',
+                'message' => 'Hasło musi zawierać co najmniej jedną wielką literę, jedną cyfrę i jeden znak specjalny.',
                 'skipOnEmpty' => true],
             ['newPassword', 'validateNewPasswordDoesNotContainUsername'],
             ['newPasswordRepeat', 'compare', 'compareAttribute' => 'newPassword',
-                'message' => 'Passwords do not match.',
+                'message' => 'Hasła nie są takie same.',
                 'skipOnEmpty' => true],
         ];
     }
@@ -62,10 +62,10 @@ class ChangeCredentialsForm extends Model
     public function attributeLabels()
     {
         return [
-            'email' => 'Email',
-            'currentPassword' => 'Current Password',
-            'newPassword' => 'New Password',
-            'newPasswordRepeat' => 'Repeat New Password',
+            'email' => 'E-mail',
+            'currentPassword' => 'Aktualne hasło',
+            'newPassword' => 'Nowe hasło',
+            'newPasswordRepeat' => 'Powtórz nowe hasło',
         ];
     }
 
@@ -85,7 +85,7 @@ class ChangeCredentialsForm extends Model
     {
         if (!$this->hasErrors()) {
             if (!$this->_user || !$this->_user->validatePassword($this->currentPassword)) {
-                $this->addError($attribute, 'Incorrect current password.');
+                $this->addError($attribute, 'Aktualne hasło jest nieprawidłowe.');
             }
         }
     }
@@ -97,7 +97,7 @@ class ChangeCredentialsForm extends Model
     {
         $existing = User::find()->where(['username' => $this->username])->andWhere(['<>', 'id', $this->_user->id])->one();
         if ($existing) {
-            $this->addError($attribute, 'This username has already been taken.');
+            $this->addError($attribute, 'Ta nazwa użytkownika jest już zajęta.');
         }
     }
 
@@ -108,7 +108,7 @@ class ChangeCredentialsForm extends Model
     {
         $existing = User::find()->where(['email' => $this->email])->andWhere(['<>', 'id', $this->_user->id])->one();
         if ($existing) {
-            $this->addError($attribute, 'This email has already been taken.');
+            $this->addError($attribute, 'Ten adres e-mail jest już zajęty.');
         }
     }
 
@@ -118,7 +118,7 @@ class ChangeCredentialsForm extends Model
     public function validateNewPasswordDoesNotContainUsername($attribute, $params)
     {
         if ($this->$attribute && strpos($this->$attribute, $this->username) !== false) {
-            $this->addError($attribute, 'Password cannot contain your username.');
+            $this->addError($attribute, 'Hasło nie może zawierać nazwy użytkownika.');
         }
     }
 

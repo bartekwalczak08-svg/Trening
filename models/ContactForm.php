@@ -235,16 +235,20 @@ class ContactForm extends Model
      */
     private function containsBlockedWordInCollapsedText($normalizedValue, array $blockedWords)
     {
-        // Catch stretched forms like "kuuurwa" after removing noise.
-        $valueForCompare = $this->collapseRepeatedLetters($this->lettersOnly($normalizedValue));
-        if ($valueForCompare === '') {
+        // Catch stretched forms like "kuuurwa" while preserving token boundaries.
+        $tokens = $this->collapsedLetterTokens((string) $normalizedValue);
+        if (empty($tokens)) {
             return false;
         }
 
         foreach ($blockedWords as $word) {
             $normalizedWord = $this->normalizeForBlacklist((string) $word);
             $wordForCompare = $this->collapseRepeatedLetters($this->lettersOnly($normalizedWord));
-            if ($wordForCompare !== '' && strpos($valueForCompare, $wordForCompare) !== false) {
+            if ($wordForCompare === '') {
+                continue;
+            }
+
+            if (in_array($wordForCompare, $tokens, true)) {
                 return true;
             }
         }
@@ -277,20 +281,57 @@ class ContactForm extends Model
     {
         // Catch forms where digits are inserted between letters, e.g. "je123bac".
         $normalized = $this->normalizeWithoutLeet((string) $value);
-        $valueForCompare = $this->collapseRepeatedLetters($this->lettersOnly($normalized));
-        if ($valueForCompare === '') {
+        $tokens = $this->collapsedLetterTokens($normalized);
+        if (empty($tokens)) {
             return false;
         }
 
         foreach ($blockedWords as $word) {
             $wordNormalized = $this->normalizeWithoutLeet((string) $word);
             $wordForCompare = $this->collapseRepeatedLetters($this->lettersOnly($wordNormalized));
-            if ($wordForCompare !== '' && strpos($valueForCompare, $wordForCompare) !== false) {
+            if ($wordForCompare === '') {
+                continue;
+            }
+
+            if (in_array($wordForCompare, $tokens, true)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Zwraca tokeny literowe po normalizacji i redukcji powtórzeń.
+     *
+     * Dzięki tokenizacji unikamy fałszywych trafień typu rdzeń słowa
+     * występujący przypadkowo wewnątrz innego, neutralnego wyrazu.
+     *
+     * @return string[]
+     */
+    private function collapsedLetterTokens($text)
+    {
+        $value = trim((string) $text);
+        if ($value === '') {
+            return [];
+        }
+
+        $rawTokens = preg_split('/[^a-z]+/i', $value, -1, PREG_SPLIT_NO_EMPTY);
+        if (!is_array($rawTokens) || empty($rawTokens)) {
+            return [];
+        }
+
+        $tokens = [];
+        foreach ($rawTokens as $token) {
+            $letters = $this->lettersOnly((string) $token);
+            if ($letters === '') {
+                continue;
+            }
+
+            $tokens[] = $this->collapseRepeatedLetters($letters);
+        }
+
+        return $tokens;
     }
 
     /**
@@ -304,8 +345,8 @@ class ContactForm extends Model
             return false;
         }
 
-        $valueForCompare = $this->collapseRepeatedLetters($this->lettersOnly((string) $normalizedValue));
-        if ($valueForCompare === '') {
+        $candidates = $this->fuzzyCandidates((string) $normalizedValue);
+        if (empty($candidates)) {
             return false;
         }
 
@@ -318,12 +359,52 @@ class ContactForm extends Model
                 continue;
             }
 
-            if ($this->matchesWithMaxGap($valueForCompare, $wordForCompare, 5)) {
-                return true;
+            foreach ($candidates as $candidate) {
+                if ($this->matchesWithMaxGap($candidate, $wordForCompare, 5)) {
+                    return true;
+                }
             }
         }
 
         return false;
+    }
+
+    /**
+     * Buduje kandydatów do fuzzy-matchingu bez sklejania całego zdania w jeden token.
+     *
+     * Dzięki temu redukujemy false positive z liter rozrzuconych po wielu słowach,
+     * a jednocześnie nadal wykrywamy obfuskację pojedynczymi literami.
+     *
+     * @return string[]
+     */
+    private function fuzzyCandidates($normalizedValue)
+    {
+        $rawTokens = preg_split('/[^a-z]+/i', (string) $normalizedValue, -1, PREG_SPLIT_NO_EMPTY);
+        if (!is_array($rawTokens) || empty($rawTokens)) {
+            return [];
+        }
+
+        $candidates = [];
+        $singleLetterSequence = '';
+
+        foreach ($rawTokens as $token) {
+            $collapsed = $this->collapseRepeatedLetters($this->lettersOnly((string) $token));
+            if ($collapsed === '') {
+                continue;
+            }
+
+            $candidates[] = $collapsed;
+
+            if (strlen($collapsed) === 1) {
+                $singleLetterSequence .= $collapsed;
+            }
+        }
+
+        if (strlen($singleLetterSequence) >= 5) {
+            $candidates[] = $singleLetterSequence;
+        }
+
+        return array_values(array_unique($candidates));
     }
 
     /**

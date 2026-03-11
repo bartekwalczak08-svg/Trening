@@ -62,13 +62,13 @@ class WorkoutExercise extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'workout_id' => 'Workout ID',
-            'exercise_id' => 'Exercise ID',
-            'sets' => 'Sets',
-            'reps' => 'Reps',
-            'duration_sec' => 'Duration Sec',
-            'rest_sec' => 'Rest Sec',
-            'position' => 'Position',
+            'workout_id' => 'ID treningu',
+            'exercise_id' => 'ID ćwiczenia',
+            'sets' => 'Serie',
+            'reps' => 'Powtórzenia',
+            'duration_sec' => 'Czas trwania (s)',
+            'rest_sec' => 'Przerwa (s)',
+            'position' => 'Pozycja',
         ];
     }
 
