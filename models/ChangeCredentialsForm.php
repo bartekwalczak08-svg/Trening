@@ -11,9 +11,11 @@ use Yii;
 use yii\base\Model;
 
 /**
- * Form used by users to update their username/password.
+ * Model formularza zmiany danych konta użytkownika.
+ *
+ * Pozwala zmienić login, e-mail oraz opcjonalnie hasło po potwierdzeniu
+ * aktualnego hasła.
  */
-// Klasa ChangeCredentialsForm.
 class ChangeCredentialsForm extends Model
 {
     public $username;
@@ -25,7 +27,9 @@ class ChangeCredentialsForm extends Model
     /** @var User */
     private $_user;
 
-    // Metoda rules.
+    /**
+     * Reguły walidacji dla zmiany danych konta.
+     */
     public function rules()
     {
         return [
@@ -52,7 +56,9 @@ class ChangeCredentialsForm extends Model
         ];
     }
 
-    // Metoda attributeLabels.
+    /**
+     * Etykiety pól formularza.
+     */
     public function attributeLabels()
     {
         return [
@@ -64,9 +70,8 @@ class ChangeCredentialsForm extends Model
     }
 
     /**
-     * @inheritdoc
+     * Inicjalizuje formularz i ustawia aktualnie zalogowanego użytkownika.
      */
-    // Metoda __construct.
     public function __construct($config = [])
     {
         parent::__construct($config);
@@ -74,9 +79,8 @@ class ChangeCredentialsForm extends Model
     }
 
     /**
-     * Checks that the provided currentPassword matches the user's password.
+     * Weryfikuje, czy podane aktualne hasło jest poprawne.
      */
-    // Metoda validateCurrentPassword.
     public function validateCurrentPassword($attribute, $params)
     {
         if (!$this->hasErrors()) {
@@ -87,9 +91,8 @@ class ChangeCredentialsForm extends Model
     }
 
     /**
-     * Validates that username is not already taken by another user.
+     * Sprawdza, czy nowy login nie jest zajęty przez innego użytkownika.
      */
-    // Metoda validateUsernameUnique.
     public function validateUsernameUnique($attribute, $params)
     {
         $existing = User::find()->where(['username' => $this->username])->andWhere(['<>', 'id', $this->_user->id])->one();
@@ -98,7 +101,9 @@ class ChangeCredentialsForm extends Model
         }
     }
 
-    // Metoda validateEmailUnique.
+    /**
+     * Sprawdza, czy nowy e-mail nie jest zajęty przez innego użytkownika.
+     */
     public function validateEmailUnique($attribute, $params)
     {
         $existing = User::find()->where(['email' => $this->email])->andWhere(['<>', 'id', $this->_user->id])->one();
@@ -107,7 +112,9 @@ class ChangeCredentialsForm extends Model
         }
     }
 
-    // Metoda validateNewPasswordDoesNotContainUsername.
+    /**
+     * Blokuje ustawienie nowego hasła zawierającego login.
+     */
     public function validateNewPasswordDoesNotContainUsername($attribute, $params)
     {
         if ($this->$attribute && strpos($this->$attribute, $this->username) !== false) {
@@ -116,10 +123,8 @@ class ChangeCredentialsForm extends Model
     }
 
     /**
-     * Applies changes to the current user and saves.
-     * @return bool whether save was successful
+     * Zapisuje zmiany danych użytkownika po pełnej walidacji formularza.
      */
-    // Metoda update.
     public function update()
     {
         if (!$this->validate()) {

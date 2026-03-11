@@ -12,9 +12,11 @@ use yii\base\Model;
 use yii\captcha\Captcha;
 
 /**
- * ContactForm is the model behind the contact form.
+ * Model formularza kontaktowego.
+ *
+ * Odpowiada za walidację danych wejściowych, zapis wiadomości do bazy
+ * oraz wielowarstwowe wykrywanie treści z blacklisty (w tym obfuskacji).
  */
-// Klasa ContactForm.
 class ContactForm extends Model
 {
     public $name;
@@ -24,9 +26,8 @@ class ContactForm extends Model
     public $verifyCode;
 
     /**
-     * @return array the validation rules.
+     * Definicja reguł walidacji formularza kontaktowego.
      */
-    // Metoda rules.
     public function rules()
     {
         $rules = [
@@ -45,7 +46,9 @@ class ContactForm extends Model
         return $rules;
     }
 
-    // Metoda isCaptchaAvailable.
+    /**
+     * Sprawdza, czy środowisko obsługuje CAPTCHA.
+     */
     public static function isCaptchaAvailable()
     {
         try {
@@ -57,9 +60,8 @@ class ContactForm extends Model
     }
 
     /**
-     * @return array customized attribute labels
+     * Etykiety pól wyświetlane w formularzu.
      */
-    // Metoda attributeLabels.
     public function attributeLabels()
     {
         return [
@@ -72,11 +74,10 @@ class ContactForm extends Model
     }
 
     /**
-     * Sends an email to the specified email address using the information collected by this model.
-     * @param string $email the target email address
-     * @return bool whether the model passes validation
+     * Waliduje formularz i zapisuje zgłoszenie kontaktowe do bazy.
+     *
+     * Parametr $email jest utrzymany dla zgodności z domyślnym szkieletem Yii.
      */
-    // Metoda contact.
     public function contact($email)
     {
         if ($this->validate()) {
@@ -96,7 +97,12 @@ class ContactForm extends Model
         return false;
     }
 
-    // Metoda validateContentBlacklist.
+    /**
+     * Walidator treści oparty o blacklistę.
+     *
+     * Łączy kilka strategii wykrywania obfuskacji, aby blokować zarówno
+     * proste, jak i celowo zniekształcone wersje zakazanych słów.
+     */
     public function validateContentBlacklist($attribute)
     {
         $value = trim((string) $this->$attribute);
@@ -114,13 +120,16 @@ class ContactForm extends Model
         $matchedByDigitNoise = $this->containsBlockedWordIgnoringDigits($value, $blockedWords);
         $matchedByFuzzySubsequence = $this->containsBlockedWordAsFuzzySubsequence($value, $normalizedValue, $blockedWords);
         $matchedByMixedScriptSubstitution = $this->containsBlockedWordWithNonLatinSubstitutions($value, $blockedWords);
+        $matchedByLeetAlternatives = $this->containsBlockedWordWithLeetAlternatives($value, $blockedWords);
 
-        if ($matchedByRegex || $matchedByCollapsedText || $matchedByDigitNoise || $matchedByFuzzySubsequence || $matchedByMixedScriptSubstitution) {
+        if ($matchedByRegex || $matchedByCollapsedText || $matchedByDigitNoise || $matchedByFuzzySubsequence || $matchedByMixedScriptSubstitution || $matchedByLeetAlternatives) {
             $this->addError($attribute, 'Wiadomość nie może zawierać wulgaryzmów.');
         }
     }
 
-    // Metoda buildBlacklistRegex.
+    /**
+     * Buduje regex zbiorczy dla wszystkich słów z blacklisty.
+     */
     private function buildBlacklistRegex(array $blockedWords)
     {
         $tokens = [];
@@ -139,7 +148,9 @@ class ContactForm extends Model
         return '/(?:' . implode('|', $tokens) . ')/i';
     }
 
-    // Metoda buildObfuscatedWordPattern.
+    /**
+     * Tworzy regex dla pojedynczego słowa z dopuszczeniem separatorów i powtórzeń.
+     */
     private function buildObfuscatedWordPattern($word)
     {
         $normalizedWord = $this->normalizeForBlacklist((string) $word);
@@ -164,7 +175,11 @@ class ContactForm extends Model
         return '(?<![a-z0-9])' . implode($separator, $parts) . '(?![a-z0-9])';
     }
 
-    // Metoda normalizeForBlacklist.
+    /**
+     * Normalizuje tekst do porównań blacklisty.
+     *
+     * Obejmuje normalizację Unicode, małe litery, polskie znaki i część leetspeak.
+     */
     private function normalizeForBlacklist($value)
     {
         $text = trim((string) $value);
@@ -215,7 +230,9 @@ class ContactForm extends Model
         return $text;
     }
 
-    // Metoda containsBlockedWordInCollapsedText.
+    /**
+     * Wykrywa słowa blacklisty po usunięciu szumu i redukcji powtórzeń liter.
+     */
     private function containsBlockedWordInCollapsedText($normalizedValue, array $blockedWords)
     {
         // Catch stretched forms like "kuuurwa" after removing noise.
@@ -235,21 +252,27 @@ class ContactForm extends Model
         return false;
     }
 
-    // Metoda lettersOnly.
+    /**
+     * Zwraca wyłącznie litery ASCII a-z.
+     */
     private function lettersOnly($text)
     {
         $result = preg_replace('/[^a-z]+/', '', (string) $text);
         return $result === null ? '' : $result;
     }
 
-    // Metoda collapseRepeatedLetters.
+    /**
+     * Redukuje serie tych samych znaków do pojedynczego wystąpienia.
+     */
     private function collapseRepeatedLetters($text)
     {
         $result = preg_replace('/(.)\1+/', '$1', (string) $text);
         return $result === null ? (string) $text : $result;
     }
 
-    // Metoda containsBlockedWordIgnoringDigits.
+    /**
+     * Wykrywa słowa blacklisty z cyframi i innym szumem wstawianym między litery.
+     */
     private function containsBlockedWordIgnoringDigits($value, array $blockedWords)
     {
         // Catch forms where digits are inserted between letters, e.g. "je123bac".
@@ -270,7 +293,9 @@ class ContactForm extends Model
         return false;
     }
 
-    // Metoda containsBlockedWordAsFuzzySubsequence.
+    /**
+     * Sprawdza dopasowanie jako podciąg z ograniczoną przerwą między literami.
+     */
     private function containsBlockedWordAsFuzzySubsequence($originalValue, $normalizedValue, array $blockedWords)
     {
         // Keep fuzzy mode only when noise appears inside letter sequences
@@ -301,7 +326,9 @@ class ContactForm extends Model
         return false;
     }
 
-    // Metoda hasInterLetterObfuscationNoise.
+    /**
+     * Wykrywa sygnały obfuskacji między literami (separatory, cyfry, rozstrzał liter).
+     */
     private function hasInterLetterObfuscationNoise($value)
     {
         $text = trim((string) $value);
@@ -310,10 +337,21 @@ class ContactForm extends Model
         }
 
         // Require separators/digits between letters to classify as obfuscation.
-        return preg_match('/\p{L}[\p{Mn}\p{Mc}\p{Me}\p{Sk}\p{So}\p{Pd}\p{Pc}\d]+\p{L}/u', $text) === 1;
+        if (preg_match('/\p{L}[\p{Mn}\p{Mc}\p{Me}\p{Sk}\p{So}\p{Pd}\p{Pc}\d]+\p{L}/u', $text) === 1) {
+            return true;
+        }
+
+        // Treat many isolated single-letter tokens as likely spaced-letter obfuscation.
+        if (preg_match_all('/(?<!\p{L})\p{L}(?!\p{L})/u', $text, $matches) !== false && count($matches[0]) >= 3) {
+            return true;
+        }
+
+        return false;
     }
 
-    // Metoda containsBlockedWordWithNonLatinSubstitutions.
+    /**
+     * Wykrywa mieszanie skryptów (np. cyrylica/greka zamiast liter łacińskich).
+     */
     private function containsBlockedWordWithNonLatinSubstitutions($rawValue, array $blockedWords)
     {
         $text = trim((string) $rawValue);
@@ -400,7 +438,82 @@ class ContactForm extends Model
         return false;
     }
 
-    // Metoda hasObfuscationNoise.
+    /**
+     * Wykrywa słowa blacklisty zapisane w wariantach leet (np. e=3, l=1).
+     */
+    private function containsBlockedWordWithLeetAlternatives($rawValue, array $blockedWords)
+    {
+        $text = $this->normalizeWithoutLeet((string) $rawValue);
+        if ($text === '') {
+            return false;
+        }
+
+        foreach ($blockedWords as $word) {
+            $pattern = $this->buildLeetAwareWordPattern((string) $word);
+            if ($pattern !== null && preg_match($pattern, $text) === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Buduje regex dla słowa z uwzględnieniem alternatyw leet dla każdej litery.
+     */
+    private function buildLeetAwareWordPattern($word)
+    {
+        $normalizedWord = $this->normalizeWithoutLeet((string) $word);
+        $lettersOnly = preg_replace('/[^a-z0-9]+/', '', $normalizedWord);
+        if ($lettersOnly === null || $lettersOnly === '') {
+            return null;
+        }
+
+        $chars = str_split($lettersOnly);
+        if (empty($chars)) {
+            return null;
+        }
+
+        $parts = [];
+        foreach ($chars as $char) {
+            $alternatives = $this->leetAlternativesForLetter($char);
+            $escapedAlternatives = array_map(static function ($item) {
+                return preg_quote($item, '/');
+            }, $alternatives);
+
+            $parts[] = '(?:' . implode('|', $escapedAlternatives) . ')+';
+        }
+
+        $separator = '[^a-z]*';
+
+        return '/(?<![a-z])' . implode($separator, $parts) . '(?![a-z])/i';
+    }
+
+    /**
+     * Zwraca dozwolone zamienniki leet dla pojedynczej litery.
+     */
+    private function leetAlternativesForLetter($char)
+    {
+        $base = strtolower((string) $char);
+        $map = [
+            'a' => ['a', '4', '@'],
+            'b' => ['b', '8'],
+            'e' => ['e', '3'],
+            'g' => ['g', '9'],
+            'i' => ['i', '1', '!', '|'],
+            'l' => ['l', '1', '!', '|'],
+            'o' => ['o', '0'],
+            's' => ['s', '5', '$'],
+            't' => ['t', '7', '+'],
+            'z' => ['z', '2'],
+        ];
+
+        return $map[$base] ?? [$base];
+    }
+
+    /**
+     * Pomocnicza detekcja obecności znaków sugerujących obfuskację.
+     */
     private function hasObfuscationNoise($value)
     {
         $text = trim((string) $value);
@@ -416,7 +529,9 @@ class ContactForm extends Model
         return preg_match('/[^\p{L}\s]/u', $text) === 1;
     }
 
-    // Metoda matchesWithMaxGap.
+    /**
+     * Sprawdza, czy needle występuje w haystack jako podciąg z limitem przerw.
+     */
     private function matchesWithMaxGap($haystack, $needle, $maxGap)
     {
         $haystack = (string) $haystack;
@@ -469,7 +584,9 @@ class ContactForm extends Model
         return false;
     }
 
-    // Metoda normalizeWithoutLeet.
+    /**
+     * Normalizuje Unicode i polskie znaki, bez mapowania leet.
+     */
     private function normalizeWithoutLeet($value)
     {
         $text = trim((string) $value);
@@ -498,7 +615,9 @@ class ContactForm extends Model
         ]);
     }
 
-    // Metoda normalizeUnicodeForBlacklist.
+    /**
+     * Normalizuje problematyczne znaki Unicode i homoglify do postaci porównywalnej.
+     */
     private function normalizeUnicodeForBlacklist($text)
     {
         $value = (string) $text;
@@ -580,7 +699,9 @@ class ContactForm extends Model
         return $normalizedSpaces === null ? $value : $normalizedSpaces;
     }
 
-    // Metoda mapEmojiLetterSymbolsToAscii.
+    /**
+     * Mapuje emoji/symbole literowe (circled/squared/regional indicators) do ASCII.
+     */
     private function mapEmojiLetterSymbolsToAscii($value)
     {
         $text = (string) $value;

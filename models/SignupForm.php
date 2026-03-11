@@ -11,9 +11,8 @@ use Yii;
 use yii\base\Model;
 
 /**
- * Signup form collects user information for registration.
+ * Model formularza rejestracji nowego użytkownika.
  */
-// Klasa SignupForm.
 class SignupForm extends Model
 {
     public $username;
@@ -21,7 +20,9 @@ class SignupForm extends Model
     public $password;
     public $passwordRepeat;
 
-    // Metoda rules.
+    /**
+     * Reguły walidacji danych wymaganych przy rejestracji.
+     */
     public function rules()
     {
         return [
@@ -45,7 +46,9 @@ class SignupForm extends Model
         ];
     }
 
-    // Metoda attributeLabels.
+    /**
+     * Etykiety pól formularza.
+     */
     public function attributeLabels()
     {
         return [
@@ -56,7 +59,9 @@ class SignupForm extends Model
         ];
     }
 
-    // Metoda validateUsernameUnique.
+    /**
+     * Sprawdza unikalność nazwy użytkownika.
+     */
     public function validateUsernameUnique($attribute, $params)
     {
         if (User::find()->where(['username' => $this->$attribute])->exists()) {
@@ -64,7 +69,9 @@ class SignupForm extends Model
         }
     }
 
-    // Metoda validatePasswordDoesNotContainUsername.
+    /**
+     * Blokuje hasła zawierające nazwę użytkownika.
+     */
     public function validatePasswordDoesNotContainUsername($attribute, $params)
     {
         if (strpos($this->$attribute, $this->username) !== false) {
@@ -73,10 +80,8 @@ class SignupForm extends Model
     }
 
     /**
-     * Creates new user if validation passes
-     * @return User|null
+     * Tworzy konto użytkownika po pomyślnej walidacji danych.
      */
-    // Metoda signup.
     public function signup()
     {
         if (!$this->validate()) {
@@ -86,11 +91,31 @@ class SignupForm extends Model
         $user = new User();
         $user->username = $this->username;
         $user->email = $this->email;
+        $now = time();
+        $user->created_at = $now;
+        $user->updated_at = $now;
         $user->setPassword($this->password);
         $user->generateAuthKey();
         if ($user->save()) {
             return $user;
         }
+
+        // Surface underlying User model errors on the signup form.
+        foreach ($user->getErrors() as $attribute => $messages) {
+            foreach ((array) $messages as $message) {
+                if (in_array($attribute, ['username', 'email', 'password'], true)) {
+                    $target = $attribute === 'password' ? 'password' : $attribute;
+                    $this->addError($target, (string) $message);
+                } else {
+                    $this->addError('username', (string) $message);
+                }
+            }
+        }
+
+        if (!$this->hasErrors()) {
+            $this->addError('username', 'Nie udało się utworzyć konta. Spróbuj ponownie.');
+        }
+
         return null;
     }
 }

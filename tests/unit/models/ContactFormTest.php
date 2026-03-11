@@ -327,6 +327,54 @@ class ContactFormTest extends \Codeception\Test\Unit
         }
     }
 
+    public function testBlacklistBlocksSpacedLetterVariantWithInsertedWord()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['zjebie'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'ty z j e siema b i e';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksCw31AsCwelVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['cwel'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'ćw31';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksLeetSubstitutionForAnyBlockedWord()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['szmata'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = '$2m474';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
     public function testBlacklistAllowsPositivePhraseWithEmoji()
     {
         $model = new ContactForm();

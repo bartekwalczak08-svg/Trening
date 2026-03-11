@@ -24,24 +24,24 @@ use Yii;
  * @property Exercises $exercise
  * @property Workouts $workout
  */
-// Klasa WorkoutExercise.
+/**
+ * Model łączący trening z konkretnym ćwiczeniem i jego parametrami wykonania.
+ */
 class WorkoutExercise extends \yii\db\ActiveRecord
 {
 
 
     /**
-     * {@inheritdoc}
+     * Nazwa tabeli mapującej ćwiczenia przypisane do treningów.
      */
-    // Metoda tableName.
     public static function tableName()
     {
         return 'workout_exercises';
     }
 
     /**
-     * {@inheritdoc}
+     * Reguły walidacji parametrów ćwiczenia (serie, powtórzenia, czas, kolejność).
      */
-    // Metoda rules.
     public function rules()
     {
         return [
@@ -56,9 +56,8 @@ class WorkoutExercise extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
+     * Etykiety atrybutów modelu.
      */
-    // Metoda attributeLabels.
     public function attributeLabels()
     {
         return [
@@ -74,22 +73,20 @@ class WorkoutExercise extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Exercise]].
+     * Relacja do słownika ćwiczeń.
      *
      * @return \yii\db\ActiveQuery
      */
-    // Metoda getExercise.
     public function getExercise()
     {
         return $this->hasOne(Exercises::class, ['id' => 'exercise_id']);
     }
 
     /**
-     * Gets query for [[Workout]].
+     * Relacja do treningu, do którego przypisano to ćwiczenie.
      *
      * @return \yii\db\ActiveQuery
      */
-    // Metoda getWorkout.
     public function getWorkout()
     {
         return $this->hasOne(Workouts::class, ['id' => 'workout_id']);

@@ -6,7 +6,11 @@
 
 namespace app\models;
 
-// Klasa ContactMessage.
+/**
+ * Model wiadomości z formularza kontaktowego.
+ *
+ * Przechowuje dane nadawcy, treść zgłoszenia i status obsługi.
+ */
 class ContactMessage extends ActiveRecord
 {
     // Lifecycle statuses used in admin list and badge colors.
@@ -14,13 +18,17 @@ class ContactMessage extends ActiveRecord
     public const STATUS_IN_PROGRESS = 'in_progress';
     public const STATUS_CLOSED = 'closed';
 
-    // Metoda tableName.
+    /**
+     * Zwraca nazwę tabeli przechowującej zgłoszenia kontaktowe.
+     */
     public static function tableName()
     {
         return '{{%contact_messages}}';
     }
 
-    // Metoda rules.
+    /**
+     * Reguły walidacji danych wiadomości kontaktowej.
+     */
     public function rules()
     {
         return [
@@ -34,7 +42,9 @@ class ContactMessage extends ActiveRecord
         ];
     }
 
-    // Metoda attributeLabels.
+    /**
+     * Etykiety pól używane w formularzach i widokach administracyjnych.
+     */
     public function attributeLabels()
     {
         return [
@@ -50,7 +60,9 @@ class ContactMessage extends ActiveRecord
         ];
     }
 
-    // Metoda statusOptions.
+    /**
+     * Mapuje wartości statusu zapisane w bazie na czytelne etykiety.
+     */
     public static function statusOptions()
     {
         // User-facing labels for status values stored in DB.
@@ -61,7 +73,9 @@ class ContactMessage extends ActiveRecord
         ];
     }
 
-    // Metoda getStatusLabel.
+    /**
+     * Zwraca czytelną etykietę aktualnego statusu wiadomości.
+     */
     public function getStatusLabel()
     {
         $options = self::statusOptions();

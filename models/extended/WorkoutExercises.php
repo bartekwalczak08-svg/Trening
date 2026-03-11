@@ -1,13 +1,10 @@
 <?php
 
 /**
- * Opis: Rozszerzony model aplikacji z logik biznesow.
+ * Extended WorkoutExercises model with application-specific behavior.
  */
-
-
 namespace app\models\extended;
 
-// Klasa WorkoutExercises.
 class WorkoutExercises extends \app\models\generated\WorkoutExercises
 {
 }

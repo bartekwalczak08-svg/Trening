@@ -1,22 +1,18 @@
 <?php
 
 /**
- * Opis: Rozszerzony model aplikacji z logik biznesow.
+ * Extended User model with authentication helpers.
  */
-
-
 namespace app\models\extended;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
 
-// Klasa User.
 class User extends \app\models\generated\User implements \yii\web\IdentityInterface
 {
     /**
      * {@inheritdoc}
      */
-    // Metoda behaviors.
     public function behaviors()
     {
         return [
@@ -29,7 +25,6 @@ class User extends \app\models\generated\User implements \yii\web\IdentityInterf
      *
      * @param string $password
      */
-    // Metoda setPassword.
     public function setPassword($password)
     {
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
@@ -38,7 +33,6 @@ class User extends \app\models\generated\User implements \yii\web\IdentityInterf
     /**
      * Generates "remember me" cookie hash.
      */
-    // Metoda generateAuthKey.
     public function generateAuthKey()
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
@@ -47,7 +41,6 @@ class User extends \app\models\generated\User implements \yii\web\IdentityInterf
     /**
      * {@inheritdoc}
      */
-    // Metoda findIdentity.
     public static function findIdentity($id)
     {
         return static::findOne($id);
@@ -56,7 +49,6 @@ class User extends \app\models\generated\User implements \yii\web\IdentityInterf
     /**
      * {@inheritdoc}
      */
-    // Metoda findIdentityByAccessToken.
     public static function findIdentityByAccessToken($token, $type = null)
     {
         return static::findOne(['access_token' => $token]);
@@ -68,7 +60,6 @@ class User extends \app\models\generated\User implements \yii\web\IdentityInterf
      * @param string $username
      * @return static|null
      */
-    // Metoda findByUsername.
     public static function findByUsername($username)
     {
         return static::findOne(['username' => $username]);
@@ -77,7 +68,6 @@ class User extends \app\models\generated\User implements \yii\web\IdentityInterf
     /**
      * {@inheritdoc}
      */
-    // Metoda getId.
     public function getId()
     {
         return $this->id;
@@ -86,7 +76,6 @@ class User extends \app\models\generated\User implements \yii\web\IdentityInterf
     /**
      * {@inheritdoc}
      */
-    // Metoda getAuthKey.
     public function getAuthKey()
     {
         return $this->auth_key;
@@ -95,7 +84,6 @@ class User extends \app\models\generated\User implements \yii\web\IdentityInterf
     /**
      * {@inheritdoc}
      */
-    // Metoda validateAuthKey.
     public function validateAuthKey($authKey)
     {
         return $this->getAuthKey() === $authKey;
@@ -107,7 +95,6 @@ class User extends \app\models\generated\User implements \yii\web\IdentityInterf
      * @param string $password password to validate
      * @return bool if password provided is valid for current user
      */
-    // Metoda validatePassword.
     public function validatePassword($password)
     {
         return Yii::$app->security->validatePassword($password, $this->password_hash);

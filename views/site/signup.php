@@ -23,6 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'id' => 'signup-form',
     ]); ?>
 
+    <?= $form->errorSummary($model, ['class' => 'alert alert-danger']) ?>
+
     <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
 
     <?= $form->field($model, 'email')->input('email') ?>

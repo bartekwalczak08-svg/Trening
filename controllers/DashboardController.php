@@ -14,10 +14,16 @@ use yii\db\Expression;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 
-// Klasa DashboardController.
+/**
+ * Kontroler dashboardu użytkownika.
+ *
+ * Zbiera metryki aktywności, podsumowania treningów i dane do wykresów progresu.
+ */
 class DashboardController extends Controller
 {
-    // Metoda behaviors.
+    /**
+     * Ogranicza dostęp do dashboardu tylko dla zalogowanych użytkowników.
+     */
     public function behaviors()
     {
         return [
@@ -35,7 +41,9 @@ class DashboardController extends Controller
         ];
     }
 
-    // Metoda actionIndex.
+    /**
+     * Renderuje główny dashboard z KPI i ostatnimi treningami.
+     */
     public function actionIndex()
     {
         $userId = Yii::$app->user->id;
@@ -104,7 +112,9 @@ class DashboardController extends Controller
         ]);
     }
 
-    // Metoda calculateCreationStreakDays.
+    /**
+     * Liczy aktualną serię dni z rzędu, w których dodano trening.
+     */
     private function calculateCreationStreakDays()
     {
         $userId = Yii::$app->user->id;
@@ -134,7 +144,9 @@ class DashboardController extends Controller
         return $streak;
     }
 
-    // Metoda formatDuration.
+    /**
+     * Formatuje liczbę sekund do czytelnej postaci h/min.
+     */
     private function formatDuration($seconds)
     {
         $seconds = (int) $seconds;
@@ -154,7 +166,9 @@ class DashboardController extends Controller
         return max(1, $minutes) . ' min';
     }
 
-    // Metoda actionProgress.
+    /**
+     * Buduje dane analityczne progresu i rekomendacje treningowe.
+     */
     public function actionProgress()
     {
         $userId = Yii::$app->user->id;

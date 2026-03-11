@@ -1,15 +1,12 @@
 <?php
 
 /**
- * Opis: Model domenowy uywany w aplikacji.
+ * Base ActiveRecord class for application models.
  */
-
-
 namespace app\models;
 
 use yii\db\ActiveRecord as YiiActiveRecord;
 
-// Klasa ActiveRecord.
 class ActiveRecord extends YiiActiveRecord
 {
 }

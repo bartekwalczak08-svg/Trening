@@ -11,16 +11,16 @@
 use yii\bootstrap5\LinkPager;
 use yii\helpers\Html;
 
-$this->title = 'Kosz zgloszen';
+$this->title = 'Kosz zgłoszeń';
 $this->params['breadcrumbs'][] = ['label' => 'Kontakt', 'url' => ['contact']];
-$this->params['breadcrumbs'][] = ['label' => 'Zgloszenia kontaktowe', 'url' => ['contact-messages']];
+$this->params['breadcrumbs'][] = ['label' => 'Zgłoszenia kontaktowe', 'url' => ['contact-messages']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="site-contact-messages-trash">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="mb-0"><?= Html::encode($this->title) ?></h1>
-        <?= Html::a('Powrot do zgloszen', ['/site/contact-messages'], ['class' => 'btn btn-outline-secondary']) ?>
+        <?= Html::a('Powrót do zgłoszeń', ['/site/contact-messages'], ['class' => 'btn btn-outline-secondary']) ?>
     </div>
 
     <div class="card p-3">
@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Data usuniecia</th>
+                            <th>Data usunięcia</th>
                             <th>Nadawca</th>
                             <th>Temat</th>
                             <th>Status</th>
@@ -51,16 +51,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <td><?= Html::encode($item->subject) ?></td>
                                 <td><span class="badge text-bg-secondary"><?= Html::encode($item->getStatusLabel()) ?></span></td>
                                 <td class="text-nowrap">
-                                    <?= Html::a('Przywroc', ['restore-contact-message', 'id' => $item->id], [
+                                    <?= Html::a('Przywróć', ['restore-contact-message', 'id' => $item->id], [
                                         'class' => 'btn btn-sm btn-outline-success',
                                         'data' => [
                                             'method' => 'post',
                                         ],
                                     ]) ?>
-                                    <?= Html::a('Usun trwale', ['purge-contact-message', 'id' => $item->id], [
+                                    <?= Html::a('Usuń trwale', ['purge-contact-message', 'id' => $item->id], [
                                         'class' => 'btn btn-sm btn-outline-danger',
                                         'data' => [
-                                            'confirm' => 'Na pewno trwale usunac to zgloszenie?',
+                                            'confirm' => 'Na pewno trwale usunąć to zgłoszenie?',
                                             'method' => 'post',
                                         ],
                                     ]) ?>

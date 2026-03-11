@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Opis: Model wygenerowany automatycznie na podstawie schematu bazy danych.
+ * Auto-generated model based on database schema.
  */
-
-
 namespace app\models\generated;
 
 use Yii;
@@ -25,13 +23,11 @@ use Yii;
  * @property Exercises $exercise
  * @property Workouts $workout
  */
-// Klasa WorkoutExercises.
 class WorkoutExercises extends \app\models\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
-    // Metoda tableName.
     public static function tableName()
     {
         return 'workout_exercises';
@@ -40,7 +36,6 @@ class WorkoutExercises extends \app\models\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    // Metoda rules.
     public function rules()
     {
         return [
@@ -59,7 +54,6 @@ class WorkoutExercises extends \app\models\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    // Metoda attributeLabels.
     public function attributeLabels()
     {
         return [
@@ -80,7 +74,6 @@ class WorkoutExercises extends \app\models\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    // Metoda getExercise.
     public function getExercise()
     {
         return $this->hasOne(Exercises::class, ['id' => 'exercise_id']);
@@ -91,7 +84,6 @@ class WorkoutExercises extends \app\models\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    // Metoda getWorkout.
     public function getWorkout()
     {
         return $this->hasOne(Workouts::class, ['id' => 'workout_id']);

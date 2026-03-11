@@ -11,10 +11,14 @@ use app\models\Project;
 use Yii;
 use yii\web\Controller;
 
-// Klasa ProjectController.
+/**
+ * Prosty kontroler demonstracyjny obsługujący formularz projektu.
+ */
 class ProjectController extends Controller
 {
-    // Metoda actionForm.
+    /**
+     * Wyświetla formularz projektu i zapisuje dane po poprawnej walidacji.
+     */
     public function actionForm()
     {
         $project = new Project();

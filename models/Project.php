@@ -1,13 +1,10 @@
 <?php
 
 /**
- * Opis: Model domenowy uywany w aplikacji.
+ * Project domain model.
  */
-
-
 namespace app\models;
 
-// Klasa Project.
 class Project extends extended\Project
 {
 

@@ -1,13 +1,10 @@
 <?php
 
 /**
- * Opis: Rozszerzony model aplikacji z logik biznesow.
+ * Extended Workouts model with weekday helpers.
  */
-
-
 namespace app\models\extended;
 
-// Klasa Workouts.
 class Workouts extends \app\models\generated\Workouts
 {
 	public const WEEKDAY_MONDAY = 'monday';
@@ -18,7 +15,6 @@ class Workouts extends \app\models\generated\Workouts
 	public const WEEKDAY_SATURDAY = 'saturday';
 	public const WEEKDAY_SUNDAY = 'sunday';
 
-	// Metoda weekdayOptions.
 	public static function weekdayOptions()
 	{
 		return [
@@ -32,13 +28,11 @@ class Workouts extends \app\models\generated\Workouts
 		];
 	}
 
-	// Metoda weekdayOrder.
 	public static function weekdayOrder()
 	{
 		return array_keys(static::weekdayOptions());
 	}
 
-	// Metoda rules.
 	public function rules()
 	{
 		return array_merge(parent::rules(), [
@@ -47,7 +41,6 @@ class Workouts extends \app\models\generated\Workouts
 		]);
 	}
 
-	// Metoda attributeLabels.
 	public function attributeLabels()
 	{
 		return array_merge(parent::attributeLabels(), [
@@ -55,7 +48,6 @@ class Workouts extends \app\models\generated\Workouts
 		]);
 	}
 
-	// Metoda getWeekdayLabel.
 	public function getWeekdayLabel()
 	{
 		$options = static::weekdayOptions();

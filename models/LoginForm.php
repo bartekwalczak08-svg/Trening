@@ -11,25 +11,24 @@ use Yii;
 use yii\base\Model;
 
 /**
- * LoginForm is the model behind the login form.
+ * Model formularza logowania.
+ *
+ * Umożliwia logowanie zarówno nazwą użytkownika, jak i adresem e-mail.
  *
  * @property-read User|null $user
- *
  */
-// Klasa LoginForm.
 class LoginForm extends Model
 {
     public $username; // username or email
     public $password;
     public $rememberMe = true;
 
-    private $_user = false;
-
+    /** @var User|null */
+    private $_user = null;
 
     /**
-     * @return array the validation rules.
+     * Reguły walidacji dla formularza logowania.
      */
-    // Metoda rules.
     public function rules()
     {
         return [
@@ -49,13 +48,8 @@ class LoginForm extends Model
     }
 
     /**
-     * Validates the password.
-     * This method serves as the inline validation for password.
-     *
-     * @param string $attribute the attribute currently being validated
-     * @param array $params the additional name-value pairs given in the rule
+     * Sprawdza, czy podane hasło pasuje do znalezionego użytkownika.
      */
-    // Metoda validatePassword.
     public function validatePassword($attribute, $params)
     {
         if (!$this->hasErrors()) {
@@ -68,10 +62,8 @@ class LoginForm extends Model
     }
 
     /**
-     * Custom validator for the login field. It accepts either a valid
-     * username (alphanumeric, underscores, dashes) or a properly formatted email.
+     * Waliduje pole loginu: akceptuje nazwę użytkownika lub poprawny e-mail.
      */
-    // Metoda validateLogin.
     public function validateLogin($attribute, $params)
     {
         if (strpos($this->$attribute, '@') !== false) {
@@ -86,22 +78,24 @@ class LoginForm extends Model
     }
 
     /**
-     * Logs in a user using the provided username and password.
-     * @return bool whether the user is logged in successfully
+     * Loguje użytkownika po pozytywnej walidacji formularza.
      */
-    // Metoda login.
     public function login()
     {
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+            $user = $this->getUser();
+            if ($user === null) {
+                return false;
+            }
+
+            return Yii::$app->user->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
         }
         return false;
     }
 
     /**
-     * {@inheritdoc}
+     * Etykiety pól formularza.
      */
-    // Metoda attributeLabels.
     public function attributeLabels()
     {
         return [
@@ -110,14 +104,11 @@ class LoginForm extends Model
     }
 
     /**
-     * Finds user by [[username]]
-     *
-     * @return User|null
+     * Wyszukuje użytkownika po nazwie lub e-mailu i cache'uje wynik.
      */
-    // Metoda getUser.
     public function getUser()
     {
-        if ($this->_user === false) {
+        if ($this->_user === null) {
             // allow login by username or email
             $this->_user = User::find()
                 ->where(['username' => $this->username])

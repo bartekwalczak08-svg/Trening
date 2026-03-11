@@ -7,25 +7,30 @@
 
 namespace app\controllers;
 
+use app\models\ContactForm;
+use app\models\ContactMessage;
+use app\models\LoginForm;
+use app\models\User;
+use app\models\WorkoutExercises;
+use app\models\Workouts;
 use Yii;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
-use app\models\ContactMessage;
-use app\models\Workouts;
-use app\models\WorkoutExercises;
 
-// Klasa SiteController.
+/**
+ * Główny kontroler stron publicznych i konta użytkownika.
+ *
+ * Obsługuje m.in. stronę główną, logowanie/rejestrację, kontakt
+ * oraz panel administracji zgłoszeniami kontaktowymi.
+ */
 class SiteController extends Controller
 {
     /**
-     * {@inheritdoc}
+     * Definiuje reguły dostępu i dozwolone metody HTTP dla akcji.
      */
-    // Metoda behaviors.
     public function behaviors()
     {
         return [
@@ -34,6 +39,7 @@ class SiteController extends Controller
                 'only' => [
                     'logout',
                     'profile',
+                    'delete-account',
                     'signup',
                     'contact-messages',
                     'contact-messages-trash',
@@ -46,6 +52,7 @@ class SiteController extends Controller
                         'actions' => [
                             'logout',
                             'profile',
+                            'delete-account',
                             'delete-contact-message',
                             'restore-contact-message',
                             'purge-contact-message',
@@ -70,7 +77,8 @@ class SiteController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
-                    'profile' => ['get','post'],
+                    'profile' => ['get', 'post'],
+                    'delete-account' => ['post'],
                     'delete-contact-message' => ['post'],
                     'restore-contact-message' => ['post'],
                     'purge-contact-message' => ['post'],
@@ -80,9 +88,8 @@ class SiteController extends Controller
     }
 
     /**
-     * {@inheritdoc}
+     * Rejestruje akcje wbudowane Yii (obsługa błędów i CAPTCHA).
      */
-    // Metoda actions.
     public function actions()
     {
         return [
@@ -97,11 +104,10 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays homepage.
+     * Buduje dane dashboardu strony głównej zależne od zalogowanego użytkownika.
      *
      * @return string
      */
-    // Metoda actionIndex.
     public function actionIndex()
     {
         $groupedWorkouts = [];
@@ -220,12 +226,11 @@ class SiteController extends Controller
     }
 
     /**
-     * Maps numeric weekday (1-7) to workout weekday key.
+     * Mapuje numer dnia tygodnia (1-7) na klucz weekday używany w modelu treningu.
      *
      * @param int $dayNumber
      * @return string
      */
-    // Metoda mapWeekdayFromNumber.
     private function mapWeekdayFromNumber($dayNumber)
     {
         $map = [
@@ -242,11 +247,10 @@ class SiteController extends Controller
     }
 
     /**
-     * Login action.
+     * Rejestruje nowego użytkownika i loguje go automatycznie.
      *
      * @return Response|string
      */
-    // Metoda actionSignup.
     public function actionSignup()
     {
         if (!Yii::$app->user->isGuest) {
@@ -265,7 +269,9 @@ class SiteController extends Controller
         ]);
     }
 
-    // Metoda actionLogin.
+    /**
+     * Wyświetla formularz logowania i uwierzytelnia użytkownika.
+     */
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
@@ -284,11 +290,10 @@ class SiteController extends Controller
     }
 
     /**
-     * Logout action.
+     * Wylogowuje aktualnego użytkownika.
      *
      * @return Response
      */
-    // Metoda actionLogout.
     public function actionLogout()
     {
         Yii::$app->user->logout();
@@ -297,11 +302,10 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays contact page.
+     * Wyświetla formularz kontaktowy i zapisuje wysłane zgłoszenie.
      *
      * @return Response|string
      */
-    // Metoda actionContact.
     public function actionContact()
     {
         $model = new ContactForm();
@@ -316,11 +320,10 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays about page.
+     * Umożliwia zmianę danych konta (login, e-mail, hasło).
      *
      * @return string
      */
-    // Metoda actionProfile.
     public function actionProfile()
     {
         $model = new \app\models\ChangeCredentialsForm();
@@ -339,13 +342,72 @@ class SiteController extends Controller
         ]);
     }
 
-    // Metoda actionAbout.
+    /**
+     * Usuwa konto zalogowanego użytkownika wraz z danymi zależnymi.
+     */
+    public function actionDeleteAccount()
+    {
+        $identity = Yii::$app->user->identity;
+        if ($identity === null) {
+            return $this->goHome();
+        }
+
+        $password = (string) Yii::$app->request->post('delete_account_password', '');
+        // Require password confirmation for destructive account deletion.
+        if ($password === '') {
+            Yii::$app->session->setFlash('error', 'Aby usunąć konto, wpisz aktualne hasło.');
+            return $this->redirect(['profile']);
+        }
+
+        // Verify password against fresh DB state to avoid stale identity data.
+        $userModel = User::findOne((int) $identity->id);
+        if ($userModel === null || !$userModel->validatePassword($password)) {
+            Yii::$app->session->setFlash('error', 'Podane hasło jest nieprawidłowe. Konto nie zostało usunięte.');
+            return $this->redirect(['profile']);
+        }
+
+        $userId = (int) $identity->id;
+        $userEmail = (string) $identity->email;
+        $db = Yii::$app->db;
+        $transaction = $db->beginTransaction();
+
+        try {
+            // Remove contact entries submitted with current account email.
+            ContactMessage::deleteAll(['email' => $userEmail]);
+
+            // Delete the user last so dependent rows can cascade safely.
+            $deleted = User::deleteAll(['id' => $userId]);
+            if ($deleted !== 1) {
+                throw new \RuntimeException('Nie udało się usunąć konta użytkownika.');
+            }
+
+            $transaction->commit();
+        } catch (\Throwable $e) {
+            if ($transaction->isActive) {
+                $transaction->rollBack();
+            }
+
+            Yii::$app->session->setFlash('error', 'Nie udało się usunąć konta. Spróbuj ponownie.');
+            return $this->redirect(['profile']);
+        }
+
+        Yii::$app->user->logout(false);
+        Yii::$app->session->setFlash('success', 'Konto zostało usunięte.');
+
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Renderuje stronę „O aplikacji”.
+     */
     public function actionAbout()
     {
         return $this->render('about');
     }
 
-    // Metoda actionContactMessages.
+    /**
+     * Lista aktywnych zgłoszeń kontaktowych z paginacją i aktualizacją statusów.
+     */
     public function actionContactMessages()
     {
         // Paginate active messages (not in trash).
@@ -404,7 +466,9 @@ class SiteController extends Controller
         ]);
     }
 
-    // Metoda actionDeleteContactMessage.
+    /**
+     * Miękko usuwa zgłoszenie kontaktowe (przeniesienie do kosza).
+     */
     public function actionDeleteContactMessage($id)
     {
         $model = ContactMessage::findOne((int) $id);
@@ -430,7 +494,9 @@ class SiteController extends Controller
         return $this->redirect(['contact-messages']);
     }
 
-    // Metoda actionContactMessagesTrash.
+    /**
+     * Wyświetla kosz zgłoszeń kontaktowych.
+     */
     public function actionContactMessagesTrash()
     {
         $query = ContactMessage::find()
@@ -454,7 +520,9 @@ class SiteController extends Controller
         ]);
     }
 
-    // Metoda actionRestoreContactMessage.
+    /**
+     * Przywraca zgłoszenie z kosza do listy aktywnych.
+     */
     public function actionRestoreContactMessage($id)
     {
         $model = ContactMessage::findOne((int) $id);
@@ -474,7 +542,9 @@ class SiteController extends Controller
         return $this->redirect(['contact-messages-trash']);
     }
 
-    // Metoda actionPurgeContactMessage.
+    /**
+     * Trwale usuwa zgłoszenie z kosza.
+     */
     public function actionPurgeContactMessage($id)
     {
         $model = ContactMessage::findOne((int) $id);

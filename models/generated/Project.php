@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Opis: Model wygenerowany automatycznie na podstawie schematu bazy danych.
+ * Auto-generated model based on database schema.
  */
-
-
 namespace app\models\generated;
 
 use Yii;
@@ -21,15 +19,11 @@ use Yii;
  * @property int $created_at
  * @property int $updated_at
  */
-// Klasa Project.
 class Project extends \app\models\ActiveRecord
 {
-
-
     /**
      * {@inheritdoc}
      */
-    // Metoda tableName.
     public static function tableName()
     {
         return 'project';
@@ -38,7 +32,6 @@ class Project extends \app\models\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    // Metoda rules.
     public function rules()
     {
         return [
@@ -53,7 +46,6 @@ class Project extends \app\models\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    // Metoda attributeLabels.
     public function attributeLabels()
     {
         return [
@@ -67,5 +59,4 @@ class Project extends \app\models\ActiveRecord
             'updated_at' => 'Updated At',
         ];
     }
-
 }

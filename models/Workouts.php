@@ -1,13 +1,10 @@
 <?php
 
 /**
- * Opis: Model domenowy uywany w aplikacji.
+ * Workouts domain model.
  */
-
-
 namespace app\models;
 
-// Klasa Workouts.
 class Workouts extends extended\Workouts
 {
 }

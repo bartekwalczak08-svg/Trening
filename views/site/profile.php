@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="site-profile">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?php $form = ActiveForm::begin([ 'id' => 'profile-form' ]); ?>
+    <?php $form = ActiveForm::begin(['id' => 'profile-form']); ?>
 
     <?= $form->field($model, 'username')->textInput() ?>
 
@@ -43,6 +43,42 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <?php ActiveForm::end(); ?>
+
+    <hr class="my-4">
+
+    <?php // Dedicated destructive-action block separated from regular profile updates. ?>
+    <section class="danger-zone" aria-labelledby="danger-zone-title">
+        <div class="danger-zone-badge mb-2">Strefa niebezpieczna</div>
+        <h5 id="danger-zone-title" class="danger-zone-title mb-2">Usuń konto</h5>
+        <p class="danger-zone-text mb-3">Ta operacja jest nieodwracalna i usunie Twoje dane treningowe.</p>
+        <?= Html::beginForm(['/site/delete-account'], 'post') ?>
+            <div class="mb-3">
+                <label class="form-label danger-zone-label" for="delete-account-password">Potwierdź aktualnym hasłem</label>
+                <div class="input-group">
+                    <?php // Password is required by backend before account deletion is executed. ?>
+                    <?= Html::passwordInput('delete_account_password', '', [
+                        'id' => 'delete-account-password',
+                        'class' => 'form-control danger-zone-input',
+                        'autocomplete' => 'current-password',
+                        'required' => true,
+                        'placeholder' => 'Wpisz aktualne hasło',
+                    ]) ?>
+                    <button class="btn btn-outline-secondary danger-zone-toggle toggle-password" type="button" data-target="delete-account-password" aria-label="Pokaż lub ukryj hasło">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <?= Html::submitButton(
+                'Usuń moje konto',
+                [
+                    'class' => 'btn btn-danger danger-zone-submit',
+                    'data' => [
+                        'confirm' => 'Czy na pewno chcesz trwale usunąć swoje konto?',
+                    ],
+                ]
+            ) ?>
+        <?= Html::endForm() ?>
+    </section>
 </div>
 
 <?php $this->registerJs(<<<'JS'

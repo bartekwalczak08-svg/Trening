@@ -1,13 +1,10 @@
 <?php
 
 /**
- * Opis: Rozszerzony model aplikacji z logik biznesow.
+ * Extended Exercises model with application-specific behavior.
  */
-
-
 namespace app\models\extended;
 
-// Klasa Exercises.
 class Exercises extends \app\models\generated\Exercises
 {
 }

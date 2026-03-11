@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Opis: Model wygenerowany automatycznie na podstawie schematu bazy danych.
+ * Auto-generated model based on database schema.
  */
-
-
 namespace app\models\generated;
 
 use Yii;
@@ -21,15 +19,11 @@ use Yii;
  * @property int $updated_at
  * @property string $email
  */
-// Klasa User.
 class User extends \app\models\ActiveRecord
 {
-
-
     /**
      * {@inheritdoc}
      */
-    // Metoda tableName.
     public static function tableName()
     {
         return 'user';
@@ -38,7 +32,6 @@ class User extends \app\models\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    // Metoda rules.
     public function rules()
     {
         return [
@@ -55,7 +48,6 @@ class User extends \app\models\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    // Metoda attributeLabels.
     public function attributeLabels()
     {
         return [
@@ -69,5 +61,4 @@ class User extends \app\models\ActiveRecord
             'email' => 'Email',
         ];
     }
-
 }
