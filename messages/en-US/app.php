@@ -242,6 +242,8 @@ return [
     'Okres reaktywacji konta minął. Konto oczekuje na usunięcie.' => 'The account reactivation period has expired. The account is pending deletion.',
     'Nie udało się dezaktywować konta.' => 'Could not deactivate account.',
     'Konto zostało dezaktywowane. Zaloguj się ponownie, aby je aktywować, lub użyj linku: {url}' => 'Account has been deactivated. Sign in again to reactivate it, or use this link: {url}',
+    'Wpisz aktualne hasło, aby potwierdzić dezaktywację konta.' => 'Enter your current password to confirm account deactivation.',
+    'Nieprawidłowe hasło. Konto nie zostało dezaktywowane.' => 'Incorrect password. The account was not deactivated.',
     'Wpisz aktualne hasło, aby potwierdzić usunięcie konta.' => 'Enter your current password to confirm account deletion.',
     'Nieprawidłowe hasło. Konto nie zostało oznaczone do usunięcia.' => 'Incorrect password. The account was not marked for deletion.',
     'Nie udało się oznaczyć konta do usunięcia.' => 'Could not mark account for deletion.',
@@ -260,4 +262,5 @@ return [
     'Czy na pewno chcesz oznaczyć konto do usunięcia za 30 dni?' => 'Are you sure you want to mark your account for deletion in 30 days?',
     'Anuluj usunięcie konta' => 'Cancel account deletion',
     'Reaktywuj konto' => 'Reactivate account',
+    'Nieprawidłowa akcja konta.' => 'Invalid account action.',
 ];

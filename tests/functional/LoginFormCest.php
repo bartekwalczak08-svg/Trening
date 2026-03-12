@@ -75,4 +75,33 @@ class LoginFormCest
         $I->see('Logout (admin)');
         $I->dontSeeElement('form#login-form');
     }
+
+    public function pendingDeleteLoginRedirectsToProfileWithoutStatusChange(\FunctionalTester $I)
+    {
+        $user = \app\models\User::findOne(101);
+        if ($user === null) {
+            $user = new \app\models\User();
+            $user->id = 101;
+            $user->created_at = time();
+        }
+
+        $user->username = 'pendinguser';
+        $user->email = 'pending@example.com';
+        $user->password_hash = Yii::$app->security->generatePasswordHash('pending123');
+        $user->auth_key = Yii::$app->security->generateRandomString();
+        $user->status = 'pending_delete';
+        $user->delete_requested_at = time() - 3600;
+        $user->updated_at = time();
+        $user->save(false);
+
+        $I->submitForm('#login-form', [
+            'LoginForm[username]' => 'pendinguser',
+            'LoginForm[password]' => 'pending123',
+        ]);
+
+        $I->seeCurrentRouteIs('site/profile');
+        $reloaded = \app\models\User::findOne(101);
+        \PHPUnit\Framework\Assert::assertNotNull($reloaded);
+        \PHPUnit\Framework\Assert::assertSame('pending_delete', (string) $reloaded->status);
+    }
 }

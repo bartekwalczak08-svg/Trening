@@ -93,7 +93,7 @@ class LoginForm extends Model
                 return false;
             }
 
-            if ($user->isDeactivated() || $user->isPendingDelete()) {
+            if ($user->isDeactivated()) {
                 $user->activateAccount();
             }
 

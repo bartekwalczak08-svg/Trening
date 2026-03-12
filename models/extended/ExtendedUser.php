@@ -50,7 +50,7 @@ class ExtendedUser extends \app\models\generated\GeneratedUser implements \yii\w
         $query = static::find()->where(['id' => $id]);
         $model = new static();
         if ($model->hasAttribute('status')) {
-            $query->andWhere(['status' => self::STATUS_ACTIVE]);
+            $query->andWhere(['status' => [self::STATUS_ACTIVE, self::STATUS_PENDING_DELETE]]);
         }
 
         return $query->one();
@@ -64,7 +64,7 @@ class ExtendedUser extends \app\models\generated\GeneratedUser implements \yii\w
         $query = static::find()->where(['access_token' => $token]);
         $model = new static();
         if ($model->hasAttribute('status')) {
-            $query->andWhere(['status' => self::STATUS_ACTIVE]);
+            $query->andWhere(['status' => [self::STATUS_ACTIVE, self::STATUS_PENDING_DELETE]]);
         }
 
         return $query->one();

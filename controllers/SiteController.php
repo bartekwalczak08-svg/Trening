@@ -45,6 +45,7 @@ class SiteController extends Controller
                 'only' => [
                     'logout',
                     'profile',
+                    'account-action',
                     'deactivate-account',
                     'delete-account',
                     'cancel-delete-account',
@@ -60,6 +61,7 @@ class SiteController extends Controller
                         'actions' => [
                             'logout',
                             'profile',
+                            'account-action',
                             'deactivate-account',
                             'delete-account',
                             'cancel-delete-account',
@@ -88,6 +90,7 @@ class SiteController extends Controller
                 'actions' => [
                     'logout' => ['post'],
                     'profile' => ['get', 'post'],
+                    'account-action' => ['post'],
                     'deactivate-account' => ['post'],
                     'delete-account' => ['post'],
                     'cancel-delete-account' => ['post'],
@@ -177,6 +180,11 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            $identity = Yii::$app->user->identity;
+            if ($identity instanceof User && $identity->isPendingDelete()) {
+                return $this->redirect(['profile']);
+            }
+
             return $this->goBack();
         }
 
@@ -240,6 +248,27 @@ class SiteController extends Controller
     }
 
     /**
+     * Handles profile account action intent submitted from shared password form.
+     *
+     * @return Response
+     */
+    public function actionAccountAction()
+    {
+        $intent = (string) Yii::$app->request->post('account_action_intent', '');
+
+        if ($intent === 'deactivate') {
+            return $this->actionDeactivateAccount();
+        }
+
+        if ($intent === 'delete') {
+            return $this->actionDeleteAccount();
+        }
+
+        Yii::$app->session->setFlash('error', Yii::t('app', 'Nieprawidłowa akcja konta.'));
+        return $this->redirect(['profile']);
+    }
+
+    /**
      * Deactivates currently logged in account and logs user out.
      *
      * @return Response
@@ -252,6 +281,21 @@ class SiteController extends Controller
         }
 
         $user = User::findOne((int) $identity->id);
+        $password = (string) Yii::$app->request->post('account_action_password', '');
+        if ($password === '') {
+            $password = (string) Yii::$app->request->post('deactivate_account_password', '');
+        }
+
+        if ($password === '') {
+            Yii::$app->session->setFlash('error', Yii::t('app', 'Wpisz aktualne hasło, aby potwierdzić dezaktywację konta.'));
+            return $this->redirect(['profile']);
+        }
+
+        if ($user === null || !$user->validatePassword($password)) {
+            Yii::$app->session->setFlash('error', Yii::t('app', 'Nieprawidłowe hasło. Konto nie zostało dezaktywowane.'));
+            return $this->redirect(['profile']);
+        }
+
         if ($user === null || !$user->deactivateAccount()) {
             Yii::$app->session->setFlash('error', Yii::t('app', 'Nie udało się dezaktywować konta.'));
             return $this->redirect(['profile']);
@@ -287,7 +331,10 @@ class SiteController extends Controller
         }
 
         $user = User::findOne((int) $identity->id);
-        $password = (string) Yii::$app->request->post('delete_account_password', '');
+        $password = (string) Yii::$app->request->post('account_action_password', '');
+        if ($password === '') {
+            $password = (string) Yii::$app->request->post('delete_account_password', '');
+        }
 
         if ($password === '') {
             Yii::$app->session->setFlash('error', Yii::t('app', 'Wpisz aktualne hasło, aby potwierdzić usunięcie konta.'));

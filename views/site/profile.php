@@ -53,15 +53,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <p class="danger-zone-text mb-3"><?= Yii::t('app', 'Możesz dezaktywować konto lub oznaczyć je do usunięcia po 30 dniach.') ?></p>
 
         <div class="d-flex flex-wrap gap-2 align-items-start">
-            <?= Html::beginForm(['/site/deactivate-account'], 'post', ['class' => 'd-inline']) ?>
-            <?= Html::submitButton(Yii::t('app', 'Dezaktywuj konto'), [
-                'class' => 'btn btn-outline-warning',
-                'data' => [
-                    'confirm' => Yii::t('app', 'Czy na pewno chcesz dezaktywować konto?'),
-                ],
-            ]) ?>
-            <?= Html::endForm() ?>
-
             <?= Html::beginForm(['/site/cancel-delete-account'], 'post', ['class' => 'd-inline']) ?>
             <?= Html::submitButton(Yii::t('app', 'Anuluj usunięcie konta'), [
                 'class' => 'btn btn-outline-success',
@@ -69,23 +60,36 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::endForm() ?>
         </div>
 
-        <?= Html::beginForm(['/site/delete-account'], 'post', ['class' => 'mt-3']) ?>
-        <label for="delete-account-password" class="form-label mb-1"><?= Yii::t('app', 'Potwierdź aktualnym hasłem') ?></label>
-        <div class="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-start">
+        <?= Html::beginForm(['/site/account-action'], 'post', ['class' => 'mt-3']) ?>
+        <label for="account-action-password" class="form-label mb-1"><?= Yii::t('app', 'Potwierdź aktualnym hasłem') ?></label>
+        <div class="d-flex" style="max-width: 360px;">
             <div class="input-group" style="max-width: 360px;">
-                <?= Html::passwordInput('delete_account_password', '', [
-                    'id' => 'delete-account-password',
+                <?= Html::passwordInput('account_action_password', '', [
+                    'id' => 'account-action-password',
                     'class' => 'form-control',
                     'placeholder' => Yii::t('app', 'Wpisz aktualne hasło'),
                     'autocomplete' => 'current-password',
                     'required' => true,
                 ]) ?>
-                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="delete-account-password" aria-label="<?= Yii::t('app', 'Pokaż lub ukryj hasło') ?>">
+                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="account-action-password" aria-label="<?= Yii::t('app', 'Pokaż lub ukryj hasło') ?>">
                     <i class="bi bi-eye"></i>
                 </button>
             </div>
+        </div>
+
+        <?= Html::hiddenInput('account_action_intent', '', ['id' => 'account-action-intent']) ?>
+        <div class="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-start mt-2">
+            <?= Html::submitButton(Yii::t('app', 'Dezaktywuj konto'), [
+                'class' => 'btn btn-outline-warning',
+                'id' => 'btn-account-deactivate',
+                'data' => [
+                    'confirm' => Yii::t('app', 'Czy na pewno chcesz dezaktywować konto?'),
+                ],
+            ]) ?>
+
             <?= Html::submitButton(Yii::t('app', 'Usuń konto (30 dni)'), [
                 'class' => 'btn btn-danger',
+                'id' => 'btn-account-delete',
                 'data' => [
                     'confirm' => Yii::t('app', 'Czy na pewno chcesz oznaczyć konto do usunięcia za 30 dni?'),
                 ],
@@ -97,6 +101,30 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php $this->registerJs(<<<'JS'
 (function() {
+    var intentInput = document.getElementById('account-action-intent');
+    var accountActionForm = intentInput ? intentInput.form : null;
+    var deactivateButton = document.getElementById('btn-account-deactivate');
+    var deleteButton = document.getElementById('btn-account-delete');
+
+    if (deactivateButton && intentInput) {
+        deactivateButton.addEventListener('click', function() {
+            intentInput.value = 'deactivate';
+        });
+    }
+    if (deleteButton && intentInput) {
+        deleteButton.addEventListener('click', function() {
+            intentInput.value = 'delete';
+        });
+    }
+    if (accountActionForm && intentInput) {
+        accountActionForm.addEventListener('submit', function() {
+            // Fallback for submit via Enter key: keep behavior deterministic.
+            if (!intentInput.value) {
+                intentInput.value = 'deactivate';
+            }
+        });
+    }
+
     var toggleButtons = document.querySelectorAll('.toggle-password');
     toggleButtons.forEach(function(btn) {
         btn.addEventListener('click', function() {
@@ -118,6 +146,7 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         });
     });
+
 })();
 JS
 ); ?>

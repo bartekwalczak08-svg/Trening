@@ -242,6 +242,8 @@ return [
     'Okres reaktywacji konta minął. Konto oczekuje na usunięcie.' => 'Okres reaktywacji konta minął. Konto oczekuje na usunięcie.',
     'Nie udało się dezaktywować konta.' => 'Nie udało się dezaktywować konta.',
     'Konto zostało dezaktywowane. Zaloguj się ponownie, aby je aktywować, lub użyj linku: {url}' => 'Konto zostało dezaktywowane. Zaloguj się ponownie, aby je aktywować, lub użyj linku: {url}',
+    'Wpisz aktualne hasło, aby potwierdzić dezaktywację konta.' => 'Wpisz aktualne hasło, aby potwierdzić dezaktywację konta.',
+    'Nieprawidłowe hasło. Konto nie zostało dezaktywowane.' => 'Nieprawidłowe hasło. Konto nie zostało dezaktywowane.',
     'Wpisz aktualne hasło, aby potwierdzić usunięcie konta.' => 'Wpisz aktualne hasło, aby potwierdzić usunięcie konta.',
     'Nieprawidłowe hasło. Konto nie zostało oznaczone do usunięcia.' => 'Nieprawidłowe hasło. Konto nie zostało oznaczone do usunięcia.',
     'Nie udało się oznaczyć konta do usunięcia.' => 'Nie udało się oznaczyć konta do usunięcia.',
@@ -260,4 +262,5 @@ return [
     'Czy na pewno chcesz oznaczyć konto do usunięcia za 30 dni?' => 'Czy na pewno chcesz oznaczyć konto do usunięcia za 30 dni?',
     'Anuluj usunięcie konta' => 'Anuluj usunięcie konta',
     'Reaktywuj konto' => 'Reaktywuj konto',
+    'Nieprawidłowa akcja konta.' => 'Nieprawidłowa akcja konta.',
 ];
