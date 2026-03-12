@@ -156,7 +156,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     </main>
 </div>
 
-<footer id="footer" class="app-footer mt-auto">
+<footer id="footer" class="app-footer mt-5">
     <div class="container py-2 py-lg-2">
         <div class="row g-2 align-items-start">
             <div class="col-lg-5">

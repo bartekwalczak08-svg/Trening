@@ -88,6 +88,15 @@ class LoginForm extends Model
                 return false;
             }
 
+            if ($user->isPendingDeleteExpired(30)) {
+                $this->addError('username', Yii::t('app', 'Okres reaktywacji konta minął. Konto oczekuje na usunięcie.'));
+                return false;
+            }
+
+            if ($user->isDeactivated() || $user->isPendingDelete()) {
+                $user->activateAccount();
+            }
+
             return Yii::$app->user->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
         }
         return false;

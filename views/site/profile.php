@@ -46,37 +46,51 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <hr class="my-4">
 
-    <?php // Dedicated destructive-action block separated from regular profile updates. ?>
+    <?php // Dedicated account lifecycle actions (deactivate / delayed delete). ?>
     <section class="danger-zone" aria-labelledby="danger-zone-title">
-        <div class="danger-zone-badge mb-2"><?= Yii::t('app', 'Strefa niebezpieczna') ?></div>
-        <h5 id="danger-zone-title" class="danger-zone-title mb-2"><?= Yii::t('app', 'Usuń konto') ?></h5>
-        <p class="danger-zone-text mb-3"><?= Yii::t('app', 'Ta operacja jest nieodwracalna i usunie Twoje dane treningowe.') ?></p>
-        <?= Html::beginForm(['/site/delete-account'], 'post') ?>
-            <div class="mb-3">
-            <label class="form-label danger-zone-label" for="delete-account-password"><?= Yii::t('app', 'Potwierdź aktualnym hasłem') ?></label>
-                <div class="input-group">
-                    <?php // Password is required by backend before account deletion is executed. ?>
-                    <?= Html::passwordInput('delete_account_password', '', [
-                        'id' => 'delete-account-password',
-                        'class' => 'form-control danger-zone-input',
-                        'autocomplete' => 'current-password',
-                        'required' => true,
-                        'placeholder' => Yii::t('app', 'Wpisz aktualne hasło'),
-                    ]) ?>
-                    <button class="btn btn-outline-secondary danger-zone-toggle toggle-password" type="button" data-target="delete-account-password" aria-label="<?= Yii::t('app', 'Pokaż lub ukryj hasło') ?>">
-                        <i class="bi bi-eye"></i>
-                    </button>
-                </div>
+        <div class="danger-zone-badge mb-2"><?= Yii::t('app', 'Strefa konta') ?></div>
+        <h5 id="danger-zone-title" class="danger-zone-title mb-2"><?= Yii::t('app', 'Zarządzanie kontem') ?></h5>
+        <p class="danger-zone-text mb-3"><?= Yii::t('app', 'Możesz dezaktywować konto lub oznaczyć je do usunięcia po 30 dniach.') ?></p>
+
+        <div class="d-flex flex-wrap gap-2 align-items-start">
+            <?= Html::beginForm(['/site/deactivate-account'], 'post', ['class' => 'd-inline']) ?>
+            <?= Html::submitButton(Yii::t('app', 'Dezaktywuj konto'), [
+                'class' => 'btn btn-outline-warning',
+                'data' => [
+                    'confirm' => Yii::t('app', 'Czy na pewno chcesz dezaktywować konto?'),
+                ],
+            ]) ?>
+            <?= Html::endForm() ?>
+
+            <?= Html::beginForm(['/site/cancel-delete-account'], 'post', ['class' => 'd-inline']) ?>
+            <?= Html::submitButton(Yii::t('app', 'Anuluj usunięcie konta'), [
+                'class' => 'btn btn-outline-success',
+            ]) ?>
+            <?= Html::endForm() ?>
+        </div>
+
+        <?= Html::beginForm(['/site/delete-account'], 'post', ['class' => 'mt-3']) ?>
+        <label for="delete-account-password" class="form-label mb-1"><?= Yii::t('app', 'Potwierdź aktualnym hasłem') ?></label>
+        <div class="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-start">
+            <div class="input-group" style="max-width: 360px;">
+                <?= Html::passwordInput('delete_account_password', '', [
+                    'id' => 'delete-account-password',
+                    'class' => 'form-control',
+                    'placeholder' => Yii::t('app', 'Wpisz aktualne hasło'),
+                    'autocomplete' => 'current-password',
+                    'required' => true,
+                ]) ?>
+                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="delete-account-password" aria-label="<?= Yii::t('app', 'Pokaż lub ukryj hasło') ?>">
+                    <i class="bi bi-eye"></i>
+                </button>
             </div>
-            <?= Html::submitButton(
-                Yii::t('app', 'Usuń moje konto'),
-                [
-                    'class' => 'btn btn-danger danger-zone-submit',
-                    'data' => [
-                        'confirm' => Yii::t('app', 'Czy na pewno chcesz trwale usunąć swoje konto?'),
-                    ],
-                ]
-            ) ?>
+            <?= Html::submitButton(Yii::t('app', 'Usuń konto (30 dni)'), [
+                'class' => 'btn btn-danger',
+                'data' => [
+                    'confirm' => Yii::t('app', 'Czy na pewno chcesz oznaczyć konto do usunięcia za 30 dni?'),
+                ],
+            ]) ?>
+        </div>
         <?= Html::endForm() ?>
     </section>
 </div>

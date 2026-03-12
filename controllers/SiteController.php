@@ -16,6 +16,8 @@ use Yii;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\Response;
 
@@ -43,7 +45,9 @@ class SiteController extends Controller
                 'only' => [
                     'logout',
                     'profile',
+                    'deactivate-account',
                     'delete-account',
+                    'cancel-delete-account',
                     'signup',
                     'contact-messages',
                     'contact-messages-trash',
@@ -56,7 +60,9 @@ class SiteController extends Controller
                         'actions' => [
                             'logout',
                             'profile',
+                            'deactivate-account',
                             'delete-account',
+                            'cancel-delete-account',
                             'delete-contact-message',
                             'restore-contact-message',
                             'purge-contact-message',
@@ -82,7 +88,9 @@ class SiteController extends Controller
                 'actions' => [
                     'logout' => ['post'],
                     'profile' => ['get', 'post'],
+                    'deactivate-account' => ['post'],
                     'delete-account' => ['post'],
+                    'cancel-delete-account' => ['post'],
                     'delete-contact-message' => ['post'],
                     'restore-contact-message' => ['post'],
                     'purge-contact-message' => ['post'],
@@ -232,7 +240,44 @@ class SiteController extends Controller
     }
 
     /**
-     * Usuwa konto zalogowanego użytkownika wraz z danymi zależnymi.
+     * Deactivates currently logged in account and logs user out.
+     *
+     * @return Response
+     */
+    public function actionDeactivateAccount()
+    {
+        $identity = Yii::$app->user->identity;
+        if ($identity === null) {
+            return $this->goHome();
+        }
+
+        $user = User::findOne((int) $identity->id);
+        if ($user === null || !$user->deactivateAccount()) {
+            Yii::$app->session->setFlash('error', Yii::t('app', 'Nie udało się dezaktywować konta.'));
+            return $this->redirect(['profile']);
+        }
+
+        $reactivateUrl = Url::to([
+            '/site/reactivate-account',
+            'id' => (int) $user->id,
+            'key' => (string) $user->auth_key,
+        ], true);
+
+        Yii::$app->user->logout(false);
+        Yii::$app->session->setFlash(
+            'success',
+            Yii::t('app', 'Konto zostało dezaktywowane. Zaloguj się ponownie, aby je aktywować, lub użyj linku: {url}', [
+                'url' => Html::a(Yii::t('app', 'Reaktywuj konto'), $reactivateUrl, ['class' => 'alert-link']),
+            ])
+        );
+
+        return $this->redirect(['login']);
+    }
+
+    /**
+     * Marks account for delayed deletion (30-day grace period).
+     *
+     * @return Response
      */
     public function actionDeleteAccount()
     {
@@ -241,49 +286,83 @@ class SiteController extends Controller
             return $this->goHome();
         }
 
+        $user = User::findOne((int) $identity->id);
         $password = (string) Yii::$app->request->post('delete_account_password', '');
-        // Require password confirmation for destructive account deletion.
+
         if ($password === '') {
-            Yii::$app->session->setFlash('error', 'Aby usunąć konto, wpisz aktualne hasło.');
+            Yii::$app->session->setFlash('error', Yii::t('app', 'Wpisz aktualne hasło, aby potwierdzić usunięcie konta.'));
             return $this->redirect(['profile']);
         }
 
-        // Verify password against fresh DB state to avoid stale identity data.
-        $userModel = User::findOne((int) $identity->id);
-        if ($userModel === null || !$userModel->validatePassword($password)) {
-            Yii::$app->session->setFlash('error', 'Podane hasło jest nieprawidłowe. Konto nie zostało usunięte.');
+        if ($user === null || !$user->validatePassword($password)) {
+            Yii::$app->session->setFlash('error', Yii::t('app', 'Nieprawidłowe hasło. Konto nie zostało oznaczone do usunięcia.'));
             return $this->redirect(['profile']);
         }
 
-        $userId = (int) $identity->id;
-        $userEmail = (string) $identity->email;
-        $db = Yii::$app->db;
-        $transaction = $db->beginTransaction();
-
-        try {
-            // Remove contact entries submitted with current account email.
-            ContactMessage::deleteAll(['email' => $userEmail]);
-
-            // Delete the user last so dependent rows can cascade safely.
-            $deleted = User::deleteAll(['id' => $userId]);
-            if ($deleted !== 1) {
-                throw new \RuntimeException('Nie udało się usunąć konta użytkownika.');
-            }
-
-            $transaction->commit();
-        } catch (\Throwable $e) {
-            if ($transaction->isActive) {
-                $transaction->rollBack();
-            }
-
-            Yii::$app->session->setFlash('error', 'Nie udało się usunąć konta. Spróbuj ponownie.');
+        if ($user === null || !$user->requestAccountDeletion()) {
+            Yii::$app->session->setFlash('error', Yii::t('app', 'Nie udało się oznaczyć konta do usunięcia.'));
             return $this->redirect(['profile']);
         }
 
         Yii::$app->user->logout(false);
-        Yii::$app->session->setFlash('success', 'Konto zostało usunięte.');
+        Yii::$app->session->setFlash('success', Yii::t('app', 'Konto oznaczono do usunięcia. Masz 30 dni na anulowanie przez ponowne logowanie.'));
 
-        return $this->redirect(['index']);
+        return $this->redirect(['login']);
+    }
+
+    /**
+     * Cancels delayed deletion request for currently logged in user.
+     *
+     * @return Response
+     */
+    public function actionCancelDeleteAccount()
+    {
+        $identity = Yii::$app->user->identity;
+        if ($identity === null) {
+            return $this->goHome();
+        }
+
+        $user = User::findOne((int) $identity->id);
+        if ($user === null || !$user->activateAccount()) {
+            Yii::$app->session->setFlash('error', Yii::t('app', 'Nie udało się anulować usunięcia konta.'));
+            return $this->redirect(['profile']);
+        }
+
+        Yii::$app->session->setFlash('success', Yii::t('app', 'Usunięcie konta zostało anulowane.'));
+
+        return $this->redirect(['profile']);
+    }
+
+    /**
+     * Reactivates account using direct link token.
+     *
+     * @param int $id
+     * @param string $key
+     * @return Response
+     */
+    public function actionReactivateAccount($id = null, $key = null)
+    {
+        $userId = (int) $id;
+        $authKey = is_string($key) ? trim($key) : '';
+        if ($userId <= 0 || $authKey === '') {
+            Yii::$app->session->setFlash('error', Yii::t('app', 'Nieprawidłowy link reaktywacyjny.'));
+            return $this->redirect(['login']);
+        }
+
+        $user = User::findOne($userId);
+        if ($user === null || !hash_equals((string) $user->auth_key, $authKey)) {
+            Yii::$app->session->setFlash('error', Yii::t('app', 'Nieprawidłowy link reaktywacyjny.'));
+            return $this->redirect(['login']);
+        }
+
+        if (!$user->activateAccount()) {
+            Yii::$app->session->setFlash('error', Yii::t('app', 'Nie udało się reaktywować konta.'));
+            return $this->redirect(['login']);
+        }
+
+        Yii::$app->session->setFlash('success', Yii::t('app', 'Konto zostało reaktywowane. Możesz się zalogować.'));
+
+        return $this->redirect(['login']);
     }
 
     /**

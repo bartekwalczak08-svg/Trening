@@ -94,6 +94,12 @@ class SignupForm extends Model
         $now = time();
         $user->created_at = $now;
         $user->updated_at = $now;
+        if ($user->hasAttribute('status')) {
+            $user->setAttribute('status', User::STATUS_ACTIVE);
+        }
+        if ($user->hasAttribute('delete_requested_at')) {
+            $user->setAttribute('delete_requested_at', null);
+        }
         $user->setPassword($this->password);
         $user->generateAuthKey();
         if ($user->save()) {
