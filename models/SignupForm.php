@@ -30,19 +30,19 @@ class SignupForm extends Model
             [['username', 'email'], 'trim'],
             ['username', 'string', 'min' => 3, 'max' => 255],
             ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_\-ąćęłńóśżźĄĆĘŁŃÓŚŻŹ]+$/u',
-                'message' => 'Dozwolone są tylko litery, cyfry, myślniki i podkreślenia.'],
+                'message' => Yii::t('app', 'Dozwolone są tylko litery, cyfry, myślniki i podkreślenia.')],
             ['username', 'validateUsernameUnique'],
 
             ['password', 'string', 'min' => 6],
             ['password', 'match', 'pattern' => '/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/',
-                'message' => 'Hasło musi zawierać co najmniej jedną wielką literę, jedną cyfrę i jeden znak specjalny.'],
+                'message' => Yii::t('app', 'Hasło musi zawierać co najmniej jedną wielką literę, jedną cyfrę i jeden znak specjalny.')],
             ['password', 'validatePasswordDoesNotContainUsername'],
             ['passwordRepeat', 'compare', 'compareAttribute' => 'password',
-                'message' => 'Hasła nie są takie same.'],
+                'message' => Yii::t('app', 'Hasła nie są takie same.')],
 
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
-            ['email', 'unique', 'targetClass' => '\\app\\models\\User', 'message' => 'Ten adres e-mail jest już zajęty.'],
+            ['email', 'unique', 'targetClass' => '\\app\\models\\User', 'message' => Yii::t('app', 'Ten adres e-mail jest już zajęty.')],
         ];
     }
 
@@ -52,9 +52,9 @@ class SignupForm extends Model
     public function attributeLabels()
     {
         return [
-            'username' => 'Nazwa użytkownika',
-            'password' => 'Hasło',
-            'passwordRepeat' => 'Powtórz hasło',
+            'username' => Yii::t('app', 'Nazwa użytkownika'),
+            'password' => Yii::t('app', 'Hasło'),
+            'passwordRepeat' => Yii::t('app', 'Powtórz hasło'),
             'email' => 'E-mail',
         ];
     }
@@ -65,7 +65,7 @@ class SignupForm extends Model
     public function validateUsernameUnique($attribute, $params)
     {
         if (User::find()->where(['username' => $this->$attribute])->exists()) {
-            $this->addError($attribute, 'Ta nazwa użytkownika jest już zajęta.');
+            $this->addError($attribute, Yii::t('app', 'Ta nazwa użytkownika jest już zajęta.'));
         }
     }
 
@@ -75,7 +75,7 @@ class SignupForm extends Model
     public function validatePasswordDoesNotContainUsername($attribute, $params)
     {
         if (strpos($this->$attribute, $this->username) !== false) {
-            $this->addError($attribute, 'Hasło nie może zawierać nazwy użytkownika.');
+            $this->addError($attribute, Yii::t('app', 'Hasło nie może zawierać nazwy użytkownika.'));
         }
     }
 
@@ -113,7 +113,7 @@ class SignupForm extends Model
         }
 
         if (!$this->hasErrors()) {
-            $this->addError('username', 'Nie udało się utworzyć konta. Spróbuj ponownie.');
+            $this->addError('username', Yii::t('app', 'Nie udało się utworzyć konta. Spróbuj ponownie.'));
         }
 
         return null;

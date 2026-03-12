@@ -7,6 +7,7 @@ namespace app\models\extended;
 
 use app\helpers\WorkoutQueryHelper;
 use app\helpers\WorkoutWeekdayHelper;
+use Yii;
 use yii\db\ActiveQuery;
 
 class ExtendedWorkouts extends \app\models\generated\GeneratedWorkouts
@@ -40,7 +41,9 @@ class ExtendedWorkouts extends \app\models\generated\GeneratedWorkouts
 	public function attributeLabels()
 	{
 		return array_merge(parent::attributeLabels(), [
-			'weekday' => 'Dzień tygodnia',
+			'name' => Yii::t('app', 'Nazwa'),
+			'description' => Yii::t('app', 'Opis'),
+			'weekday' => Yii::t('app', 'Dzień tygodnia'),
 		]);
 	}
 
@@ -48,7 +51,7 @@ class ExtendedWorkouts extends \app\models\generated\GeneratedWorkouts
 	{
 		$options = static::weekdayOptions();
 
-		return $options[$this->weekday] ?? 'Nieznany';
+		return $options[$this->weekday] ?? Yii::t('app', 'Nieznany');
 	}
 
 	/**

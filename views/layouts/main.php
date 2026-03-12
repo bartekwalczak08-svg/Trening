@@ -15,6 +15,7 @@ use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
+use yii\helpers\Url;
 
 ThemeAsset::register($this);
 LayoutAsset::register($this);
@@ -55,18 +56,29 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         'brandUrl' => Yii::$app->homeUrl,
         'options' => ['class' => 'navbar-expand-md fixed-top app-navbar']
     ]);
+    $currentLanguage = (string) Yii::$app->language;
+    $switchToLanguage = $currentLanguage === 'en-US' ? 'pl-PL' : 'en-US';
+    $languageButtonLabel = $currentLanguage === 'en-US' ? 'PL' : 'EN';
+    $languageSwitchUrl = Url::current(['lang' => $switchToLanguage]);
+
     echo '<div class="ms-auto d-flex align-items-center gap-2">';
-    echo Html::button('<i class="bi bi-list"></i> <span>Menu</span>', [
+    echo Html::button('<i class="bi bi-list"></i> <span>' . Yii::t('app', 'Menu') . '</span>', [
         'class' => 'btn btn-sm btn-outline-light mobile-menu-btn d-md-none',
         'type' => 'button',
         'aria-controls' => 'mobile-sidebar',
         'aria-expanded' => 'false',
-        'aria-label' => 'Pokaż lub ukryj menu',
+        'aria-label' => Yii::t('app', 'Pokaż lub ukryj menu'),
     ]);
-    echo Html::button('<i class="bi bi-moon-stars"></i> <span id="theme-toggle-label">Ciemny</span>', [
+    echo Html::a('<i class="bi bi-translate"></i> <span>' . $languageButtonLabel . '</span>', $languageSwitchUrl, [
+        'class' => 'btn btn-sm btn-outline-light language-toggle-btn',
+        'aria-label' => Yii::t('app', 'Przełącz język na {lang}', ['lang' => $switchToLanguage]),
+    ]);
+    echo Html::button('<i class="bi bi-moon-stars"></i> <span id="theme-toggle-label">' . Yii::t('app', 'Ciemny') . '</span>', [
         'id' => 'theme-toggle',
         'class' => 'btn btn-sm btn-outline-light theme-toggle-btn',
         'type' => 'button',
+        'data-light-label' => Yii::t('app', 'Jasny'),
+        'data-dark-label' => Yii::t('app', 'Ciemny'),
     ]);
     echo '</div>';
     // only show brand, menu in sidebar
@@ -80,7 +92,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     'type' => 'button',
     'aria-controls' => 'mobile-sidebar',
     'aria-expanded' => 'false',
-    'aria-label' => 'Otwórz menu',
+    'aria-label' => Yii::t('app', 'Otwórz menu'),
 ]) ?>
 
 <div class="d-flex padding-navbar">
@@ -88,35 +100,35 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         <div id="mobile-sidebar" class="mobile-sidebar-panel d-md-block">
             <?php
             $commonItems = [
-                ['label' => '<i class="bi bi-house me-1"></i>Strona główna', 'url' => ['/site/index'], 'encode' => false],
-                ['label' => '<i class="bi bi-info-circle me-1"></i>O aplikacji', 'url' => ['/site/about'], 'encode' => false],
-                ['label' => '<i class="bi bi-envelope me-1"></i>Kontakt', 'url' => ['/site/contact'], 'encode' => false],
-                ['label' => '<i class="bi bi-inbox me-1"></i>Zgłoszenia', 'url' => ['/site/contact-messages'], 'encode' => false],
+                ['label' => '<i class="bi bi-house me-1"></i>' . Yii::t('app', 'Strona główna'), 'url' => ['/site/index'], 'encode' => false],
+                ['label' => '<i class="bi bi-info-circle me-1"></i>' . Yii::t('app', 'O aplikacji'), 'url' => ['/site/about'], 'encode' => false],
+                ['label' => '<i class="bi bi-envelope me-1"></i>' . Yii::t('app', 'Kontakt'), 'url' => ['/site/contact'], 'encode' => false],
+                ['label' => '<i class="bi bi-inbox me-1"></i>' . Yii::t('app', 'Zgłoszenia'), 'url' => ['/site/contact-messages'], 'encode' => false],
             ];
 
             $guestItems = [
-                ['label' => '<i class="bi bi-box-arrow-in-right me-1"></i>Logowanie', 'url' => ['/site/login'], 'encode' => false],
-                ['label' => '<i class="bi bi-person-plus me-1"></i>Rejestracja', 'url' => ['/site/signup'], 'encode' => false],
+                ['label' => '<i class="bi bi-box-arrow-in-right me-1"></i>' . Yii::t('app', 'Logowanie'), 'url' => ['/site/login'], 'encode' => false],
+                ['label' => '<i class="bi bi-person-plus me-1"></i>' . Yii::t('app', 'Rejestracja'), 'url' => ['/site/signup'], 'encode' => false],
             ];
 
             $identity = Yii::$app->user->identity;
             $logoutUsername = $identity && isset($identity->username) && $identity->username !== ''
                 ? (string) $identity->username
-                : 'użytkownik';
+                : Yii::t('app', 'użytkownik');
 
             $authItems = [
-                ['label' => '<i class="bi bi-person me-1"></i>Profil', 'url' => ['/site/profile'], 'encode' => false],
+                ['label' => '<i class="bi bi-person me-1"></i>' . Yii::t('app', 'Profil'), 'url' => ['/site/profile'], 'encode' => false],
                 '<li><hr class="text-secondary"></li>',
-                '<li><span class="text-secondary small">Planowanie</span></li>',
-                ['label' => '&nbsp;<i class="bi bi-speedometer2"></i> Panel', 'url' => ['/dashboard/index'], 'encode' => false],
-                ['label' => '&nbsp;<i class="bi bi-calendar-event"></i> Kalendarz', 'url' => ['/workout/calendar'], 'encode' => false],
-                ['label' => '&nbsp;<i class="bi bi-activity"></i> Plany treningowe', 'url' => ['/workout/index'], 'encode' => false],
-                ['label' => '&nbsp;<i class="bi bi-graph-up"></i> Progres', 'url' => ['/dashboard/progress'], 'encode' => false],
+                '<li><span class="text-secondary small">' . Yii::t('app', 'Planowanie') . '</span></li>',
+                ['label' => '&nbsp;<i class="bi bi-speedometer2"></i> ' . Yii::t('app', 'Panel'), 'url' => ['/dashboard/index'], 'encode' => false],
+                ['label' => '&nbsp;<i class="bi bi-calendar-event"></i> ' . Yii::t('app', 'Kalendarz'), 'url' => ['/workout/calendar'], 'encode' => false],
+                ['label' => '&nbsp;<i class="bi bi-activity"></i> ' . Yii::t('app', 'Plany treningowe'), 'url' => ['/workout/index'], 'encode' => false],
+                ['label' => '&nbsp;<i class="bi bi-graph-up"></i> ' . Yii::t('app', 'Progres'), 'url' => ['/dashboard/progress'], 'encode' => false],
                 '<li><hr class="text-secondary"></li>',
                 '<li class="nav-item">'
                     . Html::beginForm(['/site/logout'])
                     . Html::submitButton(
-                        '<i class="bi bi-box-arrow-right me-1"></i>Wyloguj (' . Html::encode($logoutUsername) . ')',
+                        '<i class="bi bi-box-arrow-right me-1"></i>' . Yii::t('app', 'Wyloguj') . ' (' . Html::encode($logoutUsername) . ')',
                         ['class' => 'nav-link btn btn-link logout']
                     )
                     . Html::endForm()
@@ -148,33 +160,33 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     <div class="container py-2 py-lg-2">
         <div class="row g-2 align-items-start">
             <div class="col-lg-5">
-                <div class="app-footer-brand">Plan Treningowy</div>
+                <div class="app-footer-brand"><?= Yii::t('app', 'Plan Treningowy') ?></div>
                 <p class="app-footer-text mb-0">
-                    Trenuj regularnie i śledź progres.
+                    <?= Yii::t('app', 'Trenuj regularnie i śledź progres.') ?>
                 </p>
             </div>
 
             <div class="col-sm-6 col-lg-4">
-                <h6 class="app-footer-heading">Skróty</h6>
+                <h6 class="app-footer-heading"><?= Yii::t('app', 'Skróty') ?></h6>
                 <ul class="app-footer-links list-unstyled mb-0">
-                    <li><?= Html::a('Panel', ['/dashboard/index']) ?></li>
-                    <li><?= Html::a('Kalendarz', ['/workout/calendar']) ?></li>
-                    <li><?= Html::a('Plany treningowe', ['/workout/index']) ?></li>
-                    <li><?= Html::a('Kontakt', ['/site/contact']) ?></li>
+                    <li><?= Html::a(Yii::t('app', 'Panel'), ['/dashboard/index']) ?></li>
+                    <li><?= Html::a(Yii::t('app', 'Kalendarz'), ['/workout/calendar']) ?></li>
+                    <li><?= Html::a(Yii::t('app', 'Plany treningowe'), ['/workout/index']) ?></li>
+                    <li><?= Html::a(Yii::t('app', 'Kontakt'), ['/site/contact']) ?></li>
                 </ul>
             </div>
 
             <div class="col-sm-6 col-lg-3">
-                <h6 class="app-footer-heading">Status</h6>
+                <h6 class="app-footer-heading"><?= Yii::t('app', 'Status') ?></h6>
                 <div class="app-footer-pill">
                     <i class="bi bi-shield-check me-1"></i>
-                    <?= Html::encode(Yii::$app->name) ?> aktywny
+                    <?= Yii::t('app', '{appName} aktywny', ['appName' => Html::encode(Yii::$app->name)]) ?>
                 </div>
             </div>
         </div>
 
         <div class="app-footer-bottom mt-2 pt-1 d-flex flex-column flex-md-row justify-content-between gap-1">
-            <span>&copy; <?= date('Y') ?> <?= Html::encode(Yii::$app->name) ?>. Wszelkie prawa zastrzeżone.</span>
+            <span>&copy; <?= date('Y') ?> <?= Html::encode(Yii::$app->name) ?>. <?= Yii::t('app', 'Wszelkie prawa zastrzeżone.') ?></span>
         </div>
     </div>
 </footer>

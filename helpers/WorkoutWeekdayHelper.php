@@ -6,6 +6,7 @@
 namespace app\helpers;
 
 use app\models\Workouts;
+use Yii;
 
 class WorkoutWeekdayHelper
 {
@@ -17,13 +18,13 @@ class WorkoutWeekdayHelper
     public static function weekdayOptions()
     {
         return [
-            Workouts::WEEKDAY_MONDAY => 'Poniedziałek',
-            Workouts::WEEKDAY_TUESDAY => 'Wtorek',
-            Workouts::WEEKDAY_WEDNESDAY => 'Środa',
-            Workouts::WEEKDAY_THURSDAY => 'Czwartek',
-            Workouts::WEEKDAY_FRIDAY => 'Piątek',
-            Workouts::WEEKDAY_SATURDAY => 'Sobota',
-            Workouts::WEEKDAY_SUNDAY => 'Niedziela',
+            Workouts::WEEKDAY_MONDAY => Yii::t('app', 'Poniedziałek'),
+            Workouts::WEEKDAY_TUESDAY => Yii::t('app', 'Wtorek'),
+            Workouts::WEEKDAY_WEDNESDAY => Yii::t('app', 'Środa'),
+            Workouts::WEEKDAY_THURSDAY => Yii::t('app', 'Czwartek'),
+            Workouts::WEEKDAY_FRIDAY => Yii::t('app', 'Piątek'),
+            Workouts::WEEKDAY_SATURDAY => Yii::t('app', 'Sobota'),
+            Workouts::WEEKDAY_SUNDAY => Yii::t('app', 'Niedziela'),
         ];
     }
 

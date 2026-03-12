@@ -11,8 +11,8 @@ use yii\bootstrap5\ActiveForm;
 /** @var yii\web\View $this */
 /** @var app\models\Workouts $model */
 
-$this->title = 'Dodaj trening';
-$this->params['breadcrumbs'][] = ['label' => 'Plany treningowe', 'url' => ['index']];
+$this->title = Yii::t('app', 'Dodaj trening');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Plany treningowe'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -29,8 +29,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
         <div class="form-group">
-            <?= Html::submitButton('Zapisz', ['class' => 'btn btn-success']) ?>
-            <?= Html::a('Anuluj', ['index'], ['class' => 'btn btn-secondary']) ?>
+            <?= Html::submitButton(Yii::t('app', 'Zapisz'), ['class' => 'btn btn-success']) ?>
+            <?= Html::a(Yii::t('app', 'Anuluj'), ['index'], ['class' => 'btn btn-secondary']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>

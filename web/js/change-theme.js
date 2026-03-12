@@ -1,11 +1,13 @@
 (function () {
     var toggleBtn = document.getElementById('theme-toggle');
     var toggleLabel = document.getElementById('theme-toggle-label');
+    var lightLabel = toggleBtn ? (toggleBtn.getAttribute('data-light-label') || 'Jasny') : 'Jasny';
+    var darkLabel = toggleBtn ? (toggleBtn.getAttribute('data-dark-label') || 'Ciemny') : 'Ciemny';
 
     function syncLabel() {
         var current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
         if (toggleLabel) {
-            toggleLabel.textContent = current === 'dark' ? 'Jasny' : 'Ciemny';
+            toggleLabel.textContent = current === 'dark' ? lightLabel : darkLabel;
         }
     }
 

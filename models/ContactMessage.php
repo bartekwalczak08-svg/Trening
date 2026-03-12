@@ -6,6 +6,8 @@
 
 namespace app\models;
 
+use Yii;
+
 /**
  * Model wiadomości z formularza kontaktowego.
  *
@@ -49,14 +51,14 @@ class ContactMessage extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Imię',
+            'name' => Yii::t('app', 'Imię'),
             'email' => 'E-mail',
-            'subject' => 'Temat',
-            'body' => 'Wiadomość',
-            'status' => 'Status',
-            'created_at' => 'Data utworzenia',
-            'updated_at' => 'Data aktualizacji',
-            'deleted_at' => 'Data usunięcia',
+            'subject' => Yii::t('app', 'Temat'),
+            'body' => Yii::t('app', 'Wiadomość'),
+            'status' => Yii::t('app', 'Status'),
+            'created_at' => Yii::t('app', 'Data utworzenia'),
+            'updated_at' => Yii::t('app', 'Data aktualizacji'),
+            'deleted_at' => Yii::t('app', 'Data usunięcia'),
         ];
     }
 
@@ -67,9 +69,9 @@ class ContactMessage extends ActiveRecord
     {
         // User-facing labels for status values stored in DB.
         return [
-            self::STATUS_NEW => 'Nowe',
-            self::STATUS_IN_PROGRESS => 'W trakcie',
-            self::STATUS_CLOSED => 'Zamknięte',
+            self::STATUS_NEW => Yii::t('app', 'Nowe'),
+            self::STATUS_IN_PROGRESS => Yii::t('app', 'W trakcie'),
+            self::STATUS_CLOSED => Yii::t('app', 'Zamknięte'),
         ];
     }
 

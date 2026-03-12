@@ -11,7 +11,9 @@ $db = require __DIR__ . '/db.php';
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'language' => 'pl-PL',
+    'sourceLanguage' => 'pl-PL',
+    'bootstrap' => ['log', 'languageSelector'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -54,6 +56,23 @@ $config = [
             ],
         ],
         'db' => $db,
+        'languageSelector' => [
+            'class' => 'app\\components\\LanguageSelector',
+            'defaultLanguage' => 'pl-PL',
+            'supportedLanguages' => ['pl-PL', 'en-US'],
+        ],
+        'i18n' => [
+            'translations' => [
+                'app*' => [
+                    'class' => 'yii\\i18n\\PhpMessageSource',
+                    'basePath' => '@app/messages',
+                    'sourceLanguage' => 'pl-PL',
+                    'fileMap' => [
+                        'app' => 'app.php',
+                    ],
+                ],
+            ],
+        ],
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,

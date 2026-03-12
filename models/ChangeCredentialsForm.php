@@ -40,18 +40,18 @@ class ChangeCredentialsForm extends Model
             ['email', 'string', 'max' => 255],
             ['email', 'validateEmailUnique'],
             ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_-]+$/',
-                'message' => 'Dozwolone są tylko litery, cyfry, myślniki i podkreślenia.'],
+                'message' => Yii::t('app', 'Dozwolone są tylko litery, cyfry, myślniki i podkreślenia.')],
             ['username', 'validateUsernameUnique'],
 
             ['currentPassword', 'validateCurrentPassword'],
 
             ['newPassword', 'string', 'min' => 6, 'skipOnEmpty' => true],
             ['newPassword', 'match', 'pattern' => '/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/',
-                'message' => 'Hasło musi zawierać co najmniej jedną wielką literę, jedną cyfrę i jeden znak specjalny.',
+                'message' => Yii::t('app', 'Hasło musi zawierać co najmniej jedną wielką literę, jedną cyfrę i jeden znak specjalny.'),
                 'skipOnEmpty' => true],
             ['newPassword', 'validateNewPasswordDoesNotContainUsername'],
             ['newPasswordRepeat', 'compare', 'compareAttribute' => 'newPassword',
-                'message' => 'Hasła nie są takie same.',
+                'message' => Yii::t('app', 'Hasła nie są takie same.'),
                 'skipOnEmpty' => true],
         ];
     }
@@ -63,9 +63,9 @@ class ChangeCredentialsForm extends Model
     {
         return [
             'email' => 'E-mail',
-            'currentPassword' => 'Aktualne hasło',
-            'newPassword' => 'Nowe hasło',
-            'newPasswordRepeat' => 'Powtórz nowe hasło',
+            'currentPassword' => Yii::t('app', 'Aktualne hasło'),
+            'newPassword' => Yii::t('app', 'Nowe hasło'),
+            'newPasswordRepeat' => Yii::t('app', 'Powtórz nowe hasło'),
         ];
     }
 
@@ -85,7 +85,7 @@ class ChangeCredentialsForm extends Model
     {
         if (!$this->hasErrors()) {
             if (!$this->_user || !$this->_user->validatePassword($this->currentPassword)) {
-                $this->addError($attribute, 'Aktualne hasło jest nieprawidłowe.');
+                $this->addError($attribute, Yii::t('app', 'Aktualne hasło jest nieprawidłowe.'));
             }
         }
     }
@@ -97,7 +97,7 @@ class ChangeCredentialsForm extends Model
     {
         $existing = User::find()->where(['username' => $this->username])->andWhere(['<>', 'id', $this->_user->id])->one();
         if ($existing) {
-            $this->addError($attribute, 'Ta nazwa użytkownika jest już zajęta.');
+            $this->addError($attribute, Yii::t('app', 'Ta nazwa użytkownika jest już zajęta.'));
         }
     }
 
@@ -108,7 +108,7 @@ class ChangeCredentialsForm extends Model
     {
         $existing = User::find()->where(['email' => $this->email])->andWhere(['<>', 'id', $this->_user->id])->one();
         if ($existing) {
-            $this->addError($attribute, 'Ten adres e-mail jest już zajęty.');
+            $this->addError($attribute, Yii::t('app', 'Ten adres e-mail jest już zajęty.'));
         }
     }
 
@@ -118,7 +118,7 @@ class ChangeCredentialsForm extends Model
     public function validateNewPasswordDoesNotContainUsername($attribute, $params)
     {
         if ($this->$attribute && strpos($this->$attribute, $this->username) !== false) {
-            $this->addError($attribute, 'Hasło nie może zawierać nazwy użytkownika.');
+            $this->addError($attribute, Yii::t('app', 'Hasło nie może zawierać nazwy użytkownika.'));
         }
     }
 

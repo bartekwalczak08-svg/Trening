@@ -11,13 +11,13 @@
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
-$this->title = 'Rejestracja';
+$this->title = Yii::t('app', 'Rejestracja');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-signup">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Wypełnij poniższe pola, aby utworzyć konto:</p>
+    <p><?= Yii::t('app', 'Wypełnij poniższe pola, aby utworzyć konto:') ?></p>
 
     <?php $form = ActiveForm::begin([
         'id' => 'signup-form',
@@ -30,17 +30,17 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($model, 'email')->input('email') ?>
 
     <?= $form->field($model, 'password', [
-        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"signup-password\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"signup-password\" aria-label=\"" . Yii::t('app', 'Pokaż lub ukryj hasło') . "\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
         'errorOptions' => ['class' => 'invalid-feedback d-block'],
     ])->passwordInput(['id' => 'signup-password']) ?>
 
     <?= $form->field($model, 'passwordRepeat', [
-        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"signup-password-repeat\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"signup-password-repeat\" aria-label=\"" . Yii::t('app', 'Pokaż lub ukryj hasło') . "\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
         'errorOptions' => ['class' => 'invalid-feedback d-block'],
     ])->passwordInput(['id' => 'signup-password-repeat']) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Zarejestruj', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Zarejestruj'), ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

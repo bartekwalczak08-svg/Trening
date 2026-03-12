@@ -137,7 +137,7 @@ class WorkoutController extends Controller
             $model->updated_at = time();
 
             if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Trening został utworzony.');
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Trening został utworzony.'));
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
@@ -162,7 +162,7 @@ class WorkoutController extends Controller
             $model->updated_at = time();
 
             if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Trening został zaktualizowany.');
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Trening został zaktualizowany.'));
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
@@ -188,7 +188,7 @@ class WorkoutController extends Controller
 
         $model->delete();
 
-        Yii::$app->session->setFlash('success', 'Trening został usunięty.');
+        Yii::$app->session->setFlash('success', Yii::t('app', 'Trening został usunięty.'));
         return $this->redirect(['index']);
     }
 
@@ -216,7 +216,7 @@ class WorkoutController extends Controller
 
                 if ($model->save()) {
                     $this->getWorkoutExerciseService()->syncWorkoutCompletionStatus((int) $workout_id, (int) Yii::$app->user->id);
-                    Yii::$app->session->setFlash('success', 'Ćwiczenie zostało dodane.');
+                    Yii::$app->session->setFlash('success', Yii::t('app', 'Ćwiczenie zostało dodane.'));
                     return $this->redirect(['view', 'id' => $workout_id]);
                 }
             }
@@ -241,7 +241,7 @@ class WorkoutController extends Controller
         $model = $this->findWorkoutExerciseModel($id);
 
         if (!$model) {
-            throw new NotFoundHttpException('Ćwiczenie nie zostało znalezione.');
+            throw new NotFoundHttpException(Yii::t('app', 'Ćwiczenie nie zostało znalezione.'));
         }
 
         $workout = $this->findModel($model->workout_id);
@@ -252,7 +252,7 @@ class WorkoutController extends Controller
             if ($this->getWorkoutExerciseService()->hydrateFromPost($model, $post)) {
                 if ($model->save()) {
                     $this->getWorkoutExerciseService()->syncWorkoutCompletionStatus((int) $model->workout_id, (int) Yii::$app->user->id);
-                    Yii::$app->session->setFlash('success', 'Ćwiczenie zostało zaktualizowane.');
+                    Yii::$app->session->setFlash('success', Yii::t('app', 'Ćwiczenie zostało zaktualizowane.'));
                     return $this->redirect(['view', 'id' => $model->workout_id]);
                 }
             }
@@ -273,14 +273,14 @@ class WorkoutController extends Controller
         $model = $this->findWorkoutExerciseModel($id);
 
         if (!$model) {
-            throw new NotFoundHttpException('Ćwiczenie nie zostało znalezione.');
+            throw new NotFoundHttpException(Yii::t('app', 'Ćwiczenie nie zostało znalezione.'));
         }
 
         $workout_id = $model->workout_id;
         $model->delete();
         $this->getWorkoutExerciseService()->syncWorkoutCompletionStatus((int) $workout_id, (int) Yii::$app->user->id);
 
-        Yii::$app->session->setFlash('success', 'Ćwiczenie zostało usunięte.');
+        Yii::$app->session->setFlash('success', Yii::t('app', 'Ćwiczenie zostało usunięte.'));
         return $this->redirect(['view', 'id' => $workout_id]);
     }
 
@@ -324,7 +324,7 @@ class WorkoutController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException('Strona nie została znaleziona.');
+        throw new NotFoundHttpException(Yii::t('app', 'Strona nie została znaleziona.'));
     }
 
     /**
@@ -348,7 +348,7 @@ class WorkoutController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException('Ćwiczenie nie zostało znalezione.');
+        throw new NotFoundHttpException(Yii::t('app', 'Ćwiczenie nie zostało znalezione.'));
     }
 
     /**

@@ -7,6 +7,7 @@ namespace app\services;
 
 use app\models\WorkoutExercises;
 use app\models\Workouts;
+use Yii;
 use yii\db\Expression;
 
 class DashboardService
@@ -135,7 +136,7 @@ class DashboardService
 
             $workoutKey = trim((string) $workout->name);
             if ($workoutKey === '') {
-                $workoutKey = 'Bez nazwy';
+                $workoutKey = Yii::t('app', 'Bez nazwy');
             }
             if (!isset($workoutNameStats[$workoutKey])) {
                 $workoutNameStats[$workoutKey] = [
@@ -209,16 +210,22 @@ class DashboardService
 
         if ($worstWeekday !== null) {
             $recommendations[] = [
-                'title' => 'Najczęściej pomijany dzień',
-                'text' => $worstWeekday['label'] . ' (' . $worstWeekday['rate'] . '% realizacji)',
+                'title' => Yii::t('app', 'Najczęściej pomijany dzień'),
+                'text' => Yii::t('app', '{label} ({rate}% realizacji)', [
+                    'label' => $worstWeekday['label'],
+                    'rate' => $worstWeekday['rate'],
+                ]),
                 'type' => 'warning',
             ];
         }
 
         if ($bestWeekday !== null) {
             $recommendations[] = [
-                'title' => 'Najmocniejszy dzień',
-                'text' => $bestWeekday['label'] . ' (' . $bestWeekday['rate'] . '% realizacji)',
+                'title' => Yii::t('app', 'Najmocniejszy dzień'),
+                'text' => Yii::t('app', '{label} ({rate}% realizacji)', [
+                    'label' => $bestWeekday['label'],
+                    'rate' => $bestWeekday['rate'],
+                ]),
                 'type' => 'success',
             ];
         }
@@ -229,8 +236,11 @@ class DashboardService
             $delta = $lastRate - $prevRate;
             if ($delta !== 0) {
                 $recommendations[] = [
-                    'title' => 'Trend tygodniowy',
-                    'text' => ($delta > 0 ? 'Wzrost' : 'Spadek') . ' vs poprzedni tydzień: ' . ($delta > 0 ? '+' : '') . $delta . ' p.p.',
+                    'title' => Yii::t('app', 'Trend tygodniowy'),
+                    'text' => Yii::t('app', '{direction} vs poprzedni tydzień: {delta} p.p.', [
+                        'direction' => Yii::t('app', $delta > 0 ? 'Wzrost' : 'Spadek'),
+                        'delta' => ($delta > 0 ? '+' : '') . $delta,
+                    ]),
                     'type' => $delta > 0 ? 'success' : 'danger',
                 ];
             }
@@ -252,16 +262,20 @@ class DashboardService
         }
         if ($lowestWorkout !== null) {
             $recommendations[] = [
-                'title' => 'Najczęściej niedomykany trening',
-                'text' => $lowestWorkout['name'] . ' (średnio ' . $lowestWorkout['rate'] . '%, prób: ' . $lowestWorkout['count'] . ')',
+                'title' => Yii::t('app', 'Najczęściej niedomykany trening'),
+                'text' => Yii::t('app', '{name} (średnio {rate}%, prób: {count})', [
+                    'name' => $lowestWorkout['name'],
+                    'rate' => $lowestWorkout['rate'],
+                    'count' => $lowestWorkout['count'],
+                ]),
                 'type' => 'warning',
             ];
         }
 
         if (empty($recommendations)) {
             $recommendations[] = [
-                'title' => 'Brak rekomendacji',
-                'text' => 'Dodaj więcej danych treningowych, aby zobaczyć konkretne wskazówki.',
+                'title' => Yii::t('app', 'Brak rekomendacji'),
+                'text' => Yii::t('app', 'Dodaj więcej danych treningowych, aby zobaczyć konkretne wskazówki.'),
                 'type' => 'info',
             ];
         }
@@ -324,18 +338,18 @@ class DashboardService
     {
         $seconds = (int) $seconds;
         if ($seconds <= 0) {
-            return '0 min';
+            return '0 ' . Yii::t('app', 'min');
         }
 
         $hours = intdiv($seconds, 3600);
         $minutes = intdiv($seconds % 3600, 60);
 
         if ($hours > 0 && $minutes > 0) {
-            return $hours . ' h ' . $minutes . ' min';
+            return $hours . ' ' . Yii::t('app', 'h') . ' ' . $minutes . ' ' . Yii::t('app', 'min');
         }
         if ($hours > 0) {
-            return $hours . ' h';
+            return $hours . ' ' . Yii::t('app', 'h');
         }
-        return max(1, $minutes) . ' min';
+        return max(1, $minutes) . ' ' . Yii::t('app', 'min');
     }
 }

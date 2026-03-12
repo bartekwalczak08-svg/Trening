@@ -11,7 +11,7 @@
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
-$this->title = 'Profil';
+$this->title = Yii::t('app', 'Profil');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-profile">
@@ -24,22 +24,22 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($model, 'email')->input('email') ?>
 
     <?= $form->field($model, 'currentPassword', [
-        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-current-password\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-current-password\" aria-label=\"" . Yii::t('app', 'Pokaż lub ukryj hasło') . "\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
         'errorOptions' => ['class' => 'invalid-feedback d-block'],
     ])->passwordInput(['id' => 'profile-current-password', 'autocomplete' => 'off', 'value' => '']) ?>
 
     <?= $form->field($model, 'newPassword', [
-        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-new-password\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-new-password\" aria-label=\"" . Yii::t('app', 'Pokaż lub ukryj hasło') . "\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
         'errorOptions' => ['class' => 'invalid-feedback d-block'],
     ])->passwordInput(['id' => 'profile-new-password', 'autocomplete' => 'new-password', 'value' => '']) ?>
 
     <?= $form->field($model, 'newPasswordRepeat', [
-        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-new-password-repeat\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+        'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"profile-new-password-repeat\" aria-label=\"" . Yii::t('app', 'Pokaż lub ukryj hasło') . "\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
         'errorOptions' => ['class' => 'invalid-feedback d-block'],
     ])->passwordInput(['id' => 'profile-new-password-repeat', 'autocomplete' => 'new-password', 'value' => '']) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Zapisz zmiany', ['class' => 'btn btn-primary']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Zapisz zmiany'), ['class' => 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
@@ -48,12 +48,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // Dedicated destructive-action block separated from regular profile updates. ?>
     <section class="danger-zone" aria-labelledby="danger-zone-title">
-        <div class="danger-zone-badge mb-2">Strefa niebezpieczna</div>
-        <h5 id="danger-zone-title" class="danger-zone-title mb-2">Usuń konto</h5>
-        <p class="danger-zone-text mb-3">Ta operacja jest nieodwracalna i usunie Twoje dane treningowe.</p>
+        <div class="danger-zone-badge mb-2"><?= Yii::t('app', 'Strefa niebezpieczna') ?></div>
+        <h5 id="danger-zone-title" class="danger-zone-title mb-2"><?= Yii::t('app', 'Usuń konto') ?></h5>
+        <p class="danger-zone-text mb-3"><?= Yii::t('app', 'Ta operacja jest nieodwracalna i usunie Twoje dane treningowe.') ?></p>
         <?= Html::beginForm(['/site/delete-account'], 'post') ?>
             <div class="mb-3">
-                <label class="form-label danger-zone-label" for="delete-account-password">Potwierdź aktualnym hasłem</label>
+            <label class="form-label danger-zone-label" for="delete-account-password"><?= Yii::t('app', 'Potwierdź aktualnym hasłem') ?></label>
                 <div class="input-group">
                     <?php // Password is required by backend before account deletion is executed. ?>
                     <?= Html::passwordInput('delete_account_password', '', [
@@ -61,19 +61,19 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'form-control danger-zone-input',
                         'autocomplete' => 'current-password',
                         'required' => true,
-                        'placeholder' => 'Wpisz aktualne hasło',
+                        'placeholder' => Yii::t('app', 'Wpisz aktualne hasło'),
                     ]) ?>
-                    <button class="btn btn-outline-secondary danger-zone-toggle toggle-password" type="button" data-target="delete-account-password" aria-label="Pokaż lub ukryj hasło">
+                    <button class="btn btn-outline-secondary danger-zone-toggle toggle-password" type="button" data-target="delete-account-password" aria-label="<?= Yii::t('app', 'Pokaż lub ukryj hasło') ?>">
                         <i class="bi bi-eye"></i>
                     </button>
                 </div>
             </div>
             <?= Html::submitButton(
-                'Usuń moje konto',
+                Yii::t('app', 'Usuń moje konto'),
                 [
                     'class' => 'btn btn-danger danger-zone-submit',
                     'data' => [
-                        'confirm' => 'Czy na pewno chcesz trwale usunąć swoje konto?',
+                        'confirm' => Yii::t('app', 'Czy na pewno chcesz trwale usunąć swoje konto?'),
                     ],
                 ]
             ) ?>

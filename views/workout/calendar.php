@@ -11,8 +11,8 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var array<string, app\models\Workouts[]> $groupedWorkouts */
 
-$this->title = 'Kalendarz treningów';
-$this->params['breadcrumbs'][] = ['label' => 'Plany treningowe', 'url' => ['index']];
+$this->title = Yii::t('app', 'Kalendarz treningów');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Plany treningowe'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 WorkoutCalendarAsset::register($this);
 ?>
@@ -21,9 +21,9 @@ WorkoutCalendarAsset::register($this);
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="mb-1"><?= Html::encode($this->title) ?></h1>
-            <p class="calendar-subtitle mb-0">Tygodniowy rozkład treningów</p>
+            <p class="calendar-subtitle mb-0"><?= Yii::t('app', 'Tygodniowy rozkład treningów') ?></p>
         </div>
-        <?= Html::a('<i class="bi bi-plus-circle"></i> Dodaj trening', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('<i class="bi bi-plus-circle"></i> ' . Yii::t('app', 'Dodaj trening'), ['create'], ['class' => 'btn btn-success']) ?>
     </div>
 
     <div class="calendar-grid">
@@ -38,7 +38,7 @@ WorkoutCalendarAsset::register($this);
                 </div>
                 <div class="card-body">
                     <?php if (empty($dayWorkouts)): ?>
-                        <p class="calendar-empty mb-0">Brak treningów.</p>
+                        <p class="calendar-empty mb-0"><?= Yii::t('app', 'Brak treningów.') ?></p>
                     <?php else: ?>
                         <div class="d-grid gap-2">
                             <?php foreach ($dayWorkouts as $workout): ?>
@@ -48,10 +48,10 @@ WorkoutCalendarAsset::register($this);
                                         <small class="calendar-date"><?= date('d.m', $workout->created_at) ?></small>
                                     </div>
                                     <div class="calendar-meta small mt-1">
-                                        <?= (int) $workout->getWorkoutExercises()->count() ?> ćwiczeń
+                                        <?= Yii::t('app', '{count} ćwiczeń', ['count' => (int) $workout->getWorkoutExercises()->count()]) ?>
                                     </div>
                                     <div class="mt-2">
-                                        <?= Html::a('Otwórz', ['view', 'id' => $workout->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
+                                        <?= Html::a(Yii::t('app', 'Otwórz'), ['view', 'id' => $workout->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
                                     </div>
                                 </article>
                             <?php endforeach; ?>

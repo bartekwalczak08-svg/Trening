@@ -12,8 +12,8 @@
 use yii\helpers\Html;
 use yii\bootstrap5\LinkPager;
 
-$this->title = 'Zgłoszenia kontaktowe';
-$this->params['breadcrumbs'][] = ['label' => 'Kontakt', 'url' => ['contact']];
+$this->title = Yii::t('app', 'Zgłoszenia kontaktowe');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Kontakt'), 'url' => ['contact']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -21,29 +21,29 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="mb-0"><?= Html::encode($this->title) ?></h1>
         <div class="d-flex gap-2">
-            <?= Html::a('Nowa wiadomość', ['/site/contact'], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a(Yii::t('app', 'Nowa wiadomość'), ['/site/contact'], ['class' => 'btn btn-primary']) ?>
             <?php if (!Yii::$app->user->isGuest): ?>
-                <?= Html::a('Kosz (' . (int) $trashCount . ')', ['/site/contact-messages-trash'], ['class' => 'btn btn-outline-secondary']) ?>
+                <?= Html::a(Yii::t('app', 'Kosz ({count})', ['count' => (int) $trashCount]), ['/site/contact-messages-trash'], ['class' => 'btn btn-outline-secondary']) ?>
             <?php endif; ?>
         </div>
     </div>
 
     <div class="card p-3">
         <?php if (empty($messages)): ?>
-            <p class="text-muted mb-0">Brak zgłoszeń.</p>
+            <p class="text-muted mb-0"><?= Yii::t('app', 'Brak zgłoszeń.') ?></p>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Data</th>
-                            <th>Nadawca</th>
-                            <th>Temat</th>
-                            <th>Status</th>
-                            <th>Treść</th>
+                            <th><?= Yii::t('app', 'Data') ?></th>
+                            <th><?= Yii::t('app', 'Nadawca') ?></th>
+                            <th><?= Yii::t('app', 'Temat') ?></th>
+                            <th><?= Yii::t('app', 'Status') ?></th>
+                            <th><?= Yii::t('app', 'Treść') ?></th>
                             <?php if (!Yii::$app->user->isGuest): ?>
-                                <th>Akcje</th>
+                                <th><?= Yii::t('app', 'Akcje') ?></th>
                             <?php endif; ?>
                         </tr>
                     </thead>
@@ -76,10 +76,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </td>
                                 <?php if (!Yii::$app->user->isGuest): ?>
                                     <td class="text-nowrap">
-                                        <?= Html::a('Usuń', ['delete-contact-message', 'id' => $item->id], [
+                                        <?= Html::a(Yii::t('app', 'Usuń'), ['delete-contact-message', 'id' => $item->id], [
                                             'class' => 'btn btn-sm btn-outline-danger',
                                             'data' => [
-                                                'confirm' => 'Przenieść zgłoszenie do kosza?',
+                                                'confirm' => Yii::t('app', 'Przenieść zgłoszenie do kosza?'),
                                                 'method' => 'post',
                                             ],
                                         ]) ?>

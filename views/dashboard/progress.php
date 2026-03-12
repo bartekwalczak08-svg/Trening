@@ -17,7 +17,7 @@ use yii\helpers\Html;
 /** @var int[] $weekdayCompletionRate */
 /** @var array<int, array{title:string,text:string,type:string}> $recommendations */
 
-$this->title = 'Progres';
+$this->title = Yii::t('app', 'Progres');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -25,33 +25,33 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="mb-1"><?= Html::encode($this->title) ?></h1>
-            <p class="text-muted mb-0">Analiza wykonania treningów i skuteczności planu.</p>
+            <p class="text-muted mb-0"><?= Yii::t('app', 'Analiza wykonania treningów i skuteczności planu.') ?></p>
         </div>
-        <?= Html::a('<i class="bi bi-activity me-1"></i> Plany treningowe', ['/workout/index'], ['class' => 'btn btn-outline-primary']) ?>
+        <?= Html::a('<i class="bi bi-activity me-1"></i> ' . Yii::t('app', 'Plany treningowe'), ['/workout/index'], ['class' => 'btn btn-outline-primary']) ?>
     </div>
 
     <div class="row g-3 mb-4">
         <div class="col-sm-6 col-xl-3">
             <div class="card p-3 h-100 text-center">
-                <div class="text-muted small">Ukończone</div>
+                <div class="text-muted small"><?= Yii::t('app', 'Ukończone') ?></div>
                 <div class="card-value text-success"><?= (int) $totals['completed'] ?></div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="card p-3 h-100 text-center">
-                <div class="text-muted small">W trakcie</div>
+                <div class="text-muted small"><?= Yii::t('app', 'W trakcie') ?></div>
                 <div class="card-value text-warning"><?= (int) $totals['inProgress'] ?></div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="card p-3 h-100 text-center">
-                <div class="text-muted small">Nierozpoczęte</div>
+                <div class="text-muted small"><?= Yii::t('app', 'Nierozpoczęte') ?></div>
                 <div class="card-value text-danger"><?= (int) $totals['notStarted'] ?></div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="card p-3 h-100 text-center">
-                <div class="text-muted small">Skuteczność</div>
+                <div class="text-muted small"><?= Yii::t('app', 'Skuteczność') ?></div>
                 <div class="card-value text-info"><?= (int) $totals['completionPercent'] ?>%</div>
             </div>
         </div>
@@ -59,8 +59,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="card p-3 mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="h5 mb-0">Rekomendacje tygodnia</h3>
-            <span class="badge bg-primary-subtle text-primary-emphasis border">Co poprawić</span>
+            <h3 class="h5 mb-0"><?= Yii::t('app', 'Rekomendacje tygodnia') ?></h3>
+            <span class="badge bg-primary-subtle text-primary-emphasis border"><?= Yii::t('app', 'Co poprawić') ?></span>
         </div>
         <div class="row g-3">
             <?php foreach ($recommendations as $item): ?>
@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <article class="border rounded p-3 h-100">
                         <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                             <strong class="small"><?= Html::encode($item['title']) ?></strong>
-                            <span class="badge <?= $badgeClass ?>">Wskazówka</span>
+                            <span class="badge <?= $badgeClass ?>"><?= Yii::t('app', 'Wskazówka') ?></span>
                         </div>
                         <p class="small mb-0 text-muted"><?= Html::encode($item['text']) ?></p>
                     </article>
@@ -92,18 +92,18 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="row g-4">
         <div class="col-lg-8">
             <div class="card p-3 h-100">
-                <h3 class="h5 mb-3">Trend tygodniowy</h3>
+                <h3 class="h5 mb-3"><?= Yii::t('app', 'Trend tygodniowy') ?></h3>
                 <?php if (empty($weeklyLabels)): ?>
-                    <p class="text-muted mb-0">Za mało danych do trendu tygodniowego.</p>
+                    <p class="text-muted mb-0"><?= Yii::t('app', 'Za mało danych do trendu tygodniowego.') ?></p>
                 <?php else: ?>
                     <div class="table-responsive">
                         <table class="table table-sm align-middle mb-0">
                             <thead>
                                 <tr>
-                                    <th>Tydzień</th>
-                                    <th>Zaplanowane</th>
-                                    <th>Ukończone</th>
-                                    <th>Procent</th>
+                                    <th><?= Yii::t('app', 'Tydzień') ?></th>
+                                    <th><?= Yii::t('app', 'Zaplanowane') ?></th>
+                                    <th><?= Yii::t('app', 'Ukończone') ?></th>
+                                    <th><?= Yii::t('app', 'Procent') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -134,7 +134,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <div class="col-lg-4">
             <div class="card p-3 h-100">
-                <h3 class="h5 mb-3">Skuteczność wg dnia</h3>
+                <h3 class="h5 mb-3"><?= Yii::t('app', 'Skuteczność wg dnia') ?></h3>
                 <ul class="list-group list-group-flush">
                     <?php foreach ($weekdayLabels as $i => $day): ?>
                         <?php $rate = (int) $weekdayCompletionRate[$i]; ?>
@@ -154,17 +154,17 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <div class="card p-3 mt-4">
-        <h3 class="h5 mb-3">Do domknięcia</h3>
+        <h3 class="h5 mb-3"><?= Yii::t('app', 'Do domknięcia') ?></h3>
         <?php if (empty($incompleteWorkouts)): ?>
-            <p class="text-muted mb-0">Świetna robota. Wszystkie treningi są ukończone.</p>
+            <p class="text-muted mb-0"><?= Yii::t('app', 'Świetna robota. Wszystkie treningi są ukończone.') ?></p>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>Trening</th>
-                            <th>Dzień</th>
-                            <th>Postęp</th>
+                            <th><?= Yii::t('app', 'Trening') ?></th>
+                            <th><?= Yii::t('app', 'Dzień') ?></th>
+                            <th><?= Yii::t('app', 'Postęp') ?></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -186,7 +186,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <small class="text-muted"><?= $done ?>/<?= $total ?></small>
                                     </div>
                                 </td>
-                                <td class="text-end"><?= Html::a('Otwórz', ['/workout/view', 'id' => $item['id']], ['class' => 'btn btn-sm btn-outline-primary']) ?></td>
+                                <td class="text-end"><?= Html::a(Yii::t('app', 'Otwórz'), ['/workout/view', 'id' => $item['id']], ['class' => 'btn btn-sm btn-outline-primary']) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

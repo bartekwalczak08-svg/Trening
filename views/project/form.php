@@ -22,7 +22,7 @@ $form = ActiveForm::begin(
 );
 ?>
 
-<h3 class="m-0 mt-1">Utwórz projekt</h3>
+<h3 class="m-0 mt-1"><?= Yii::t('app', 'Utwórz projekt') ?></h3>
 <hr class="mt-1"/>
 <?= $form->field($project, 'title')->input('text') ?>
 <?= $form->field($project, 'description')->input('text') ?>
@@ -33,7 +33,7 @@ $form = ActiveForm::begin(
 
 <?php
 echo Html::submitButton(
-    'Utwórz',
+    Yii::t('app', 'Utwórz'),
     ['class' => 'btn btn-success float-right mb-2']
 );
 ActiveForm::end();

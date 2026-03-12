@@ -65,11 +65,11 @@ class ContactForm extends Model
     public function attributeLabels()
     {
         return [
-            'name' => 'Imię',
+            'name' => Yii::t('app', 'Imię'),
             'email' => 'E-mail',
-            'subject' => 'Temat',
-            'body' => 'Wiadomość',
-            'verifyCode' => 'Kod weryfikacyjny',
+            'subject' => Yii::t('app', 'Temat'),
+            'body' => Yii::t('app', 'Wiadomość'),
+            'verifyCode' => Yii::t('app', 'Kod weryfikacyjny'),
         ];
     }
 
@@ -123,7 +123,7 @@ class ContactForm extends Model
         $matchedByLeetAlternatives = $this->containsBlockedWordWithLeetAlternatives($value, $blockedWords);
 
         if ($matchedByRegex || $matchedByCollapsedText || $matchedByDigitNoise || $matchedByFuzzySubsequence || $matchedByMixedScriptSubstitution || $matchedByLeetAlternatives) {
-            $this->addError($attribute, 'Wiadomość nie może zawierać wulgaryzmów.');
+            $this->addError($attribute, Yii::t('app', 'Wiadomość nie może zawierać wulgaryzmów.'));
         }
     }
 

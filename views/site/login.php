@@ -13,13 +13,13 @@
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
-$this->title = 'Logowanie';
+$this->title = Yii::t('app', 'Logowanie');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-login">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Wypełnij pola, aby się zalogować (możesz podać nazwę użytkownika lub e-mail):</p>
+    <p><?= Yii::t('app', 'Wypełnij pola, aby się zalogować (możesz podać nazwę użytkownika lub e-mail):') ?></p>
 
     <div class="row">
         <div class="col-lg-5">
@@ -34,10 +34,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ]); ?>
 
-            <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'nazwa użytkownika lub e-mail']) ?>
+            <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => Yii::t('app', 'nazwa użytkownika lub e-mail')]) ?>
 
             <?= $form->field($model, 'password', [
-                'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"login-password\" aria-label=\"Pokaż lub ukryj hasło\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
+                'template' => "{label}\n<div class=\"input-group\">{input}<button class=\"btn btn-outline-secondary toggle-password\" type=\"button\" data-target=\"login-password\" aria-label=\"" . Yii::t('app', 'Pokaż lub ukryj hasło') . "\"><i class=\"bi bi-eye\"></i></button></div>\n{error}",
                 'errorOptions' => ['class' => 'invalid-feedback d-block'],
             ])->passwordInput(['id' => 'login-password']) ?>
 
@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <div class="form-group">
                 <div>
-                    <?= Html::submitButton('Zaloguj', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+                    <?= Html::submitButton(Yii::t('app', 'Zaloguj'), ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
                 </div>
             </div>
 
@@ -81,8 +81,7 @@ JS
 ); ?>
 
             <div class="text-muted">
-                Możesz zalogować się danymi utworzonymi przy rejestracji. Dla wygody migracja dodaje użytkownika
-                "admin" z hasłem "admin123".
+                <?= Yii::t('app', 'Możesz zalogować się danymi utworzonymi przy rejestracji. Dla wygody migracja dodaje użytkownika "admin" z hasłem "admin123".') ?>
             </div>
 
         </div>

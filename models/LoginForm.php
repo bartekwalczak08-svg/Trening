@@ -56,7 +56,7 @@ class LoginForm extends Model
             $user = $this->getUser();
 
             if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Nieprawidłowa nazwa użytkownika, e-mail lub hasło.');
+                $this->addError($attribute, Yii::t('app', 'Nieprawidłowa nazwa użytkownika, e-mail lub hasło.'));
             }
         }
     }
@@ -68,11 +68,11 @@ class LoginForm extends Model
     {
         if (strpos($this->$attribute, '@') !== false) {
             if (!filter_var($this->$attribute, FILTER_VALIDATE_EMAIL)) {
-                $this->addError($attribute, 'Nieprawidłowy adres e-mail.');
+                $this->addError($attribute, Yii::t('app', 'Nieprawidłowy adres e-mail.'));
             }
         } else {
             if (!preg_match('/^[a-zA-Z0-9_-]+$/', $this->$attribute)) {
-                $this->addError($attribute, 'Dozwolone są tylko litery, cyfry, myślniki i podkreślenia.');
+                $this->addError($attribute, Yii::t('app', 'Dozwolone są tylko litery, cyfry, myślniki i podkreślenia.'));
             }
         }
     }
@@ -99,7 +99,7 @@ class LoginForm extends Model
     public function attributeLabels()
     {
         return [
-            'username' => 'Nazwa użytkownika lub e-mail',
+            'username' => Yii::t('app', 'Nazwa użytkownika lub e-mail'),
         ];
     }
 
