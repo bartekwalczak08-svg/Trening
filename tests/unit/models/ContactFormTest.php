@@ -247,6 +247,134 @@ class ContactFormTest extends \Codeception\Test\Unit
         }
     }
 
+    public function testBlacklistBlocksReportedMixedScriptKurwaBypass()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['kurwa'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'Ӄひя🆆𖦹';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksMixedScriptsAndSymbolKurwaVariant()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['kurwa'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'KひЯ🆆𖦹';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksMultiScriptKurwaVariantWithoutLatin()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['kurwa'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'Ӄひя𝕎𖦹';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksReportedTurnedKMixedScriptKurwaBypass()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['kurwa'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'ʞひя🆆𖦹';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksWildcardOnlyMixedScriptForAnyBlockedWord()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['cwel'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'ʗひя𖦹';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksReportedMixedConfusableCweluBypass()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['cwelu'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'ꉔω|ℰ𝓛u';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistBlocksSeparatorHeavyMixedScriptCweluBypass()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['cwelu'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'ꓚ-ω-|-ℰ-𝓛-u';
+
+            verify($model->validate(['body']))->false();
+            verify($model->getErrors('body'))->notEmpty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
+    public function testBlacklistAllowsPureSingleScriptCyrillicPhrase()
+    {
+        $original = \Yii::$app->params['contactBlacklistWords'] ?? [];
+        \Yii::$app->params['contactBlacklistWords'] = ['kurwa'];
+
+        try {
+            $model = new ContactForm();
+            $model->body = 'это просто обычное сообщение';
+
+            verify($model->validate(['body']))->true();
+            verify($model->getErrors('body'))->empty();
+        } finally {
+            \Yii::$app->params['contactBlacklistWords'] = $original;
+        }
+    }
+
     public function testBlacklistAllowsPureNonLatinPhrase()
     {
         $original = \Yii::$app->params['contactBlacklistWords'] ?? [];

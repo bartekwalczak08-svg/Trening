@@ -464,8 +464,9 @@ class ContactForm extends Model
             $text = strtolower($text);
         }
 
-        // Guard to avoid false positives on pure non-Latin messages.
-        if (preg_match('/[a-z]/', $text) !== 1 || preg_match('/[^\x00-\x7F]/u', $text) !== 1) {
+        // Only inspect tokens that look like deliberate Unicode obfuscation.
+        // This keeps pure single-script messages (e.g. Hebrew/Cyrillic sentences) allowed.
+        if (!$this->hasSuspiciousUnicodeObfuscationTokens($text)) {
             return false;
         }
 
@@ -475,14 +476,19 @@ class ContactForm extends Model
             return false;
         }
 
-        $tokens = preg_split('/[^a-z0-9?]+/i', $masked, -1, PREG_SPLIT_NO_EMPTY);
-        if (!is_array($tokens) || empty($tokens)) {
+        $candidates = $this->buildMixedScriptWildcardCandidates($masked);
+        if (empty($candidates)) {
             return false;
         }
 
-        foreach ($tokens as $token) {
-            // Mixed-script bypass token must contain both ASCII letters/digits and wildcard marks.
-            if (strpos($token, '?') === false || preg_match('/[a-z0-9]/i', $token) !== 1) {
+        foreach ($candidates as $token) {
+            // Evaluate suspicious tokens containing wildcard marks, even when no ASCII survived.
+            if (strpos($token, '?') === false) {
+                continue;
+            }
+
+            // Very short wildcard-only tokens are too ambiguous and can raise false positives.
+            if (preg_match('/[a-z0-9]/i', $token) !== 1 && strlen($token) < 4) {
                 continue;
             }
 
@@ -505,6 +511,11 @@ class ContactForm extends Model
                     return true;
                 }
 
+                // Fallback for separator-heavy obfuscation where only a wildcard skeleton remains.
+                if ($this->matchesWithWildcardAndMaxGap($token, $lettersOnly, 3)) {
+                    return true;
+                }
+
                 // Fallback for mixed-script replacements that collapse to missing tail letters.
                 $withoutWildcards = str_replace('?', '', $token);
                 if ($withoutWildcards !== '') {
@@ -517,6 +528,201 @@ class ContactForm extends Model
         }
 
         return false;
+    }
+
+    /**
+     * Buduje kandydatów tokenów dla wykrywania mixed-script po zamianie znaków na wildcardy.
+     *
+     * Dodaje także wersję "szkieletu" bez separatorów, aby łapać rozbijanie słowa
+     * symbolami typu "-", "|" itp.
+     *
+     * @return string[]
+     */
+    private function buildMixedScriptWildcardCandidates($masked)
+    {
+        $value = (string) $masked;
+        if ($value === '') {
+            return [];
+        }
+
+        $tokens = preg_split('/[^a-z0-9?]+/i', $value, -1, PREG_SPLIT_NO_EMPTY);
+        if (!is_array($tokens)) {
+            $tokens = [];
+        }
+
+        $candidates = [];
+        foreach ($tokens as $token) {
+            $normalized = strtolower((string) $token);
+            if ($normalized !== '') {
+                $candidates[] = $normalized;
+            }
+        }
+
+        $wordChunks = preg_split('/\s+/u', $value, -1, PREG_SPLIT_NO_EMPTY);
+        if (!is_array($wordChunks)) {
+            $wordChunks = [];
+        }
+
+        foreach ($wordChunks as $chunk) {
+            $skeleton = preg_replace('/[^a-z0-9?]+/i', '', strtolower((string) $chunk));
+            if ($skeleton !== null && $skeleton !== '') {
+                $candidates[] = $skeleton;
+            }
+        }
+
+        return array_values(array_unique($candidates));
+    }
+
+    /**
+     * Sprawdza dopasowanie needle w tokenie z wildcardami i ograniczoną przerwą.
+     */
+    private function matchesWithWildcardAndMaxGap($haystack, $needle, $maxGap)
+    {
+        $haystack = (string) $haystack;
+        $needle = (string) $needle;
+        $maxGap = (int) $maxGap;
+
+        if ($haystack === '' || $needle === '') {
+            return false;
+        }
+
+        $haystackLength = strlen($haystack);
+        $needleLength = strlen($needle);
+        if ($needleLength > $haystackLength) {
+            return false;
+        }
+
+        for ($start = 0; $start < $haystackLength; $start++) {
+            if ($haystack[$start] !== '?' && $haystack[$start] !== $needle[0]) {
+                continue;
+            }
+
+            $currentPos = $start;
+            $matched = true;
+
+            for ($i = 1; $i < $needleLength; $i++) {
+                $foundAt = -1;
+                $searchFrom = $currentPos + 1;
+                $searchTo = min($haystackLength - 1, $currentPos + $maxGap + 1);
+
+                for ($j = $searchFrom; $j <= $searchTo; $j++) {
+                    if ($haystack[$j] === '?' || $haystack[$j] === $needle[$i]) {
+                        $foundAt = $j;
+                        break;
+                    }
+                }
+
+                if ($foundAt === -1) {
+                    $matched = false;
+                    break;
+                }
+
+                $currentPos = $foundAt;
+            }
+
+            if ($matched) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Wykrywa podejrzane tokeny Unicode typowe dla obfuskacji blacklisty.
+     */
+    private function hasSuspiciousUnicodeObfuscationTokens($text)
+    {
+        $value = (string) $text;
+
+        $tokens = preg_split('/[^\p{L}\p{N}\p{So}\p{Sk}\p{Mn}\p{Mc}\p{Me}]+/u', (string) $text, -1, PREG_SPLIT_NO_EMPTY);
+        if (!is_array($tokens) || empty($tokens)) {
+            $tokens = [];
+        }
+
+        foreach ($tokens as $token) {
+            if ($this->isSuspiciousUnicodeToken((string) $token)) {
+                return true;
+            }
+        }
+
+        // Handle separator-heavy obfuscation spread across a single chunk.
+        $chunks = preg_split('/\s+/u', $value, -1, PREG_SPLIT_NO_EMPTY);
+        if (!is_array($chunks)) {
+            $chunks = [];
+        }
+
+        foreach ($chunks as $chunk) {
+            $chunkValue = (string) $chunk;
+            if ($chunkValue === '' || preg_match('/[^\x00-\x7F]/u', $chunkValue) !== 1) {
+                continue;
+            }
+
+            if ($this->countUnicodeScripts($chunkValue) >= 2) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Token uznajemy za podejrzany, jeśli miesza skrypty lub litery z symbolami/cyframi.
+     */
+    private function isSuspiciousUnicodeToken($token)
+    {
+        $value = (string) $token;
+        if ($value === '' || preg_match('/[^\x00-\x7F]/u', $value) !== 1) {
+            return false;
+        }
+
+        $hasLatin = preg_match('/\p{Latin}/u', $value) === 1;
+        $withoutLatin = preg_replace('/\p{Latin}+/u', '', $value);
+        $hasNonLatinLetter = $withoutLatin !== null && preg_match('/\p{L}/u', $withoutLatin) === 1;
+        $hasDigit = preg_match('/\d/u', $value) === 1;
+        $hasSymbol = preg_match('/[\p{So}\p{Sk}]/u', $value) === 1;
+
+        if (($hasLatin && $hasNonLatinLetter) || ($hasNonLatinLetter && ($hasDigit || $hasSymbol))) {
+            return true;
+        }
+
+        return $this->countUnicodeScripts($value) >= 2;
+    }
+
+    /**
+     * Liczy liczbę różnych skryptów literowych obecnych w tokenie.
+     */
+    private function countUnicodeScripts($token)
+    {
+        $value = (string) $token;
+        if ($value === '') {
+            return 0;
+        }
+
+        $scriptPatterns = [
+            '/\p{Latin}/u',
+            '/\p{Cyrillic}/u',
+            '/\p{Greek}/u',
+            '/\p{Armenian}/u',
+            '/\p{Hebrew}/u',
+            '/\p{Arabic}/u',
+            '/\p{Devanagari}/u',
+            '/\p{Bengali}/u',
+            '/\p{Georgian}/u',
+            '/\p{Thai}/u',
+            '/\p{Hiragana}/u',
+            '/\p{Katakana}/u',
+            '/\p{Han}/u',
+        ];
+
+        $count = 0;
+        foreach ($scriptPatterns as $pattern) {
+            if (preg_match($pattern, $value) === 1) {
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /**
@@ -757,7 +963,9 @@ class ContactForm extends Model
             'ɢ' => 'g', 'ʜ' => 'h', 'ɪ' => 'i', 'ᴊ' => 'j', 'ᴋ' => 'k', 'ʟ' => 'l',
             'ᴍ' => 'm', 'ɴ' => 'n', 'ᴏ' => 'o', 'ᴘ' => 'p', 'ǫ' => 'q', 'ʀ' => 'r',
             'ꜱ' => 's', 'ᴛ' => 't', 'ᴜ' => 'u', 'ᴠ' => 'v', 'ᴡ' => 'w', 'x' => 'x',
-            'ʏ' => 'y', 'ᴢ' => 'z',
+            'ʏ' => 'y', 'ᴢ' => 'z', 'ʞ' => 'k',
+            // Targeted confusables from newly reported bypass variants.
+            'ꉔ' => 'c',
         ]);
 
         // Map common Cyrillic/Greek homoglyphs to Latin lookalikes.
@@ -768,12 +976,15 @@ class ContactForm extends Model
             'т' => 't', 'Т' => 't', 'в' => 'b', 'В' => 'b', 'н' => 'h', 'Н' => 'h',
             'г' => 'r', 'Г' => 'r',
             'і' => 'i', 'І' => 'i', 'ї' => 'i', 'Ї' => 'i', 'ј' => 'j', 'Ј' => 'j',
-            'ӏ' => 'l',
+            'ӏ' => 'l', 'Ӄ' => 'k', 'ӄ' => 'k', 'я' => 'r', 'Я' => 'r',
+            // Targeted confusables observed in production bypass attempts.
+            'ひ' => 'u', '𖦹' => 'a',
             'α' => 'a', 'Α' => 'a', 'β' => 'b', 'Β' => 'b', 'δ' => 'd', 'Δ' => 'd',
             'ε' => 'e', 'Ε' => 'e', 'ι' => 'i', 'Ι' => 'i', 'κ' => 'k', 'Κ' => 'k',
             'γ' => 'r', 'Γ' => 'r',
             'ν' => 'v', 'Ν' => 'v', 'ο' => 'o', 'Ο' => 'o', 'ρ' => 'p', 'Ρ' => 'p',
             'τ' => 't', 'Τ' => 't', 'υ' => 'u', 'Υ' => 'u', 'χ' => 'x', 'Χ' => 'x',
+            'ω' => 'w', 'Ω' => 'w',
         ]);
 
         $normalizedSpaces = preg_replace('/\p{Z}+/u', ' ', $value);
