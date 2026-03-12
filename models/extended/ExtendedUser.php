@@ -8,7 +8,7 @@ namespace app\models\extended;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 
-class User extends \app\models\generated\User implements \yii\web\IdentityInterface
+class ExtendedUser extends \app\models\generated\GeneratedUser implements \yii\web\IdentityInterface
 {
     /**
      * {@inheritdoc}

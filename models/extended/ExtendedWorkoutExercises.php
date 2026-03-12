@@ -5,6 +5,6 @@
  */
 namespace app\models\extended;
 
-class WorkoutExercises extends \app\models\generated\WorkoutExercises
+class ExtendedWorkoutExercises extends \app\models\generated\GeneratedWorkoutExercises
 {
 }

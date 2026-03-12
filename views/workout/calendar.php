@@ -5,6 +5,7 @@
  */
 
 
+use app\assets\WorkoutCalendarAsset;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
@@ -13,6 +14,7 @@ use yii\helpers\Html;
 $this->title = 'Kalendarz treningów';
 $this->params['breadcrumbs'][] = ['label' => 'Plany treningowe', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+WorkoutCalendarAsset::register($this);
 ?>
 
 <div class="workout-calendar">
@@ -61,42 +63,3 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 
-<style>
-.calendar-grid {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-@media (min-width: 768px) {
-    .calendar-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-@media (min-width: 1200px) {
-    .calendar-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-}
-.calendar-day {
-    border-radius: 12px;
-    border: 1px solid rgba(0,0,0,0.08);
-}
-.calendar-item {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-}
-.calendar-item-title {
-    color: var(--text, #e8e8ff);
-}
-.calendar-subtitle,
-.calendar-empty,
-.calendar-meta,
-.calendar-date {
-    color: var(--text-muted, #a0a0cc);
-}
-.calendar-count {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text, #e8e8ff);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-}
-</style>

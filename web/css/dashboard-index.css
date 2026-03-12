@@ -1,0 +1,94 @@
+/* Property order: layout -> box model -> typography -> visual -> motion */
+.dashboard-panel .hero {
+  padding: 1.25rem;
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  border-radius: 16px;
+  background: linear-gradient(120deg, rgba(0, 212, 255, 0.12), rgba(57, 255, 170, 0.08));
+}
+
+.dashboard-panel .hero-content {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dashboard-panel .eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted, #a0a0cc);
+}
+
+.dashboard-panel .hero-title {
+  font-weight: 700;
+  color: var(--text, #e8e8ff);
+}
+
+.dashboard-panel .hero-subtitle,
+.dashboard-panel .panel-muted {
+  color: var(--text-muted, #a0a0cc);
+}
+
+.dashboard-panel .kpi-card {
+  padding: 1rem;
+  border: 1px solid var(--border, #dbe4ef);
+  border-radius: 14px;
+  background: var(--surface-soft, #f8fafc);
+}
+
+.dashboard-panel .kpi-label {
+  font-size: 0.85rem;
+  color: var(--text-muted, #a0a0cc);
+}
+
+.dashboard-panel .kpi-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text, #e8e8ff);
+}
+
+.dashboard-panel .panel-card {
+  border: 1px solid var(--border, #dbe4ef);
+  border-radius: 14px;
+  background: var(--card-bg, #ffffff);
+}
+
+.dashboard-panel .panel-card .card-header,
+.dashboard-panel .panel-card .card-footer,
+.dashboard-panel .activity-item {
+  border-color: var(--border, #dbe4ef);
+  background: transparent;
+}
+
+html[data-theme='dark'] .dashboard-panel .kpi-card {
+  border-color: #334155;
+  background: rgba(15, 23, 42, 0.75);
+}
+
+html[data-theme='dark'] .dashboard-panel .panel-card {
+  border-color: #334155;
+  background: rgba(17, 24, 39, 0.92);
+}
+
+html[data-theme='dark'] .dashboard-panel .panel-card .card-header,
+html[data-theme='dark'] .dashboard-panel .panel-card .card-footer,
+html[data-theme='dark'] .dashboard-panel .activity-item {
+  border-color: #334155;
+}
+
+.dashboard-panel .activity-title {
+  font-weight: 600;
+  color: var(--text, #e8e8ff);
+}
+
+@media (max-width: 768px) {
+  .dashboard-panel .hero {
+    padding: 1rem;
+  }
+
+  .dashboard-panel .kpi-value {
+    font-size: 1.35rem;
+  }
+}

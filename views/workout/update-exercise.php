@@ -5,6 +5,7 @@
  */
 
 
+use app\assets\WorkoutExerciseFormAsset;
 use yii\helpers\Html;
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\ArrayHelper;
@@ -18,6 +19,7 @@ $this->title = 'Edytuj ćwiczenie';
 $this->params['breadcrumbs'][] = ['label' => 'Plany treningowe', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $workout->name, 'url' => ['view', 'id' => $workout->id]];
 $this->params['breadcrumbs'][] = 'Edytuj';
+WorkoutExerciseFormAsset::register($this);
 
 $durationUnit = 'sec';
 $durationValue = $model->duration_sec;
@@ -125,27 +127,4 @@ if ($durationValue !== null && $durationUnit === 'min') {
         </div>
     </div>
 </div>
-
-<style>
-.workout-exercise-update .card {
-    border-radius: 15px;
-    border: none;
-}
-.workout-exercise-update .card-header {
-    border-radius: 15px 15px 0 0 !important;
-}
-.workout-exercise-update .form-control-lg,
-.workout-exercise-update .form-select-lg {
-    border-radius: 10px;
-}
-.workout-exercise-update .input-group-text {
-    border-radius: 10px;
-}
-.workout-exercise-update .btn {
-    border-radius: 10px;
-}
-.workout-exercise-update .workout-form-muted {
-    color: var(--text-muted, #a0a0cc);
-}
-</style>
 

@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Opis: Model domenowy uywany w aplikacji.
+ * Auto-generated model based on database schema.
  */
-
-
-namespace app\models;
+namespace app\models\generated;
 
 use Yii;
 
@@ -16,23 +14,19 @@ use Yii;
  * @property int $workout_id
  * @property int $exercise_id
  * @property int|null $sets
- * @property int|null $reps
+ * @property string|null $reps
  * @property int|null $duration_sec
  * @property int|null $rest_sec
  * @property int|null $position
+ * @property int $is_completed
  *
- * @property Exercises $exercise
- * @property Workouts $workout
+ * @property GeneratedExercises $exercise
+ * @property GeneratedWorkouts $workout
  */
-/**
- * Model łączący trening z konkretnym ćwiczeniem i jego parametrami wykonania.
- */
-class WorkoutExercise extends \yii\db\ActiveRecord
+class GeneratedWorkoutExercises extends \app\models\ActiveRecord
 {
-
-
     /**
-     * Nazwa tabeli mapującej ćwiczenia przypisane do treningów.
+     * {@inheritdoc}
      */
     public static function tableName()
     {
@@ -40,23 +34,25 @@ class WorkoutExercise extends \yii\db\ActiveRecord
     }
 
     /**
-     * Reguły walidacji parametrów ćwiczenia (serie, powtórzenia, czas, kolejność).
+     * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['sets', 'reps', 'duration_sec'], 'default', 'value' => null],
+            [['sets', 'duration_sec'], 'default', 'value' => null],
             [['rest_sec'], 'default', 'value' => 60],
             [['position'], 'default', 'value' => 0],
+            [['is_completed'], 'default', 'value' => 0],
             [['workout_id', 'exercise_id'], 'required'],
-            [['workout_id', 'exercise_id', 'sets', 'reps', 'duration_sec', 'rest_sec', 'position'], 'integer'],
-            [['workout_id'], 'exist', 'skipOnError' => true, 'targetClass' => Workouts::class, 'targetAttribute' => ['workout_id' => 'id']],
-            [['exercise_id'], 'exist', 'skipOnError' => true, 'targetClass' => Exercises::class, 'targetAttribute' => ['exercise_id' => 'id']],
+            [['workout_id', 'exercise_id', 'sets', 'duration_sec', 'rest_sec', 'position', 'is_completed'], 'integer'],
+            [['reps'], 'string'],
+            [['exercise_id'], 'exist', 'skipOnError' => true, 'targetClass' => GeneratedExercises::class, 'targetAttribute' => ['exercise_id' => 'id']],
+            [['workout_id'], 'exist', 'skipOnError' => true, 'targetClass' => GeneratedWorkouts::class, 'targetAttribute' => ['workout_id' => 'id']],
         ];
     }
 
     /**
-     * Etykiety atrybutów modelu.
+     * {@inheritdoc}
      */
     public function attributeLabels()
     {
@@ -69,27 +65,27 @@ class WorkoutExercise extends \yii\db\ActiveRecord
             'duration_sec' => 'Czas trwania (s)',
             'rest_sec' => 'Przerwa (s)',
             'position' => 'Pozycja',
+            'is_completed' => 'Ukończono',
         ];
     }
 
     /**
-     * Relacja do słownika ćwiczeń.
+    * Gets query for [[GeneratedExercise]].
      *
      * @return \yii\db\ActiveQuery
      */
     public function getExercise()
     {
-        return $this->hasOne(Exercises::class, ['id' => 'exercise_id']);
+        return $this->hasOne(GeneratedExercises::class, ['id' => 'exercise_id']);
     }
 
     /**
-     * Relacja do treningu, do którego przypisano to ćwiczenie.
+    * Gets query for [[GeneratedWorkout]].
      *
      * @return \yii\db\ActiveQuery
      */
     public function getWorkout()
     {
-        return $this->hasOne(Workouts::class, ['id' => 'workout_id']);
+        return $this->hasOne(GeneratedWorkouts::class, ['id' => 'workout_id']);
     }
-
 }

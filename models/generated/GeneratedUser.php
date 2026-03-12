@@ -19,7 +19,7 @@ use Yii;
  * @property int $updated_at
  * @property string $email
  */
-class User extends \app\models\ActiveRecord
+class GeneratedUser extends \app\models\ActiveRecord
 {
     /**
      * {@inheritdoc}

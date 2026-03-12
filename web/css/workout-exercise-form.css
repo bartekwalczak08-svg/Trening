@@ -1,0 +1,32 @@
+.workout-exercise-create .card,
+.workout-exercise-update .card {
+  border-radius: 15px;
+  border: none;
+}
+
+.workout-exercise-create .card-header,
+.workout-exercise-update .card-header {
+  border-radius: 15px 15px 0 0 !important;
+}
+
+.workout-exercise-create .form-control-lg,
+.workout-exercise-create .form-select-lg,
+.workout-exercise-update .form-control-lg,
+.workout-exercise-update .form-select-lg {
+  border-radius: 10px;
+}
+
+.workout-exercise-create .input-group-text,
+.workout-exercise-update .input-group-text {
+  border-radius: 10px;
+}
+
+.workout-exercise-create .btn,
+.workout-exercise-update .btn {
+  border-radius: 10px;
+}
+
+.workout-exercise-create .workout-form-muted,
+.workout-exercise-update .workout-form-muted {
+  color: var(--text-muted, #a0a0cc);
+}

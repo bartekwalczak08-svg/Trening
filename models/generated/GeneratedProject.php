@@ -19,7 +19,7 @@ use Yii;
  * @property int $created_at
  * @property int $updated_at
  */
-class Project extends \app\models\ActiveRecord
+class GeneratedProject extends \app\models\ActiveRecord
 {
     /**
      * {@inheritdoc}

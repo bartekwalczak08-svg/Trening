@@ -1,0 +1,8 @@
+.padding-navbar {
+  padding-top: var(--bs-navbar-height, 72px);
+  flex: 1 0 auto;
+}
+
+.sidebar {
+  width: 240px;
+}

@@ -20,9 +20,9 @@ use Yii;
  * @property int $created_at
  * @property int $updated_at
  *
- * @property WorkoutExercises[] $workoutExercises
+ * @property GeneratedWorkoutExercises[] $workoutExercises
  */
-class Exercises extends \app\models\ActiveRecord
+class GeneratedExercises extends \app\models\ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -66,12 +66,12 @@ class Exercises extends \app\models\ActiveRecord
     }
 
     /**
-     * Gets query for [[WorkoutExercises]].
+     * Gets query for [[GeneratedWorkoutExercises]].
      *
      * @return \yii\db\ActiveQuery
      */
     public function getWorkoutExercises()
     {
-        return $this->hasMany(WorkoutExercises::class, ['exercise_id' => 'id']);
+        return $this->hasMany(GeneratedWorkoutExercises::class, ['exercise_id' => 'id']);
     }
 }

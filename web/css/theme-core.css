@@ -1,0 +1,68 @@
+:root {
+  --bg: #f2f6fb;
+  --card-bg: #ffffff;
+  --sidebar: #111827;
+  --sidebar-2: #0f172a;
+  --sidebar-border: rgba(148, 163, 184, 0.25);
+  --text: #1f2937;
+  --text-muted: #64748b;
+  --border: #d9e2ec;
+  --accent: #0f766e;
+  --accent-p: #0ea5e9;
+  --accent-g: #22c55e;
+  --success: #16a34a;
+  --info: #0284c7;
+  --danger: #dc2626;
+  --surface-soft: #f8fafc;
+  --badge-bg: #e0f2fe;
+  --badge-text: #075985;
+  --badge-border: #bae6fd;
+  --table-head-bg: #f1f5f9;
+  --table-head-text: #334155;
+  --input-bg: #ffffff;
+  --input-text: #0f172a;
+  --input-border: #cbd5e1;
+}
+
+html[data-theme='dark'] {
+  --bg: #0b1220;
+  --card-bg: #111827;
+  --sidebar: #020617;
+  --sidebar-2: #0b1220;
+  --sidebar-border: rgba(100, 116, 139, 0.35);
+  --text: #e5e7eb;
+  --text-muted: #94a3b8;
+  --border: #243244;
+  --accent: #22d3ee;
+  --accent-p: #38bdf8;
+  --accent-g: #34d399;
+  --success: #22c55e;
+  --info: #38bdf8;
+  --danger: #f87171;
+  --surface-soft: #0f172a;
+  --badge-bg: #10243d;
+  --badge-text: #7dd3fc;
+  --badge-border: #1e3a5f;
+  --table-head-bg: #132235;
+  --table-head-text: #cbd5e1;
+  --input-bg: #0f172a;
+  --input-text: #e2e8f0;
+  --input-border: #334155;
+}
+
+body {
+  background:
+    radial-gradient(1100px 600px at 0% -10%, #e2f2ff 0%, transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, #fff4dc 0%, transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", "Trebuchet MS", Tahoma, sans-serif;
+}
+
+html[data-theme='dark'] body {
+  background:
+    radial-gradient(1100px 600px at 0% -10%, rgba(14, 116, 144, 0.22) 0%, transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(30, 58, 138, 0.18) 0%, transparent 60%),
+    var(--bg);
+  color: var(--text);
+}

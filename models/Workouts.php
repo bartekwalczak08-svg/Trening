@@ -5,6 +5,6 @@
  */
 namespace app\models;
 
-class Workouts extends extended\Workouts
+class Workouts extends extended\ExtendedWorkouts
 {
 }

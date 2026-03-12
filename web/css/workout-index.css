@@ -1,0 +1,58 @@
+.workout-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.workout-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+.workout-card .card-title {
+  font-weight: 600;
+  color: var(--text, #e8e8ff);
+}
+
+.workout-subtitle {
+  color: var(--text-muted, #a0a0cc);
+}
+
+.workout-empty-icon {
+  color: var(--text-muted, #a0a0cc);
+  opacity: 0.8;
+}
+
+.workout-description {
+  color: var(--text, #e8e8ff);
+  min-height: 48px;
+}
+
+.workout-date-badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text, #e8e8ff);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.workout-index .badge {
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.workout-index .btn {
+  border-radius: 8px;
+}
+
+.workout-index .btn-lg {
+  border-radius: 10px;
+}
+
+.workout-btn-main {
+  font-weight: 600;
+}
+
+.workout-day-count {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text, #e8e8ff);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}

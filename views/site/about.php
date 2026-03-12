@@ -7,10 +7,12 @@
 
 /** @var yii\web\View $this */
 
+use app\assets\SiteAboutAsset;
 use yii\helpers\Html;
 
 $this->title = 'O aplikacji';
 $this->params['breadcrumbs'][] = $this->title;
+SiteAboutAsset::register($this);
 ?>
 <div class="site-about">
     <section class="card p-4 mb-4 about-hero">
@@ -66,8 +68,3 @@ $this->params['breadcrumbs'][] = $this->title;
     </section>
 </div>
 
-<style>
-.about-hero {
-    border: 1px solid var(--border, #dbe4ef);
-}
-</style>

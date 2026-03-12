@@ -5,6 +5,7 @@
  */
 
 
+use app\assets\DashboardAsset;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
@@ -14,6 +15,7 @@ use yii\helpers\Html;
 
 $this->title = 'Panel';
 $this->params['breadcrumbs'][] = $this->title;
+DashboardAsset::register($this);
 
 $todayExerciseCount = $todayWorkout ? $todayWorkout->getWorkoutExercises()->count() : 0;
 ?>
@@ -125,99 +127,4 @@ $todayExerciseCount = $todayWorkout ? $todayWorkout->getWorkoutExercises()->coun
     </section>
 </div>
 
-<style>
-.dashboard-panel .hero {
-    background: linear-gradient(120deg, rgba(0, 212, 255, 0.12), rgba(57, 255, 170, 0.08));
-    border: 1px solid rgba(0, 212, 255, 0.25);
-    border-radius: 16px;
-    padding: 1.25rem;
-}
-
-.dashboard-panel .hero-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.dashboard-panel .eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-muted, #a0a0cc);
-    font-size: 0.75rem;
-}
-
-.dashboard-panel .hero-title {
-    color: var(--text, #e8e8ff);
-    font-weight: 700;
-}
-
-.dashboard-panel .hero-subtitle,
-.dashboard-panel .panel-muted {
-    color: var(--text-muted, #a0a0cc);
-}
-
-.dashboard-panel .kpi-card {
-    background: var(--surface-soft, #f8fafc);
-    border: 1px solid var(--border, #dbe4ef);
-    border-radius: 14px;
-    padding: 1rem;
-}
-
-.dashboard-panel .kpi-label {
-    color: var(--text-muted, #a0a0cc);
-    font-size: 0.85rem;
-}
-
-.dashboard-panel .kpi-value {
-    color: var(--text, #e8e8ff);
-    font-size: 1.6rem;
-    font-weight: 700;
-}
-
-.dashboard-panel .panel-card {
-    border-radius: 14px;
-    border: 1px solid var(--border, #dbe4ef);
-    background: var(--card-bg, #ffffff);
-}
-
-.dashboard-panel .panel-card .card-header,
-.dashboard-panel .panel-card .card-footer,
-.dashboard-panel .activity-item {
-    background: transparent;
-    border-color: var(--border, #dbe4ef);
-}
-
-html[data-theme='dark'] .dashboard-panel .kpi-card {
-    background: rgba(15, 23, 42, 0.75);
-    border-color: #334155;
-}
-
-html[data-theme='dark'] .dashboard-panel .panel-card {
-    background: rgba(17, 24, 39, 0.92);
-    border-color: #334155;
-}
-
-html[data-theme='dark'] .dashboard-panel .panel-card .card-header,
-html[data-theme='dark'] .dashboard-panel .panel-card .card-footer,
-html[data-theme='dark'] .dashboard-panel .activity-item {
-    border-color: #334155;
-}
-
-.dashboard-panel .activity-title {
-    color: var(--text, #e8e8ff);
-    font-weight: 600;
-}
-
-@media (max-width: 768px) {
-    .dashboard-panel .hero {
-        padding: 1rem;
-    }
-
-    .dashboard-panel .kpi-value {
-        font-size: 1.35rem;
-    }
-}
-</style>
 

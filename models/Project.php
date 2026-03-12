@@ -5,7 +5,7 @@
  */
 namespace app\models;
 
-class Project extends extended\Project
+class Project extends extended\ExtendedProject
 {
 
 }

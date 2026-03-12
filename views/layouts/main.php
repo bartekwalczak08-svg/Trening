@@ -8,14 +8,16 @@
 /** @var yii\web\View $this */
 /** @var string $content */
 
-use app\assets\AppAsset;
+use app\assets\ThemeAsset;
+use app\assets\LayoutAsset;
 use app\widgets\Alert;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
 
-AppAsset::register($this);
+ThemeAsset::register($this);
+LayoutAsset::register($this);
 
 $this->registerCsrfMetaTags();
 $this->registerMetaTag(['charset' => Yii::$app->charset], 'charset');
@@ -42,16 +44,6 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     <?php $this->head() ?>
     <!-- bootstrap icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .padding-navbar {
-            padding-top: var(--bs-navbar-height, 56px);
-            flex: 1 0 auto;
-        }
-
-        .sidebar {
-            width: 240px;
-        }
-    </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
 <?php $this->beginBody() ?>
@@ -190,35 +182,9 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <?php $this->endBody() ?>
 <script>
     (function () {
-        var toggleBtn = document.getElementById('theme-toggle');
-        var toggleLabel = document.getElementById('theme-toggle-label');
         var mobileMenuBtn = document.querySelector('.mobile-menu-btn');
         var mobileFabBtn = document.getElementById('mobile-menu-fab');
         var mobileSidebar = document.getElementById('mobile-sidebar');
-        if (!toggleBtn) {
-            return;
-        }
-
-        function syncLabel() {
-            var current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-            if (toggleLabel) {
-                toggleLabel.textContent = current === 'dark' ? 'Jasny' : 'Ciemny';
-            }
-        }
-
-        toggleBtn.addEventListener('click', function () {
-            var current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-            var next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            try {
-                localStorage.setItem('theme', next);
-            } catch (e) {
-                // ignore localStorage errors
-            }
-            syncLabel();
-        });
-
-        syncLabel();
 
         // Framework-independent mobile menu toggle for consistent behavior.
         function syncMenuAria(expanded) {

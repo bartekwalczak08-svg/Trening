@@ -5,6 +5,7 @@
  */
 
 
+use app\assets\WorkoutViewAsset;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
@@ -14,6 +15,7 @@ use yii\helpers\Html;
 $this->title = $workout->name;
 $this->params['breadcrumbs'][] = ['label' => 'Plany treningowe', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+WorkoutViewAsset::register($this);
 
 $exerciseTotal = count($workoutExercises);
 $exerciseCompleted = 0;
@@ -194,63 +196,4 @@ if ($exerciseTotal > 0 && $exerciseCompleted === $exerciseTotal) {
         <?= Html::a('<i class="bi bi-arrow-left me-1"></i> Wróć do listy', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
     </div>
 </div>
-
-<style>
-.workout-view .card {
-    border-radius: 15px;
-    border: none;
-}
-
-.workout-view .card,
-.workout-view .card-body,
-.workout-view .card-header {
-    color: var(--text, #e8e8ff);
-}
-
-.workout-view .card-header.bg-white {
-    background-color: rgba(255, 255, 255, 0.04) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.workout-view .workout-muted {
-    color: var(--text-muted, #a0a0cc) !important;
-}
-
-.workout-view .table {
-    background-color: #ffffff;
-}
-
-.workout-view .table td {
-    color: #2f3242;
-}
-
-.workout-view .table th {
-    color: #5a5f73;
-}
-
-.workout-view .table-light th {
-    background-color: #f1f3f8;
-}
-
-.workout-view .table > thead {
-    border-bottom: 2px solid #dee2e6;
-}
-.workout-view .table th {
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-}
-.workout-view .table td {
-    vertical-align: middle;
-}
-.workout-view .badge.rounded-pill {
-    padding: 0.5em 0.8em;
-}
-.workout-complete-checkbox {
-    width: 1.1rem;
-    height: 1.1rem;
-    cursor: pointer;
-}
-</style>
 

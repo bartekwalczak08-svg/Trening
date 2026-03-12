@@ -5,6 +5,7 @@
  */
 
 
+use app\assets\SiteIndexAsset;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
@@ -22,7 +23,7 @@ use yii\helpers\Html;
 /** @var int $weeklyCompletionPercent */
 
 $this->title = 'Plan Treningowy';
-$this->registerCssFile('@web/css/site.css', ['depends' => [\yii\bootstrap5\BootstrapAsset::class]]);
+SiteIndexAsset::register($this);
 
 $totalWorkouts = 0;
 foreach ($groupedWorkouts as $items) {
@@ -205,88 +206,3 @@ foreach ($groupedWorkouts as $items) {
     <?php endif; ?>
 </div>
 
-<style>
-.home-calendar-grid {
-    display: grid;
-    gap: 0.75rem;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-@media (min-width: 768px) {
-    .home-calendar-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-@media (min-width: 1200px) {
-    .home-calendar-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-}
-.home-day {
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-}
-.home-count {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text, #e8e8ff);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.today-card {
-    border-radius: 14px;
-    overflow: hidden;
-}
-
-.today-header {
-    padding-bottom: 0.65rem;
-    border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.12));
-}
-
-.today-count-badge {
-    background: linear-gradient(90deg, rgba(14, 165, 233, 0.2), rgba(20, 184, 166, 0.2));
-    color: var(--text, #e8e8ff);
-    border: 1px solid rgba(56, 189, 248, 0.45);
-    font-weight: 600;
-}
-
-.today-list {
-    margin: 0;
-}
-
-.today-item {
-    border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
-    border-radius: 10px;
-    padding: 0.55rem 0.7rem !important;
-    margin-bottom: 0.55rem;
-    background: var(--surface-soft, rgba(255, 255, 255, 0.03));
-}
-
-.today-item-name {
-    font-weight: 600;
-    color: var(--text, #e8e8ff);
-}
-
-.today-open-btn {
-    border: 1px solid rgba(56, 189, 248, 0.6);
-    color: var(--info, #0ea5e9);
-    background: transparent;
-}
-
-.today-open-btn:hover {
-    background: rgba(56, 189, 248, 0.14);
-    color: #ffffff;
-}
-
-.today-empty {
-    font-size: 0.95rem;
-}
-
-.today-next-day {
-    display: inline-block;
-    padding: 0.12rem 0.5rem;
-    border-radius: 999px;
-    border: 1px solid rgba(56, 189, 248, 0.45);
-    background: rgba(56, 189, 248, 0.12);
-    color: var(--text, #e8e8ff);
-    font-weight: 600;
-}
-</style>

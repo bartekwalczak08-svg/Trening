@@ -1,0 +1,82 @@
+.app-footer {
+  margin-top: 0.55rem;
+  border-top: 1px solid var(--border);
+  background:
+    linear-gradient(140deg, color-mix(in srgb, var(--card-bg) 90%, #ffffff 10%), color-mix(in srgb, var(--surface-soft) 92%, #ffffff 8%));
+  position: relative;
+  overflow: hidden;
+}
+
+.app-footer::before {
+  content: "";
+  position: absolute;
+  inset: -40% auto auto -10%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent-p) 20%, transparent) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.app-footer-brand {
+  font-weight: 800;
+  font-size: 1.08rem;
+  letter-spacing: 0.2px;
+  margin-bottom: 0.2rem;
+  background: linear-gradient(90deg, var(--accent), var(--accent-p));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.app-footer-text {
+  color: var(--text-muted);
+  max-width: 30ch;
+  font-size: 0.84rem;
+}
+
+.app-footer-heading {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.app-footer-links li + li {
+  margin-top: 0.15rem;
+}
+
+.app-footer-links a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.84rem;
+  transition: color 0.18s ease, transform 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.app-footer-links a:hover {
+  color: var(--accent-p);
+  transform: translateX(2px);
+}
+
+.app-footer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  border: 1px solid var(--badge-border);
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  border-radius: 999px;
+  padding: 0.2rem 0.48rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.app-footer-bottom {
+  border-top: 1px dashed color-mix(in srgb, var(--border) 80%, transparent);
+  color: var(--text-muted);
+  font-size: 0.74rem;
+}

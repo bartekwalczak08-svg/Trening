@@ -5,6 +5,6 @@
  */
 namespace app\models;
 
-class User extends extended\User
+class User extends extended\ExtendedUser
 {
 }

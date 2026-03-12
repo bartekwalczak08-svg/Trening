@@ -5,6 +5,7 @@
  */
 
 
+use app\assets\WorkoutExerciseFormAsset;
 use yii\helpers\Html;
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\ArrayHelper;
@@ -18,6 +19,7 @@ $this->title = 'Dodaj ćwiczenie';
 $this->params['breadcrumbs'][] = ['label' => 'Plany treningowe', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $workout->name, 'url' => ['view', 'id' => $workout->id]];
 $this->params['breadcrumbs'][] = $this->title;
+WorkoutExerciseFormAsset::register($this);
 
 $durationUnit = 'sec';
 if (method_exists($model, 'hasAttribute') && $model->hasAttribute('duration_unit')) {
@@ -116,27 +118,4 @@ if (method_exists($model, 'hasAttribute') && $model->hasAttribute('duration_unit
         </div>
     </div>
 </div>
-
-<style>
-.workout-exercise-create .card {
-    border-radius: 15px;
-    border: none;
-}
-.workout-exercise-create .card-header {
-    border-radius: 15px 15px 0 0 !important;
-}
-.workout-exercise-create .form-control-lg,
-.workout-exercise-create .form-select-lg {
-    border-radius: 10px;
-}
-.workout-exercise-create .input-group-text {
-    border-radius: 10px;
-}
-.workout-exercise-create .btn {
-    border-radius: 10px;
-}
-.workout-exercise-create .workout-form-muted {
-    color: var(--text-muted, #a0a0cc);
-}
-</style>
 

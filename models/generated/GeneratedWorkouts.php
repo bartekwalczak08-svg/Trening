@@ -19,10 +19,10 @@ use Yii;
  * @property int $created_at
  * @property int $updated_at
  *
- * @property User|null $user
- * @property WorkoutExercises[] $workoutExercises
+ * @property GeneratedUser|null $user
+ * @property GeneratedWorkoutExercises[] $workoutExercises
  */
-class Workouts extends \app\models\ActiveRecord
+class GeneratedWorkouts extends \app\models\ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -46,7 +46,7 @@ class Workouts extends \app\models\ActiveRecord
             [['user_id', 'is_completed', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['weekday'], 'string', 'max' => 16],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => GeneratedUser::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -68,22 +68,22 @@ class Workouts extends \app\models\ActiveRecord
     }
 
     /**
-     * Gets query for [[User]].
+     * Gets query for [[GeneratedUser]].
      *
      * @return \yii\db\ActiveQuery
      */
     public function getUser()
     {
-        return $this->hasOne(User::class, ['id' => 'user_id']);
+        return $this->hasOne(GeneratedUser::class, ['id' => 'user_id']);
     }
 
     /**
-     * Gets query for [[WorkoutExercises]].
+     * Gets query for [[GeneratedWorkoutExercises]].
      *
      * @return \yii\db\ActiveQuery
      */
     public function getWorkoutExercises()
     {
-        return $this->hasMany(WorkoutExercises::class, ['workout_id' => 'id']);
+        return $this->hasMany(GeneratedWorkoutExercises::class, ['workout_id' => 'id']);
     }
 }

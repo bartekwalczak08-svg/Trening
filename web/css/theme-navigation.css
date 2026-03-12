@@ -1,0 +1,160 @@
+.navbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 18px rgba(2, 8, 23, 0.28);
+}
+
+.app-navbar {
+  background: color-mix(in srgb, var(--sidebar) 92%, transparent) !important;
+  --bs-navbar-padding-y: 0.2rem;
+}
+
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+}
+
+.navbar-brand::before {
+  content: "";
+  width: 62px;
+  height: 62px;
+  border-radius: 12px;
+  display: inline-block;
+  background-image: url('../logo.png');
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 18px rgba(2, 8, 23, 0.4);
+}
+
+.app-brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 14px rgba(2, 8, 23, 0.35);
+}
+
+.app-brand-text {
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.2px;
+}
+
+.sidebar {
+  background: linear-gradient(180deg, var(--sidebar) 0%, var(--sidebar-2) 100%) !important;
+  border-right: 1px solid var(--sidebar-border);
+  min-height: 100%;
+}
+
+.theme-toggle-btn {
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-weight: 600;
+  color: #e2e8f0 !important;
+  border-color: rgba(148, 163, 184, 0.6) !important;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.mobile-menu-btn {
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  border-color: rgba(148, 163, 184, 0.7) !important;
+  color: #e2e8f0 !important;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.mobile-menu-btn:hover {
+  color: #ffffff !important;
+  border-color: rgba(186, 230, 253, 0.9) !important;
+  background: rgba(14, 165, 233, 0.25);
+}
+
+.mobile-menu-fab {
+  position: fixed;
+  right: 0.9rem;
+  bottom: 0.9rem;
+  z-index: 1060;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: #0284c7;
+  border-color: #0369a1;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(2, 132, 199, 0.45);
+}
+
+.mobile-menu-fab:hover,
+.mobile-menu-fab:focus {
+  background: #0369a1;
+  border-color: #075985;
+  color: #ffffff;
+}
+
+.theme-toggle-btn:hover {
+  color: #ffffff !important;
+  border-color: rgba(186, 230, 253, 0.9) !important;
+  background: rgba(14, 165, 233, 0.25);
+}
+
+.logo {
+  font-size: 1.85rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #5eead4, #67e8f9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  margin-bottom: 1.8rem;
+  letter-spacing: -0.5px;
+}
+
+.nav-link {
+  color: #cbd5e1 !important;
+  border-radius: 10px;
+  padding: 0.66rem 0.9rem;
+  transition: all 0.18s ease;
+}
+
+.nav-link:hover {
+  color: #f8fafc !important;
+  background-color: rgba(30, 41, 59, 0.75);
+  transform: translateX(2px);
+}
+
+.nav-link.active {
+  color: #f8fafc !important;
+  background: linear-gradient(90deg, rgba(15, 118, 110, 0.6), rgba(14, 165, 233, 0.35));
+  border-left: 4px solid #5eead4;
+}
+
+.neon-heading {
+  font-weight: 700;
+  background: linear-gradient(90deg, #0f766e, #0284c7 82%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.35px;
+}
+
+.btn-neon {
+  background: linear-gradient(90deg, #0f766e, #0284c7);
+  color: #ffffff !important;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.6rem;
+  padding: 0.65rem 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-neon:hover {
+  background: linear-gradient(90deg, #115e59, #0369a1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
+}

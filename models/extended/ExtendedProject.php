@@ -5,6 +5,6 @@
  */
 namespace app\models\extended;
 
-class Project extends \app\models\generated\Project
+class ExtendedProject extends \app\models\generated\GeneratedProject
 {
 }
