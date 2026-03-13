@@ -1,5 +1,5 @@
 .padding-navbar {
-  padding-top: var(--bs-navbar-height, 72px);
+  padding-top: 0;
   flex: 1 0 auto;
 }
 

@@ -43,6 +43,40 @@
   margin-bottom: 0.3rem;
 }
 
+.app-footer-shortcuts-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.app-footer-shortcuts-heading {
+  display: block;
+  width: auto;
+  text-align: center;
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.35rem;
+}
+
+.app-footer-shortcuts-columns {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: max-content;
+  gap: 17px;
+}
+
+.app-footer-shortcuts-columns > div:first-child {
+  text-align: left;
+  transform: translateX(20px);
+}
+
+.app-footer-shortcuts-columns > div:last-child {
+  text-align: left;
+  transform: translateX(27px);
+}
+
 .app-footer-links li + li {
   margin-top: 0.15rem;
 }

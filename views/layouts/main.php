@@ -14,7 +14,6 @@ use app\widgets\Alert;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
-use yii\bootstrap5\NavBar;
 use yii\helpers\Url;
 
 ThemeAsset::register($this);
@@ -49,42 +48,12 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <body class="d-flex flex-column min-vh-100">
 <?php $this->beginBody() ?>
 
-<header id="header">
-    <?php
-    NavBar::begin([
-        'brandLabel' => '',
-        'brandUrl' => Yii::$app->homeUrl,
-        'options' => ['class' => 'navbar-expand-md fixed-top app-navbar']
-    ]);
-    $currentLanguage = (string) Yii::$app->language;
-    $switchToLanguage = $currentLanguage === 'en-US' ? 'pl-PL' : 'en-US';
-    $languageButtonLabel = $currentLanguage === 'en-US' ? 'PL' : 'EN';
-    $languageSwitchUrl = Url::current(['lang' => $switchToLanguage]);
-
-    echo '<div class="ms-auto d-flex align-items-center gap-2">';
-    echo Html::button('<i class="bi bi-list"></i> <span>' . Yii::t('app', 'Menu') . '</span>', [
-        'class' => 'btn btn-sm btn-outline-light mobile-menu-btn d-md-none',
-        'type' => 'button',
-        'aria-controls' => 'mobile-sidebar',
-        'aria-expanded' => 'false',
-        'aria-label' => Yii::t('app', 'Pokaż lub ukryj menu'),
-    ]);
-    echo Html::a('<i class="bi bi-translate"></i> <span>' . $languageButtonLabel . '</span>', $languageSwitchUrl, [
-        'class' => 'btn btn-sm btn-outline-light language-toggle-btn',
-        'aria-label' => Yii::t('app', 'Przełącz język na {lang}', ['lang' => $switchToLanguage]),
-    ]);
-    echo Html::button('<i class="bi bi-moon-stars"></i> <span id="theme-toggle-label">' . Yii::t('app', 'Ciemny') . '</span>', [
-        'id' => 'theme-toggle',
-        'class' => 'btn btn-sm btn-outline-light theme-toggle-btn',
-        'type' => 'button',
-        'data-light-label' => Yii::t('app', 'Jasny'),
-        'data-dark-label' => Yii::t('app', 'Ciemny'),
-    ]);
-    echo '</div>';
-    // only show brand, menu in sidebar
-    NavBar::end();
-    ?>
-</header>
+<?php
+$currentLanguage = (string) Yii::$app->language;
+$switchToLanguage = $currentLanguage === 'en-US' ? 'pl-PL' : 'en-US';
+$languageButtonLabel = $currentLanguage === 'en-US' ? 'PL' : 'EN';
+$languageSwitchUrl = Url::current(['lang' => $switchToLanguage]);
+?>
 
 <?= Html::button('<i class="bi bi-list"></i>', [
     'id' => 'mobile-menu-fab',
@@ -98,6 +67,12 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <div class="d-flex padding-navbar">
     <div class="d-flex flex-column flex-shrink-0 p-3 sidebar">
         <div id="mobile-sidebar" class="mobile-sidebar-panel d-md-block">
+            <div class="sidebar-top-controls">
+                <?= Html::a('', Yii::$app->homeUrl, [
+                    'class' => 'navbar-brand sidebar-brand',
+                    'aria-label' => Yii::t('app', 'Strona główna'),
+                ]) ?>
+            </div>
             <?php
             $commonItems = [
                 ['label' => '<i class="bi bi-house me-1"></i>' . Yii::t('app', 'Strona główna'), 'url' => ['/site/index'], 'encode' => false],
@@ -125,6 +100,21 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                 ['label' => '&nbsp;<i class="bi bi-activity"></i> ' . Yii::t('app', 'Plany treningowe'), 'url' => ['/workout/index'], 'encode' => false],
                 ['label' => '&nbsp;<i class="bi bi-graph-up"></i> ' . Yii::t('app', 'Progres'), 'url' => ['/dashboard/progress'], 'encode' => false],
                 '<li><hr class="text-secondary"></li>',
+                '<li class="nav-item sidebar-utility-item">'
+                    . '<div class="sidebar-utility-buttons">'
+                    . Html::a('<i class="bi bi-translate"></i> <span>' . $languageButtonLabel . '</span>', $languageSwitchUrl, [
+                        'class' => 'btn btn-sm btn-outline-light language-toggle-btn',
+                        'aria-label' => Yii::t('app', 'Przełącz język na {lang}', ['lang' => $switchToLanguage]),
+                    ])
+                    . Html::button('<i class="bi bi-moon-stars"></i> <span id="theme-toggle-label">' . Yii::t('app', 'Ciemny') . '</span>', [
+                        'id' => 'theme-toggle',
+                        'class' => 'btn btn-sm btn-outline-light theme-toggle-btn',
+                        'type' => 'button',
+                        'data-light-label' => Yii::t('app', 'Jasny'),
+                        'data-dark-label' => Yii::t('app', 'Ciemny'),
+                    ])
+                    . '</div>'
+                    . '</li>',
                 '<li class="nav-item">'
                     . Html::beginForm(['/site/logout'])
                     . Html::submitButton(
@@ -167,13 +157,23 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             </div>
 
             <div class="col-sm-6 col-lg-4">
-                <h6 class="app-footer-heading"><?= Yii::t('app', 'Skróty') ?></h6>
-                <ul class="app-footer-links list-unstyled mb-0">
-                    <li><?= Html::a(Yii::t('app', 'Panel'), ['/dashboard/index']) ?></li>
-                    <li><?= Html::a(Yii::t('app', 'Kalendarz'), ['/workout/calendar']) ?></li>
-                    <li><?= Html::a(Yii::t('app', 'Plany treningowe'), ['/workout/index']) ?></li>
-                    <li><?= Html::a(Yii::t('app', 'Kontakt'), ['/site/contact']) ?></li>
-                </ul>
+                <div class="app-footer-shortcuts-group">
+                    <h6 class="app-footer-heading app-footer-shortcuts-heading"><?= Yii::t('app', 'Skróty') ?></h6>
+                    <div class="app-footer-shortcuts-columns">
+                        <div>
+                            <ul class="app-footer-links list-unstyled mb-0">
+                                <li><?= Html::a(Yii::t('app', 'Panel'), ['/dashboard/index']) ?></li>
+                                <li><?= Html::a(Yii::t('app', 'Kalendarz'), ['/workout/calendar']) ?></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <ul class="app-footer-links list-unstyled mb-0">
+                                <li><?= Html::a(Yii::t('app', 'Plany treningowe'), ['/workout/index']) ?></li>
+                                <li><?= Html::a(Yii::t('app', 'Kontakt'), ['/site/contact']) ?></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="col-sm-6 col-lg-3">
